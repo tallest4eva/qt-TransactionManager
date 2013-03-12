@@ -9,7 +9,6 @@
 #include <QDate>
 #include <QLabel>
 #include <QList>
-#include <QPainterPath>
 #include <QString>
 #include <QTimer>
 #include <QWidget>
@@ -17,10 +16,24 @@
 #include <qwt_plot.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_histogram.h>
+#include <qwt_plot_curve.h>
 #include <qwt_scale_draw.h>
 
 #include "Account.h"
 #include "Transaction.h"
+
+class DisplayLabel : public QLabel
+{
+    Q_OBJECT
+public:
+    virtual void mouseReleaseEvent( QMouseEvent * aEvent ){ QLabel::mouseReleaseEvent( aEvent ); clicked(); }
+    QDate getDate() const { return mDate; }
+    void  setDate( QDate aDate ){ mDate = aDate; }
+signals:
+    void clicked();
+private:
+    QDate mDate;
+};
 
 class GraphWidget : public QWidget
 {
@@ -36,13 +49,11 @@ public:
 
     struct MonthDataType
     {
-        float positiveVal;
-        float negativeVal;
         float income;
         float expense;
         float netWorth;
         QDate date;
-        MonthDataType(): positiveVal(0.0), negativeVal(0.0), income(0.0), expense(0.0), netWorth(0.0), date(2000,1,1){}
+        MonthDataType(): income(0.0), expense(0.0), netWorth(0.0), date(2000,1,1){}
     };
 
     // Variable
@@ -67,8 +78,12 @@ public:
         const QList<Transaction*>& aTransactionList
         );
 
+signals:
+    void dateSelected( QDate aStartDate, QDate aEndDate );
+
 private slots:
     void hideDisplayLabel();
+    void handleDisplayClicked();
 
 private:
     // Date graph widget
@@ -77,22 +92,13 @@ private:
     QDate mEndDate;
     QwtPlot mPlot;
     QwtPlotGrid* mGrid;
+    QwtPlotCurve* mIncomeCurve;
     QwtPlotHistogram* mPositiveHistogram;
     QwtPlotHistogram* mNegativeHistogram;
-    QLabel mDisplayLabel;
+    DisplayLabel mDisplayLabel;
     QTimer mDisplayTimer;
     QList<MonthDataType> mMonthDataList;
 
-};
-
-class TimeScaleDraw : public QwtScaleDraw
-{
-public:
-    virtual QwtText label( double aValue ) const
-    {
-        QDate date = GraphWidget::REFERENCE_DATE.addDays( aValue );
-        return QwtText( date.toString("MMMyy") );
-    }
 };
 
 #endif // RENDERAREA_H

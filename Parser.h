@@ -35,13 +35,14 @@ public:
 
         ENTRY_CNT
     };
-
     enum DateFormatType
     {
         DATE_FORMAT_MMddyy_SLASH,
         DATE_FORMAT_MMddyy_HYPHEN,
         DATE_FORMAT_MMddyyyy_SLASH,
         DATE_FORMAT_MMddyyyy_HYPHEN,
+        DATE_FORMAT_Mdyyyy_SLASH,
+        DATE_FORMAT_Mdyyyy_HYPHEN,
         DATE_FORMAT_yyMMdd_SLASH,
         DATE_FORMAT_yyMMdd_HYPHEN,
         DATE_FORMAT_yyyyMMdd_SLASH,
@@ -53,6 +54,13 @@ public:
 
         DATE_FORMAT_CNT
     };
+    enum SeparatorType
+    {
+        SEPARATOR_COMMA,
+        SEPARATOR_SEMI_COLON,
+
+        SEPARATOR_CNT
+    };
     
     // Functions
     static void restore();
@@ -63,10 +71,14 @@ public:
         
     // Variables
     static const DateFormatType cDefaultDateFormat;
-    static DateFormatType cDateFormat;
+    static DateFormatType sDateFormat;
+    static const SeparatorType cDefaultSeparator;
+    static SeparatorType sSeparator;
     static const int cDefaultEntryList[];
     static QVector<int> sEntryList;
+
     static const char* cDateFormatList[];
+    static const char cSeparatorList[];
 
 private:
     // Variables

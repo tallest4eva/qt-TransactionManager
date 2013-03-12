@@ -39,6 +39,16 @@ public:
 
         TAB_CNT
     };
+    struct TransactionFilterType
+    {
+        bool allAccounts;
+        QList<Account*> accountList;
+        bool allCategories;
+        QList<Category::CategoryIdType> categoriesList;
+        bool allLabels;
+        QList<Category::LabelIdType> LabelList;
+        TransactionFilterType(): allAccounts(true), allCategories(true), allLabels(true){} 
+    };
 
     // Functions
     explicit TransactionManager(QWidget *parent = 0);
@@ -82,6 +92,7 @@ private slots:
     void on_reportAllAccountsCheckBox_stateChanged( int aCheckState );
     void on_reportAllCategoriesCheckBox_stateChanged( int aCheckState );
     void on_reportAllLabelsCheckBox_stateChanged( int aCheckState );
+    void handleShowTransactionByDate( QDate aStartDate, QDate aEndDate );
 
 private:
     // Functions

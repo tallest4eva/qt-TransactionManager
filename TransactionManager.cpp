@@ -20,19 +20,15 @@
 #include "TransactionListModel.h"
 #include "Logger.h"
 #include "DisplayDialog.h"
+#include "FileConfigDialog.h"
 
 // Static variables
 QStringList TransactionManager::mFileContents;
 QList<Account*> TransactionManager::mAccountList;
 QList<Transaction*> TransactionManager::mTransactionList;
+QList<Month*> TransactionManager::mMonthList;
 QDate TransactionManager::mFirstTransactionDate = QDate();
 QDate TransactionManager::mLastTransactionDate = QDate();
-
-// Static functions
-static bool accountSortLessThan( Account* a1, Account* &a2 )
-{
-     return a1->getName() < a2->getName();
-}
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -95,9 +91,12 @@ void TransactionManager::init()
         mReportLabelsCheckBoxList.push_back( checkbox );
     }
 
+    // Init graph
     mReportNetIncomeGraph.setGraphMode( GraphWidget::BAR_NET_INCOME );
-    ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
     mReportNetWorthGraph.setGraphMode( GraphWidget::BAR_NET_WORTH );
+    connect( &mReportNetIncomeGraph, SIGNAL(dateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
+    connect( &mReportNetWorthGraph, SIGNAL(dateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
+    ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
     ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
 
     // Test pie chart
@@ -119,9 +118,6 @@ void TransactionManager::on_actionExit_triggered()
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionOpen_triggered()
 {
-    // Close previous file
-    on_actionClose_triggered();
-    
     QString fileName = QFileDialog::getOpenFileName( this, tr("Open File"), QString(), tr("Csv Files (*.csv);;All Files (*.*)") );
 
     if( !fileName.isEmpty() )
@@ -133,17 +129,20 @@ void TransactionManager::on_actionOpen_triggered()
             return;
         }
 
+        // Close previous file
+        on_actionClose_triggered();
+
         // Parse file contents
         mFileName = fileName;
         QTextStream in( &file );
         mAccountList.clear();
         mTransactionList.clear();
+        mMonthList.clear();
         mFileContents.clear();
         mFirstTransactionDate.setDate(2000,1,1);
         mLastTransactionDate.setDate(2000,1,1);
 
         Parser::parseFile( in );
-        qSort( mAccountList.begin(), mAccountList.end(), accountSortLessThan );
         file.close();
 
         // Update ui contents
@@ -169,8 +168,13 @@ void TransactionManager::on_actionClose_triggered()
         {
             delete mTransactionList[i];
         }
+        for( int i = 0; i < mMonthList.size(); i++ )
+        {
+            delete mMonthList[i];
+        }
         mAccountList.clear();
         mTransactionList.clear();
+        mMonthList.clear();
         mFileContents.clear();
         mFirstTransactionDate.setDate(2000,1,1);
         mLastTransactionDate.setDate(2000,1,1);
@@ -210,9 +214,7 @@ void TransactionManager::on_actionSave_triggered()
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionFileInputConfig_triggered()
 {
-    DisplayDialog dialog;
-    dialog.setWindowTitle( "Display File Contents" );
-    dialog.setDisplay( mFileContents );
+    FileConfigDialog dialog;
     dialog.exec();
 } // TransactionManager::on_actionSave_triggered()
 
@@ -269,8 +271,8 @@ void TransactionManager::on_overviewAccountList_itemDoubleClicked( QListWidgetIt
 {
     // Switch to Transactions and show selected account
     int row = ui->overviewAccountList->row( aItem );
-    ui->tabWidget->setCurrentIndex(1);
-    ui->transactionToolBox->setCurrentIndex(0);
+    ui->tabWidget->setCurrentWidget( ui->transactionsTab );
+    ui->transactionToolBox->setCurrentWidget( ui->transactionAccountToolBox );
     ui->transactionAllAccountsCheckBox->setCheckState( Qt::Unchecked );
     on_transactionAllAccountsCheckBox_stateChanged( (int)Qt::Unchecked );
     if( mTransactionAccountsCheckBoxList.size() > row )
@@ -681,6 +683,19 @@ QList<Transaction*> TransactionManager::filterTransactionList( TabType aTabType 
     }
     return transactionList;
 } // TransactionManager::updateTransactionsTab()
+
+//----------------------------------------------------------------------------
+// Handle Show Transaction By Date
+//----------------------------------------------------------------------------
+void TransactionManager::handleShowTransactionByDate( QDate aStartDate, QDate aEndDate )
+{
+    // Switch to transaction tab
+    ui->tabWidget->setCurrentWidget( ui->transactionsTab );
+    ui->transactionToolBox->setCurrentWidget( ui->transactionDateToolBox );
+    ui->transactionStartDateEdit->setDate( aStartDate );
+    ui->transactionEndDateEdit->setDate( aEndDate );
+    on_transactionSelectButton_clicked();
+} // TransactionManager::handleShowTransactionByDate()
 
 //----------------------------------------------------------------------------
 // Button clicked

@@ -9,28 +9,38 @@
 #include "Parser.h"
 #include "Category.h"
 #include "Logger.h"
+#include "Month.h"
 #include "TransactionManager.h"
 
 // Static variables
-const DateFormatType Parser::cDefaultDateFormat = Parser::DATE_ENTRY_MMddyy_SLASH;
-DateFormatType Parser::sDateFormat;
+const Parser::DateFormatType Parser::cDefaultDateFormat = Parser::DATE_FORMAT_MMddyy_SLASH;
+Parser::DateFormatType Parser::sDateFormat = Parser::cDefaultDateFormat;
+const Parser::SeparatorType Parser::cDefaultSeparator = Parser::SEPARATOR_COMMA;
+Parser::SeparatorType Parser::sSeparator = Parser::cDefaultSeparator;
+QVector<int> Parser::sEntryList;
 
 const char* Parser::cDateFormatList[] =
 {
-    "MM/dd/yy",     // DATE_ENTRY_MMddyy_SLASH
-    "MM-dd-yy",     // DATE_ENTRY_MMddyy_HYPHEN,
-    "MM/dd/yyyy",   // DATE_ENTRY_MMddyyyy_SLASH,
-    "MM-dd-yyyy",   // DATE_ENTRY_MMddyyyy_HYPHEN,
-    "yy/MM/dd",     // DATE_ENTRY_yyMMdd_SLASH,
-    "yy-MM-dd",     // DATE_ENTRY_yyMMdd_HYPHEN,
-    "yyyy/MM/dd",   // DATE_ENTRY_yyyyMMdd_SLASH,
-    "yyyy-MM-dd",   // DATE_ENTRY_yyyyMMdd_HYPHEN,
-    "dd/MM/yy",     // DATE_ENTRY_ddMMyy_SLASH,
-    "dd-MM-yy",     // DATE_ENTRY_ddMMyy_HYPHEN,
-    "dd/MM/yyyy",   // DATE_ENTRY_ddMMyyyy_SLASH,
-    "dd-MM-yyyy",   // DATE_ENTRY_ddMMyyyy_HYPHEN,
+    "MM/dd/yy",     // DATE_FORMAT_MMddyy_SLASH
+    "MM-dd-yy",     // DATE_FORMAT_MMddyy_HYPHEN,
+    "MM/dd/yyyy",   // DATE_FORMAT_MMddyyyy_SLASH,
+    "MM-dd-yyyy",   // DATE_FORMAT_MMddyyyy_HYPHEN,
+    "M/d/yyyy",     // DATE_FORMAT_Mdyyyy_SLASH,
+    "M-d-yyyy",     // DATE_FORMAT_Mdyyyy_HYPHEN,
+    "yy/MM/dd",     // DATE_FORMAT_yyMMdd_SLASH,
+    "yy-MM-dd",     // DATE_FORMAT_yyMMdd_HYPHEN,
+    "yyyy/MM/dd",   // DATE_FORMAT_yyyyMMdd_SLASH,
+    "yyyy-MM-dd",   // DATE_FORMAT_yyyyMMdd_HYPHEN,
+    "dd/MM/yy",     // DATE_FORMAT_ddMMyy_SLASH,
+    "dd-MM-yy",     // DATE_FORMAT_ddMMyy_HYPHEN,
+    "dd/MM/yyyy",   // DATE_FORMAT_ddMMyyyy_SLASH,
+    "dd-MM-yyyy",   // DATE_FORMAT_ddMMyyyy_HYPHEN,
 };
-
+const char Parser::cSeparatorList[] =
+{
+    ',',     // SEPARATOR_COMMA
+    ';',     // SEPARATOR_SEMI_COLON,
+};
 
 const int Parser::cDefaultEntryList[] =
 {
@@ -50,12 +60,23 @@ const int Parser::cDefaultEntryList[] =
 	4,          /* ENTRY_ACCOUNT_ALT_NAMES    */
 };
 
+// Static functions
+static bool accountSortLessThan( Account* arg1, Account* &arg2 )
+{
+     return arg1->getName() < arg2->getName();
+}
+static bool monthSortLessThan( Month* arg1, Month* &arg2 )
+{
+     return *arg1 < *arg2;
+}
+
 //----------------------------------------------------------------------------
 // Restore
 //----------------------------------------------------------------------------
 void Parser::restore()
 {
     sDateFormat = cDefaultDateFormat;
+    sSeparator = cDefaultSeparator;
     sEntryList.clear();
     for( int i = 0; i < ENTRY_CNT; i++ )
     {
@@ -80,7 +101,7 @@ void Parser::parseFile
     {
         QString line = aTextStream.readLine();
         TransactionManager::mFileContents.push_back( line );
-        QStringList tokens = line.split(',');
+        QStringList tokens = line.split( cSeparatorList[sSeparator] );
         if( tokens.size() > 0 && tokens[0] != "" && tokens[0] != "Date" && !tokens[0].contains("_____") )
         {
             if( tokens[0] == "Account" )
@@ -103,18 +124,9 @@ void Parser::parseFile
             {
                 // Add to transaction list
                 Transaction* transaction = new Transaction();
-                QString accountName = "No Account found";
-                for( int i = TransactionManager::mAccountList.size()-1; i >= 0; --i )
-                {
-                    if( TransactionManager::mAccountList[i]->isAccountMatch( tokens[sEntryList[ENTRY_TRANS_ACCOUNT_NAME]] ) )
-                    {
-                        transaction->setAccount( TransactionManager::mAccountList[i] );
-                        accountName = TransactionManager::mAccountList[i]->getName();
-                        TransactionManager::mAccountList[i]->addTransaction( transaction );
-                        break;
-                    }
-                }
+                Account::addToAccount( tokens[sEntryList[ENTRY_TRANS_ACCOUNT_NAME]], transaction ); 
                 transaction->setTransactionDate( QDate::fromString( tokens[sEntryList[ENTRY_TRANS_DATE]], cDateFormatList[sDateFormat] ) );
+                Month::addToMonth( transaction->getTransactionDate(), transaction );
                 transaction->setNumber( TransactionManager::mTransactionList.size() );
                 transaction->setDescription( tokens[sEntryList[ENTRY_TRANS_DESCRIPTION]] );
                 transaction->setOriginalDescription( tokens[sEntryList[ENTRY_TRANS_ORIG_DESC]] );
@@ -124,7 +136,7 @@ void Parser::parseFile
                 transaction->setCategory( Category::getCategoryId( tokens[sEntryList[ENTRY_TRANS_CATEGORY]] ) );
                 transaction->setLabels( tokens[sEntryList[ENTRY_TRANS_LABELS]].split(' ',QString::SkipEmptyParts) );
                 TransactionManager::mTransactionList.push_back( transaction );
-                logStr = "Adding to account:" + QString(accountName) + QString(transaction->getInfo());
+                logStr = "Adding to account:" + QString(transaction->getAccount()->getName()) + QString(transaction->getInfo());
                 Logger::logString( logStr );
 
                 // Update transaction dates
@@ -140,10 +152,17 @@ void Parser::parseFile
         }
     }
     
-    // Update account info
+    // Sort and update info
+    qSort( TransactionManager::mAccountList.begin(), TransactionManager::mAccountList.end(), accountSortLessThan );
+    qSort( TransactionManager::mMonthList.begin(), TransactionManager::mMonthList.end(), monthSortLessThan );
     for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
     {
         TransactionManager::mAccountList[i]->updateData();
         Logger::logString( QString(TransactionManager::mAccountList[i]->getInfo()) );
     }
+    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+    {
+        TransactionManager::mMonthList[i]->updateData();
+    }
+    
 } // Parser::parseFile

@@ -3,7 +3,7 @@
 //  HEADER NAME: DisplayDialog.cpp
 //******************************************************************************
 
-#include <QVBoxLayout>
+#include <QGridLayout>
 
 #include "DisplayDialog.h"
 
@@ -24,9 +24,9 @@ DisplayDialog::DisplayDialog
     mScrollable.setWidget( &mLabel );
     mScrollable.setWidgetResizable(true);
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget( &mScrollable );
-    layout->addWidget( &mButton );
+    QGridLayout *layout = new QGridLayout;
+    layout->addWidget( &mScrollable, 0, 0, 10, 10 );
+    layout->addWidget( &mButton, 10, 8, 1, 2 );
     setLayout( layout );
     resize( 700, 500 );
     show();

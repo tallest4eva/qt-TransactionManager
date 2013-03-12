@@ -608,8 +608,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>232</width>
-                <height>393</height>
+                <width>149</width>
+                <height>100</height>
                </rect>
               </property>
               <attribute name="label">
@@ -867,11 +867,17 @@
            <attribute name="title">
             <string>Net Income</string>
            </attribute>
+           <attribute name="toolTip">
+            <string>Income/Expense Bar Chart</string>
+           </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_3"/>
           </widget>
           <widget class="QWidget" name="reportNetWorthTab">
            <attribute name="title">
             <string>Net Worth</string>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Net Worth Bar Chart</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_4"/>
           </widget>
@@ -880,6 +886,22 @@
             <string>List</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+          </widget>
+          <widget class="QWidget" name="reportAccountTab">
+           <attribute name="title">
+            <string>Assets/Debts by Account</string>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Assets/Debts Pie Chart by Account</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="reportCategoryTab">
+           <attribute name="title">
+            <string>Income/Expense by Category</string>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Income/Expense Pie Chart by Category</string>
+           </attribute>
           </widget>
          </widget>
         </item>

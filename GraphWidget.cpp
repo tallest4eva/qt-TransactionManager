@@ -11,12 +11,23 @@
 #include "GraphWidget.h"
 
 const QDate GraphWidget::REFERENCE_DATE = QDate(1990,1,1);
-static const int DISPLAY_LABEL_TIMOEUT = 10000;          // Display label timeout
+static const int DISPLAY_LABEL_TIMOEUT = 3000;              // Display label timeout
+
+class TimeScaleDraw : public QwtScaleDraw
+{
+public:
+    virtual QwtText label( double aValue ) const
+    {
+        QDate date = GraphWidget::REFERENCE_DATE.addDays( aValue );
+        return QwtText( date.toString("MMMyy") );
+    }
+};
 
 GraphWidget::GraphWidget(QWidget *parent) :
     QWidget(parent)
   , mGraphMode( BAR_NET_INCOME )
   , mGrid( NULL )
+  , mIncomeCurve( NULL )
   , mPositiveHistogram( NULL )
   , mNegativeHistogram( NULL )
 {
@@ -58,10 +69,13 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mNegativeHistogram->setSymbol(symbol);
     mNegativeHistogram->attach(&mPlot);
 
+    mIncomeCurve = new QwtPlotCurve();
+    mIncomeCurve->setPen( QPen(QBrush(Qt::black),1) );
+    mIncomeCurve->attach(&mPlot);
+
     QHBoxLayout* layout = new QHBoxLayout;
     layout->addWidget( &mPlot );
     setLayout( layout );
-    setDateRange( mStartDate, mEndDate );
 
     // Set up display label
     mDisplayLabel.setParent( this );
@@ -71,6 +85,8 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mDisplayLabel.setFrameShape( QFrame::StyledPanel );
     mDisplayLabel.setPalette( QPalette(Qt::black,Qt::white) );
     mDisplayLabel.setAutoFillBackground( true );
+    connect( &mDisplayLabel, SIGNAL(clicked()), this, SLOT(handleDisplayClicked()) );
+
     QFont font;
     font.setPointSize( 10 );
     mDisplayLabel.setFont( font );
@@ -85,18 +101,29 @@ GraphWidget::~GraphWidget()
 {
     mDisplayTimer.stop();
     delete mGrid;
+    delete mIncomeCurve;
     delete mPositiveHistogram;
     delete mNegativeHistogram;
 } // GraphWidget::~GraphWidget
 
 //----------------------------------------------------------------------------
-// Destructor
+// hideDisplayLabel
 //----------------------------------------------------------------------------
 void GraphWidget::hideDisplayLabel()
 {
     mDisplayTimer.stop();
     mDisplayLabel.hide();
 } // GraphWidget::hideDisplayLabel
+
+//----------------------------------------------------------------------------
+// handle Display Clicked
+//----------------------------------------------------------------------------
+void GraphWidget::handleDisplayClicked()
+{
+    hideDisplayLabel();
+    QDate date = mDisplayLabel.getDate();
+    dateSelected( date, date.addMonths(1).addDays(-1) );
+} // GraphWidget::handleDisplayClicked
 
 //----------------------------------------------------------------------------
 // mouseReleaseEvent
@@ -128,6 +155,7 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
         QRectF rect = mPlot.plotLayout()->canvasRect();
         int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - rect.x() );
         QDate date = REFERENCE_DATE.addDays( dateVal-10 );
+        mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
         for( int i = 0; i < mMonthDataList.size(); i++ )
         {
             if( date.year() == mMonthDataList[i].date.year() && date.month() == mMonthDataList[i].date.month() )
@@ -145,7 +173,7 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
                 {
                     str += "</font>";
                 }
-                str += "<br>";
+                str += "<center><font color=\"blue\">See Transactions</font></center>";
                 mDisplayLabel.setText( str );
                 mDisplayLabel.show();
                 mDisplayTimer.start( DISPLAY_LABEL_TIMOEUT );
@@ -224,9 +252,6 @@ void GraphWidget::setTransactionData
         }
     }
     
-    QVector<QwtIntervalSample> positiveSamples;
-    QVector<QwtIntervalSample> negativeSamples;
-    
     // Calculate income / expense
     if( aTransactionList.size() > 0 )
     {
@@ -302,37 +327,46 @@ void GraphWidget::setTransactionData
     }
 
     // Setup histogram
+    QVector<QwtIntervalSample> positiveSamples;
+    QVector<QwtIntervalSample> negativeSamples;
+    QVector<double> curveXSamples;
+    QVector<double> curveYSamples;
     if( mMonthDataList.size() > 0 )
     {
         float maxValue = 0;
         float minValue = 0;
         for( int i = 0; i < mMonthDataList.size(); i++ )
         {
+            float startDay = REFERENCE_DATE.daysTo(mMonthDataList[i].date) + 2;
+            float endDay = startDay + mMonthDataList[i].date.daysInMonth() - 4;
+            float positiveValue = 0;
+            float negativeValue = 0;
             switch( mGraphMode )
             {
             case BAR_NET_INCOME:
-                mMonthDataList[i].positiveVal = mMonthDataList[i].income;
-                mMonthDataList[i].negativeVal = mMonthDataList[i].expense;
+                positiveValue = mMonthDataList[i].income;
+                negativeValue = mMonthDataList[i].expense;
+                curveXSamples.push_back( REFERENCE_DATE.daysTo(mMonthDataList[i].date)+14 );
+                curveYSamples.push_back( mMonthDataList[i].income + mMonthDataList[i].expense );
                 break;
             case BAR_NET_WORTH:
-                ( mMonthDataList[i].netWorth > 0 ) ? mMonthDataList[i].positiveVal = mMonthDataList[i].netWorth : mMonthDataList[i].negativeVal = mMonthDataList[i].netWorth;
+                ( mMonthDataList[i].netWorth > 0 ) ? positiveValue = mMonthDataList[i].netWorth : negativeValue = mMonthDataList[i].netWorth;
                 break;
             }
             QwtIntervalSample sample;
-            float start = REFERENCE_DATE.daysTo(mMonthDataList[i].date) + 2;
-            float end = start + mMonthDataList[i].date.daysInMonth() - 4;
-            sample.interval = QwtInterval( start, end );
-            sample.value = mMonthDataList[i].positiveVal;
+            sample.interval = QwtInterval( startDay, endDay );
+            sample.value = positiveValue;
             positiveSamples.push_back( sample );
-            sample.value = mMonthDataList[i].negativeVal;
+            sample.value = negativeValue;
             negativeSamples.push_back( sample );
 
             // Set max values
-            maxValue = ( mMonthDataList[i].positiveVal > maxValue ) ? mMonthDataList[i].positiveVal : maxValue;
-            minValue = ( mMonthDataList[i].negativeVal < minValue ) ? mMonthDataList[i].negativeVal : minValue;
+            maxValue = ( positiveValue > maxValue ) ? positiveValue : maxValue;
+            minValue = ( negativeValue < minValue ) ? negativeValue : minValue;
         }
         mPlot.setAxisScale( QwtPlot::yLeft, minValue*1.20, maxValue*1.20 );
     }
+    //mIncomeCurve->setSamples( curveXSamples, curveYSamples );
     mPositiveHistogram->setSamples( positiveSamples );
     mNegativeHistogram->setSamples( negativeSamples );
     mPlot.replot();

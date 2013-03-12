@@ -56,7 +56,10 @@ public:
     bool operator< ( const Transaction& aTransaction ) const;
     bool operator> ( const Transaction& aTransaction ) const;
 
+    static bool transactionSortLessThan( Transaction* t1, Transaction* &t2 ){ return *t1 < *t2; }
+
 private:
+    // Variables
     Account* mAccount;
     QDate mTransactionDate;
     int mNumber;

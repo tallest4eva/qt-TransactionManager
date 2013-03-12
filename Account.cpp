@@ -8,12 +8,6 @@
 #include "Account.h"
 #include "TransactionManager.h"
 
-// Static functions
-static bool transactionSortLessThan( Transaction* t1, Transaction* &t2 )
-{
-     return *t1 < *t2;
-}
-
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
@@ -55,7 +49,7 @@ void Account::addTransaction( Transaction* aTransaction )
 //----------------------------------------------------------------------------
 void Account::updateData()
 {
-    qSort( mTransactionList.begin(), mTransactionList.end(), transactionSortLessThan );
+    qSort( mTransactionList.begin(), mTransactionList.end(), Transaction::transactionSortLessThan );
     if( mTransactionList.size() > 0 )
     {
         mOpenDate = mTransactionList[0]->getTransactionDate();
@@ -115,7 +109,47 @@ QString Account::getInfo()
 } // Account::getInfo
 
 //----------------------------------------------------------------------------
-// updateUI
+// getAccountIndex
+//----------------------------------------------------------------------------
+int Account::getAccountIndex( Account* aAccount )
+{
+    int index = -1;
+    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    {
+        if( aAccount == TransactionManager::mAccountList[i] )
+        {
+            index = i;
+            break;
+        }
+    }
+    return index;
+} // Account::getAccountIndex
+
+//----------------------------------------------------------------------------
+// addToAccount. Allows for alternate names
+//----------------------------------------------------------------------------
+bool Account::addToAccount
+    (
+    const QString& aAccountName,
+    Transaction* aTransaction
+    )
+{
+    bool found = false;
+    for( int i = TransactionManager::mAccountList.size()-1; i >= 0; --i )
+    {
+        if( TransactionManager::mAccountList[i]->isAccountMatch( aAccountName ) )
+        {
+            aTransaction->setAccount( TransactionManager::mAccountList[i] );
+            TransactionManager::mAccountList[i]->addTransaction( aTransaction );
+            found = true;
+            break;
+        }
+    }
+    return found;
+} // Account::addToAccount
+
+//----------------------------------------------------------------------------
+// getTotalAccountBalance
 //----------------------------------------------------------------------------
 float Account::getTotalAccountBalance()
 {
@@ -125,5 +159,5 @@ float Account::getTotalAccountBalance()
         balance += TransactionManager::mAccountList[i]->getBalance();
     }
     return balance;
-} // TransactionManager::updateUI()
+} // Account::getTotalAccountBalance()
 

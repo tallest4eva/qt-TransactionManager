@@ -47,6 +47,8 @@ public:
     bool operator== ( const Account& aAccount ) const;
 
     static float getTotalAccountBalance();
+    static int getAccountIndex( Account* aAccount );
+    static bool addToAccount( const QString& aAccountName, Transaction* aTransaction );
 
 private:
     QString mName;

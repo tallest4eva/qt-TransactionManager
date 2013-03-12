@@ -16,10 +16,13 @@ SOURCES += main.cpp\
         Account.cpp\
         Category.cpp\
         DisplayDialog.cpp\
+        FileConfigDialog.cpp\
         GraphWidget.cpp\
         Logger.cpp\
+        Month.cpp\
         OverviewAccountListItem.cpp\
         Parser.cpp\
+        PieView.cpp\
         Transaction.cpp\
         TransactionListModel.cpp\
         TransactionManager.cpp
@@ -27,10 +30,13 @@ SOURCES += main.cpp\
 HEADERS  += Account.h\
             Category.h\
             DisplayDialog.h\
+            FileConfigDialog.h\
             GraphWidget.h\
             Logger.h\
+            Month.h\
             OverviewAccountListItem.h\
             Parser.h\
+            PieView.h\
             Transaction.h\
             TransactionListModel.h\
             TransactionManager.h

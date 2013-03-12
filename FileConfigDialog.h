@@ -33,13 +33,16 @@ public:
     ~FileConfigDialog();
 
 private slots:
-    void handleButton( ButtonType aButton );
+    void handleCancelButton();
+    void handleRestoreButton();
+    void handleDoneButton();
 
 private:
     // Functions
     void updateComboBoxes();
     
     // Variables
+    QGroupBox mFileBox;
     QGroupBox mAccountBox;
     QGroupBox mTransactionBox;
     QComboBox mTransactionDate;
@@ -50,6 +53,7 @@ private:
     QComboBox mTransactionBalance;
     QComboBox mTransactionCategory;
     QComboBox mTransactionLabels;
+    QComboBox mFileSeperator;
     QComboBox mDateFormat;
     QComboBox mAccountName;
     QComboBox mAccountStatus;
@@ -58,7 +62,7 @@ private:
     
     QPushButton mCancelButton;
     QPushButton mRestoreButton;
-    QPushButton mOkButton;
+    QPushButton mDoneButton;
 };
 
 #endif // FileConfigDialog_H
