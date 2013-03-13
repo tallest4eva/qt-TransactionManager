@@ -23,23 +23,25 @@ SOURCES += main.cpp\
         OverviewAccountListItem.cpp\
         Parser.cpp\
         PieView.cpp\
+        ReportTableView.cpp\
         Transaction.cpp\
         TransactionListModel.cpp\
         TransactionManager.cpp
 
 HEADERS  += Account.h\
-            Category.h\
-            DisplayDialog.h\
-            FileConfigDialog.h\
-            GraphWidget.h\
-            Logger.h\
-            Month.h\
-            OverviewAccountListItem.h\
-            Parser.h\
-            PieView.h\
-            Transaction.h\
-            TransactionListModel.h\
-            TransactionManager.h
+        Category.h\
+        DisplayDialog.h\
+        FileConfigDialog.h\
+        GraphWidget.h\
+        Logger.h\
+        Month.h\
+        OverviewAccountListItem.h\
+        Parser.h\
+        PieView.h\
+        ReportTableView.h\
+        Transaction.h\
+        TransactionListModel.h\
+        TransactionManager.h
 
 FORMS    += transactionmanager.ui
 

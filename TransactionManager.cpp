@@ -98,10 +98,12 @@ void TransactionManager::init()
     connect( &mReportNetWorthGraph, SIGNAL(dateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
     ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
     ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
-
-    // Test pie chart
-    ui->reportListTab->layout()->addWidget( &mPieChart );
-    mPieChart.setMinimumSize( 500, 300 );
+    
+    ui->reportListTab->layout()->addWidget( &mReportTableView );
+    ui->reportAccountTab->layout()->addWidget( &mAssetsPieChart );
+    ui->reportAccountTab->layout()->addWidget( &mDebtsPieChart );
+    ui->reportCategoryTab->layout()->addWidget( &mIncomePieChart );
+    ui->reportCategoryTab->layout()->addWidget( &mExpensePieChart );
 } // TransactionManager::init()
 
 //----------------------------------------------------------------------------
@@ -545,6 +547,7 @@ void TransactionManager::updateReportsTab()
 {
     mReportNetIncomeGraph.setTransactionData( ui->reportStartDateEdit->date(), ui->reportEndDateEdit->date(), filterAccountList( REPORT_TAB ), filterTransactionList( REPORT_TAB ) );
     mReportNetWorthGraph.setTransactionData(  ui->reportStartDateEdit->date(), ui->reportEndDateEdit->date(), filterAccountList( REPORT_TAB ), filterTransactionList( REPORT_TAB ) );
+    mReportTableView.setDateRange( ui->reportStartDateEdit->date(), ui->reportEndDateEdit->date() );
 } // TransactionManager::updateReportsTab()
 
 //----------------------------------------------------------------------------

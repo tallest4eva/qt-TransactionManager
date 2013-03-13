@@ -20,6 +20,7 @@
 #include "Transaction.h"
 #include "GraphWidget.h"
 #include "PieView.h"
+#include "ReportTableView.h"
 
 namespace Ui
 {
@@ -123,7 +124,11 @@ private:
     QButtonGroup mReportLabelsCheckBoxGroup;
     GraphWidget mReportNetIncomeGraph;
     GraphWidget mReportNetWorthGraph;
-    PieView mPieChart;
+    ReportTableView mReportTableView;
+    PieView mAssetsPieChart;
+    PieView mDebtsPieChart;
+    PieView mIncomePieChart;
+    PieView mExpensePieChart;
 };
 
 #endif // TRANSACTIONMANAGER_H

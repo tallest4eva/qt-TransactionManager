@@ -49,6 +49,9 @@ void Month::addTransaction( Transaction* aTransaction )
     mTransactionList.push_back( aTransaction );
 } // Month::addTransaction()
 
+//----------------------------------------------------------------------------
+//! getNetWorth
+//----------------------------------------------------------------------------
 bool Month::getNetWorth( Account* aAccount, float* aNetWorth ) const
 {
     bool found = false;

@@ -108,11 +108,11 @@ void TransactionListModel::setupTableView
         // Set transaction column widths
         const int columnWidth = 95;
         mTableView->setColumnWidth( (int)HDR_DATE, columnWidth );
-        mTableView->setColumnWidth( (int)HDR_NAME, 2*columnWidth );
-        mTableView->setColumnWidth( (int)HDR_DESCRIPTION, 3*columnWidth );
+        mTableView->setColumnWidth( (int)HDR_NAME, columnWidth*2 );
+        mTableView->setColumnWidth( (int)HDR_DESCRIPTION, columnWidth*3 );
         mTableView->setColumnWidth( (int)HDR_AMOUNT, columnWidth );
         mTableView->setColumnWidth( (int)HDR_BALANCE, columnWidth );
-        mTableView->setColumnWidth( (int)HDR_CATEGORY, 2*columnWidth );
+        mTableView->setColumnWidth( (int)HDR_CATEGORY, columnWidth*2 );
         mTableView->horizontalHeader()->setStretchLastSection( true );
         mTableView->setSortingEnabled( true );
         mTableView->sortByColumn ( (int)HDR_NAME, Qt::AscendingOrder );
