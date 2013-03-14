@@ -21,6 +21,7 @@
 #include "Logger.h"
 #include "DisplayDialog.h"
 #include "FileConfigDialog.h"
+#include "ReportPieChartModel.h"
 
 // Static variables
 QStringList TransactionManager::mFileContents;
@@ -67,7 +68,9 @@ void TransactionManager::init()
     ui->transactionToolBox->setCurrentIndex(0);
     ui->reportToolBox->setCurrentIndex(0);
     ui->reportDisplayTabWidget->setCurrentIndex(0);
-    ui->transactionTableView->setModel( new TransactionListModel() );
+    TransactionListModel* model = new TransactionListModel();
+    ui->transactionTableView->setModel( model );
+    model->setupTableView( ui->transactionTableView );
     ui->transactionOpenAccountsCheckBox->setDisabled( true );
     ui->reportOpenAccountsCheckBox->setDisabled( true );
     for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
@@ -99,11 +102,17 @@ void TransactionManager::init()
     ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
     ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
     
+    // Init report
     ui->reportListTab->layout()->addWidget( &mReportTableView );
     ui->reportAccountTab->layout()->addWidget( &mAssetsPieChart );
     ui->reportAccountTab->layout()->addWidget( &mDebtsPieChart );
     ui->reportCategoryTab->layout()->addWidget( &mIncomePieChart );
     ui->reportCategoryTab->layout()->addWidget( &mExpensePieChart );
+    mAssetsPieChart.setModel( new ReportPieChartModel() );
+    mDebtsPieChart.setModel( new ReportPieChartModel() );
+    mIncomePieChart.setModel( new ReportPieChartModel() );
+    mExpensePieChart.setModel( new ReportPieChartModel() );
+
 } // TransactionManager::init()
 
 //----------------------------------------------------------------------------
@@ -225,23 +234,10 @@ void TransactionManager::on_actionFileInputConfig_triggered()
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionAbout_triggered()
 {
-    QStandardItemModel* model = new QStandardItemModel(8, 8, this);
-    model->setHeaderData(0, Qt::Horizontal, tr("Label"));
-    model->setHeaderData(1, Qt::Horizontal, tr("Quantity"));
-    mPieChart.setModel(model);
-    model->setData( model->index(0,1), 10 );
-    model->setData( model->index(0,0), "Value 1" );
-    model->setData( model->index(0,0), Qt::red, Qt::DecorationRole );
-    model->setData( model->index(1,1), 30 );
-    model->setData( model->index(1,0), "Value 2" );
-    model->setData( model->index(1,0), Qt::blue, Qt::DecorationRole );
-    model->setData( model->index(2,1), 40 );
-    model->setData( model->index(2,0), "Value 3" );
-    model->setData( model->index(2,0), Qt::green, Qt::DecorationRole );
-    //QMessageBox msgBox;
-    //msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 0.1");
-    //msgBox.setIcon( QMessageBox::Information );
-    //msgBox.exec();
+    QMessageBox msgBox;
+    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 0.1");
+    msgBox.setIcon( QMessageBox::Information );
+    msgBox.exec();
 } // TransactionManager::on_actionDisplayLog_triggered()
 
 //----------------------------------------------------------------------------
@@ -436,8 +432,8 @@ void TransactionManager::initTransactionsTab()
     }
 
     // Init table
-    TransactionListModel* model = (TransactionListModel*)ui->transactionTableView->model();
-    model->setupTableView( ui->transactionTableView );
+    ui->transactionTableView->model()->setRowCount( 0 );
+    ui->transactionTableView->sortByColumn ( (int)TransactionListModel::HDR_NAME, Qt::AscendingOrder );
 
     // Update transaction table
     updateTransactionsTab();
@@ -449,8 +445,16 @@ void TransactionManager::initTransactionsTab()
 void TransactionManager::updateTransactionsTab()
 {
     TransactionListModel* model = (TransactionListModel*)ui->transactionTableView->model();
-    model->setTransactionList( filterTransactionList( TRANSACTION_TAB ) );
-    model->resort();
+    if( !mFileName.isEmpty() )
+    {
+        mTransactionFilter = getTransactionFilter( TRANSACTION_TAB );
+        model->setTransactionFilter( mTransactionFilter );
+        model->resort();
+    }
+    else
+    {
+        model->clear();
+    }
 } // TransactionManager::updateTransactionsTab()
 
 //----------------------------------------------------------------------------
@@ -545,147 +549,61 @@ void TransactionManager::initReportsTab()
 //----------------------------------------------------------------------------
 void TransactionManager::updateReportsTab()
 {
-    mReportNetIncomeGraph.setTransactionData( ui->reportStartDateEdit->date(), ui->reportEndDateEdit->date(), filterAccountList( REPORT_TAB ), filterTransactionList( REPORT_TAB ) );
-    mReportNetWorthGraph.setTransactionData(  ui->reportStartDateEdit->date(), ui->reportEndDateEdit->date(), filterAccountList( REPORT_TAB ), filterTransactionList( REPORT_TAB ) );
-    mReportTableView.setDateRange( ui->reportStartDateEdit->date(), ui->reportEndDateEdit->date() );
+    mReportFilter = getTransactionFilter( REPORT_TAB );
+    mReportNetIncomeGraph.setTransactionFilter( mReportFilter );
+    mReportNetWorthGraph.setTransactionFilter( mReportFilter );
+    mReportTableView.setTransactionFilter( mReportFilter );
 } // TransactionManager::updateReportsTab()
-
-//----------------------------------------------------------------------------
-// filter Account List
-//----------------------------------------------------------------------------
-QList<Account*> TransactionManager::filterAccountList( TabType aTabType )
-{
-    QList<Account*> accountList;
-    switch( aTabType )
-    {
-    case REPORT_TAB:
-        for( int i = 0; i < mReportAccountsCheckBoxList.size(); i++ )
-        {
-            if( mReportAccountsCheckBoxList[i]->checkState() == Qt::Checked ){ accountList.push_back( mAccountList[i] ); }
-        }
-        break;
-    case TRANSACTION_TAB:
-    default:
-        for( int i = 0; i < mTransactionAccountsCheckBoxList.size(); i++ )
-        {
-            if( mTransactionAccountsCheckBoxList[i]->checkState() == Qt::Checked ){ accountList.push_back( mAccountList[i] ); }
-        }
-        break;
-    }
-    return accountList;
-} // TransactionManager::filterAccountList()
 
 //----------------------------------------------------------------------------
 // filter Transaction List
 //----------------------------------------------------------------------------
-QList<Transaction*> TransactionManager::filterTransactionList( TabType aTabType )
+Transaction::FilterType TransactionManager::getTransactionFilter( TabType aTabType )
 {
-    bool allAccounts = true;
-    bool allCategories = true;
-    bool allLabels = true;
-    QList<Account*> accountList;
-    QList<Category::CategoryIdType> categoryList;
-    QList<Category::LabelIdType> labelList;
-    QDate startDate;
-    QDate endDate;
+    Transaction::FilterType filter;
     switch( aTabType )
     {
     case REPORT_TAB:
         for( int i = 0; i < mReportAccountsCheckBoxList.size(); i++ )
         {
-            ( mReportAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? allAccounts = false : accountList.push_back( mAccountList[i] );
+            ( mReportAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllAccounts = false : filter.mAccountList.push_back( mAccountList[i] );
         }
         for( int i = 0; i < mReportCategoriesCheckBoxList.size(); i++ )
         {
-            ( mReportCategoriesCheckBoxList[i]->checkState() == Qt::Unchecked ) ? allCategories = false : categoryList.push_back((Category::CategoryIdType)i);
+            ( mReportCategoriesCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllCategories = false : filter.mCategoryList[i] = true;
         }
         for( int i = 0; i < mReportLabelsCheckBoxList.size(); i++ )
         {
-            ( mReportLabelsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? allLabels = false : labelList.push_back((Category::LabelIdType)i);
+            ( mReportLabelsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllLabels = false : filter.mLabelList[i] = true;
         }
-        startDate = ui->reportStartDateEdit->date();
-        endDate = ui->reportEndDateEdit->date();
+        filter.mStartDate = ui->reportStartDateEdit->date();
+        filter.mEndDate = ui->reportEndDateEdit->date();
         break;
     case TRANSACTION_TAB:
     default:
         for( int i = 0; i < mTransactionAccountsCheckBoxList.size(); i++ )
         {
-            ( mTransactionAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? allAccounts = false : accountList.push_back( mAccountList[i] );
+            ( mTransactionAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllAccounts = false : filter.mAccountList.push_back( mAccountList[i] );
         }
         for( int i = 0; i < mTransactionCategoriesCheckBoxList.size(); i++ )
         {
-            ( mTransactionCategoriesCheckBoxList[i]->checkState() == Qt::Unchecked ) ? allCategories = false : categoryList.push_back((Category::CategoryIdType)i);
+            ( mTransactionCategoriesCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllCategories = false : filter.mCategoryList[i] = true;
         }
         for( int i = 0; i < mTransactionLabelsCheckBoxList.size(); i++ )
         {
-            ( mTransactionLabelsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? allLabels = false : labelList.push_back((Category::LabelIdType)i);
+            ( mTransactionLabelsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllLabels = false : filter.mLabelList[i] = true;
         }
-        startDate = ui->transactionStartDateEdit->date();
-        endDate = ui->transactionEndDateEdit->date();
+        filter.mStartDate = ui->transactionStartDateEdit->date();
+        filter.mEndDate = ui->transactionEndDateEdit->date();
         break;
     }
-
-    QList<Transaction*> transactionList;
-    for( int i = 0; i < mTransactionList.size(); i++ )
+    // If not all dates are set
+    if( mFirstTransactionDate < filter.mStartDate || mLastTransactionDate > filter.mEndDate )
     {
-        Transaction* transaction = mTransactionList[i];
-        bool match = true;
-        
-        // Match acounts
-        if( !allAccounts )
-        {
-            match = false;
-            for( int j = 0; j < accountList.size(); j++ )
-            {
-                if( *accountList[j] == *(transaction->getAccount()) )
-                {
-                    match = true;
-                    break;
-                }
-            }
-        }
-
-        // Match categories
-        if( match && !allCategories )
-        {
-            match = false;
-            for( int j = 0; j < categoryList.size(); j++ )
-            {
-                if( categoryList[j] == transaction->getCategory() )
-                {
-                    match = true;
-                    break;
-                }
-            }
-        }
-
-        // Match labels
-        if( match && !allLabels )
-        {
-            match = false;
-            for( int j = 0; j < labelList.size(); j++ )
-            {
-                if( transaction->matchLabels( labelList[j] ) )
-                {
-                    match = true;
-                    break;
-                }
-            }
-        }
-
-        // Match dates
-        if( match )
-        {
-            match &= ( transaction->getTransactionDate() >= startDate && transaction->getTransactionDate() <= endDate );
-        }
-
-        if( match )
-        {
-            transactionList.push_back( transaction );
-        }
+        filter.mAllDates = false;
     }
-    return transactionList;
-} // TransactionManager::updateTransactionsTab()
+    return filter;
+} // TransactionManager::getTransactionFilter()
 
 //----------------------------------------------------------------------------
 // Handle Show Transaction By Date

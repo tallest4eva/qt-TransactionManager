@@ -6,9 +6,12 @@
 #ifndef ReportTableView_H
 #define ReportTableView_H
 
+#include <QDate>
 #include <QWidget>
 #include <QTableView>
 #include <QStandardItemModel>
+
+#include "Transaction.h"
 
 class ReportTableView : public QTableView
 {
@@ -29,7 +32,7 @@ public:
     // Functions
     explicit ReportTableView(QWidget* parent = 0);
     ~ReportTableView();
-    void setDateRange( QDate aStartDate, QDate aEndDate );
+    void setTransactionFilter( const Transaction::FilterType& aFilter );
 
 private:
     // Functions

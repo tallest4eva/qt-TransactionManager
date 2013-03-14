@@ -46,6 +46,7 @@ public:
     QString getInfo();
     bool operator== ( const Account& aAccount ) const;
 
+    static void updateAccountList();
     static float getTotalAccountBalance();
     static int getAccountIndex( Account* aAccount );
     static bool addToAccount( const QString& aAccountName, Transaction* aTransaction );

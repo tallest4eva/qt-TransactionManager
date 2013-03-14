@@ -43,9 +43,10 @@ public:
     // Functions
     explicit TransactionListModel();
     ~TransactionListModel();
-    void setTransactionList( QList<Transaction*>& aTransactionList );
+    void setTransactionFilter( const Transaction::FilterType& aFilter );
     void setupTableView( QTableView* aTableView );
     void resort();
+    void clear();
 
 private:
     // Functions

@@ -9,9 +9,11 @@
 #include <qwt_plot_layout.h>
 
 #include "GraphWidget.h"
+#include "Month.h"
+#include "TransactionManager.h"
 
 const QDate GraphWidget::REFERENCE_DATE = QDate(1990,1,1);
-static const int DISPLAY_LABEL_TIMOEUT = 3000;              // Display label timeout
+static const int DISPLAY_LABEL_TIMOEUT = 5000;              // Display label timeout
 
 class TimeScaleDraw : public QwtScaleDraw
 {
@@ -155,21 +157,24 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
         QRectF rect = mPlot.plotLayout()->canvasRect();
         int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - rect.x() );
         QDate date = REFERENCE_DATE.addDays( dateVal-10 );
+        QString ref = date.toString("yyyy-MM-dd");
         mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
-        for( int i = 0; i < mMonthDataList.size(); i++ )
+        for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
         {
-            if( date.year() == mMonthDataList[i].date.year() && date.month() == mMonthDataList[i].date.month() )
+            Month* month = TransactionManager::mMonthList[i];
+            if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
             {
                 QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
-                str += "Income: <font color=\"green\">$" + QString::number( mMonthDataList[i].income, 'f', 2 ) + "</font><br>";
-                str += "Expense: <font color=\"red\">$" + QString::number( mMonthDataList[i].expense, 'f', 2 ) + "</font><br>";
+                str += "Income: <font color=\"green\">$" + QString::number( month->getIncome(), 'f', 2 ) + "</font><br>";
+                str += "Expense: <font color=\"red\">$" + QString::number( month->getExpense(), 'f', 2 ) + "</font><br>";
                 str += "Net Worth: ";
-                if( mMonthDataList[i].netWorth != 0 )
+                float netWorth = month->getNetWorth();
+                if( netWorth != 0 )
                 {
-                    str += ( mMonthDataList[i].netWorth > 0 ) ? "<font color=\"green\">" : "<font color=\"red\">";
+                    str += ( netWorth > 0 ) ? "<font color=\"green\">" : "<font color=\"red\">";
                 }
-                str += "$" + QString::number( mMonthDataList[i].netWorth, 'f', 2 );
-                if( mMonthDataList[i].netWorth != 0 )
+                str += "$" + QString::number( netWorth, 'f', 2 );
+                if( netWorth != 0 )
                 {
                     str += "</font>";
                 }
@@ -208,26 +213,19 @@ void GraphWidget::setGraphMode( BarChartType aGraphMode )
 //----------------------------------------------------------------------------
 // Set Transaction Data
 //----------------------------------------------------------------------------
-void GraphWidget::setTransactionData
-    (
-    const QDate& aStartDate,
-    const QDate& aEndDate,
-    const QList<Account*>& aAccountList,
-    const QList<Transaction*>& aTransactionList
-    )
+void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    mStartDate = aStartDate;
-    mEndDate = aEndDate;
-    mMonthDataList.clear();
+    mStartDate = aFilter.mStartDate;
+    mEndDate = aFilter.mEndDate;
     hideDisplayLabel();
 
     // Setup date axis
+    mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
+    mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
     if( mStartDate < mEndDate )
     {
+        mEndDate = mEndDate.addMonths(1);
         int monthStep = 1;
-        QDate startDate = QDate( mStartDate.year(), mStartDate.month(), 1 );
-        QDate endDate = QDate( mEndDate.year(), mEndDate.month(), 1 );
-        endDate = endDate.addMonths(1);
         if( mStartDate.daysTo(mEndDate) > 365*7 )
         {
             monthStep = 12;
@@ -240,90 +238,8 @@ void GraphWidget::setTransactionData
         {
             monthStep = 2;
         }
-        mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(startDate), REFERENCE_DATE.daysTo(endDate), 30.416*monthStep );
+        mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mStartDate), REFERENCE_DATE.daysTo(mEndDate), 30.416*monthStep );
         mPlot.updateAxes();
-
-        // Create month list
-        for( QDate date = startDate; date < endDate; date = date.addMonths(1) )
-        {
-            MonthDataType data;
-            data.date = date;
-            mMonthDataList.push_back( data );
-        }
-    }
-    
-    // Calculate income / expense
-    if( aTransactionList.size() > 0 )
-    {
-        for( int i = 0; i < aTransactionList.size(); i++ )
-        {
-            Transaction* transaction = aTransactionList[i];
-
-            // Skip transfer categories
-            Category::CategoryIdType category = transaction->getCategory();
-            switch( category )
-            {
-            case Category::TRANSFER:
-            case Category::CREDIT_CARD_PAYMENT:
-            case Category::FAMILY_TRANSFER:
-            case Category::TRANSFER_FOR_CASH_SPENDING:
-            case Category::ACCOUNT_BALANCE:
-                continue;
-            default:
-                break;
-            }
-
-            // Create income/expense data list
-            QDate date = transaction->getTransactionDate();
-            for( int j = 0; j < mMonthDataList.size(); j++ )
-            {
-                if( date.year() == mMonthDataList[j].date.year() && date.month() == mMonthDataList[j].date.month() )
-                {
-                    if( transaction->getType() == Transaction::TRANSACTION_CREDIT )
-                    {
-                        mMonthDataList[j].income += transaction->getAmount();
-                    }
-                    else
-                    {
-                        mMonthDataList[j].expense += transaction->getAmount();
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    // Calculate net worth
-    if( aAccountList.size() > 0 )
-    {
-        for( int i = 0; i < aAccountList.size(); i++ )
-        {
-            QList<Transaction*> transactionList = aAccountList[i]->getTransactionList();
-            QVector<float> netWorth( mMonthDataList.size(), 0 );
-            for( int j = 0; j < mMonthDataList.size(); j++ )
-            {
-                float currentNetWorth = 0;
-                for( int k = 0; k < transactionList.size(); k++ )
-                {
-                    Transaction* transaction = transactionList[k];
-                    QDate date = transaction->getTransactionDate();
-                    if( date >= mMonthDataList[j].date.addMonths(1) )
-                    {
-                        netWorth[j] = currentNetWorth;
-                        break;
-                    }
-                    else if( k == transactionList.size()-1 )
-                    {
-                        netWorth[j] = transaction->getCurrentBalance();
-                    }
-                    currentNetWorth = transaction->getCurrentBalance();
-                }
-            }
-            for( int j = 0; j < mMonthDataList.size(); j++ )
-            {
-                mMonthDataList[j].netWorth += netWorth[j];
-            }
-        }
     }
 
     // Setup histogram
@@ -331,26 +247,30 @@ void GraphWidget::setTransactionData
     QVector<QwtIntervalSample> negativeSamples;
     QVector<double> curveXSamples;
     QVector<double> curveYSamples;
-    if( mMonthDataList.size() > 0 )
+    float maxValue = 0;
+    float minValue = 0;
+    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
     {
-        float maxValue = 0;
-        float minValue = 0;
-        for( int i = 0; i < mMonthDataList.size(); i++ )
+        // Date
+        Month* month = TransactionManager::mMonthList[i];
+        if( mStartDate <= month->getDate() && mEndDate > month->getDate() )
         {
-            float startDay = REFERENCE_DATE.daysTo(mMonthDataList[i].date) + 2;
-            float endDay = startDay + mMonthDataList[i].date.daysInMonth() - 4;
+            float startDay = REFERENCE_DATE.daysTo(month->getDate()) + 2;
+            float endDay = startDay + month->getDate().daysInMonth() - 4;
             float positiveValue = 0;
             float negativeValue = 0;
+            float netWorth = 0;
             switch( mGraphMode )
             {
             case BAR_NET_INCOME:
-                positiveValue = mMonthDataList[i].income;
-                negativeValue = mMonthDataList[i].expense;
-                curveXSamples.push_back( REFERENCE_DATE.daysTo(mMonthDataList[i].date)+14 );
-                curveYSamples.push_back( mMonthDataList[i].income + mMonthDataList[i].expense );
+                positiveValue = month->getIncome();
+                negativeValue = month->getExpense();
+                curveXSamples.push_back( REFERENCE_DATE.daysTo(month->getDate())+14 );
+                curveYSamples.push_back( positiveValue + negativeValue );
                 break;
             case BAR_NET_WORTH:
-                ( mMonthDataList[i].netWorth > 0 ) ? positiveValue = mMonthDataList[i].netWorth : negativeValue = mMonthDataList[i].netWorth;
+                netWorth = month->getNetWorth();
+                ( netWorth > 0 ) ? positiveValue = netWorth : negativeValue = netWorth;
                 break;
             }
             QwtIntervalSample sample;
@@ -364,8 +284,9 @@ void GraphWidget::setTransactionData
             maxValue = ( positiveValue > maxValue ) ? positiveValue : maxValue;
             minValue = ( negativeValue < minValue ) ? negativeValue : minValue;
         }
-        mPlot.setAxisScale( QwtPlot::yLeft, minValue*1.20, maxValue*1.20 );
     }
+
+    mPlot.setAxisScale( QwtPlot::yLeft, minValue*1.20, maxValue*1.20 );
     //mIncomeCurve->setSamples( curveXSamples, curveYSamples );
     mPositiveHistogram->setSamples( positiveSamples );
     mNegativeHistogram->setSamples( negativeSamples );

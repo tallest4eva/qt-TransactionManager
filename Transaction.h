@@ -9,6 +9,7 @@
 #include <QDate>
 #include <QString>
 #include <QStringList>
+#include <QList>
 #include <QVector>
 #include "Category.h"
 
@@ -22,6 +23,22 @@ public:
         TRANSACTION_DEBIT,
         TRANSACTION_CREDIT,
         TRANSACTION_INVALID
+    };
+    struct FilterType
+    {
+        bool mAllAccounts;
+        QList<Account*> mAccountList;
+        bool mAllCategories;
+        QVector<bool> mCategoryList;
+        bool mAllLabels;
+        QVector<bool> mLabelList;
+        bool mAllDates;
+        QDate mStartDate;
+        QDate mEndDate;
+        FilterType(): mAllAccounts(true), 
+                      mAllCategories(true), mCategoryList(Category::CATEGORY_TYPE_CNT,false),
+                      mAllLabels(true), mLabelList(Category::LABEL_CNT,false),
+                      mAllDates(true), mStartDate(2000,1,1), mEndDate(2000,1,1){}
     };
 
     // Functions
@@ -49,13 +66,20 @@ public:
     Category::CategoryIdType getCategory() const { return mCategory; }
     void  setCategory( Category::CategoryIdType aCategory ){ mCategory = aCategory; }
     void  setLabels( const QStringList& aLabels );
-    bool matchLabels( Category::LabelIdType aLabel );
+    bool matchLabel( Category::LabelIdType aLabel );
+    bool matchLabels( const QVector<bool> aLabelMask );
+    bool matchTransaction( const FilterType& aFilter );
     QString getInfo();
 
     // Comparators
     bool operator< ( const Transaction& aTransaction ) const;
     bool operator> ( const Transaction& aTransaction ) const;
 
+    static QList<Transaction*> filterTransactions
+        (
+        const QList<Transaction*>& aTransactionList,
+        const FilterType& aFilter
+        );
     static bool transactionSortLessThan( Transaction* t1, Transaction* &t2 ){ return *t1 < *t2; }
 
 private:

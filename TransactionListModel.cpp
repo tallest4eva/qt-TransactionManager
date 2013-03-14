@@ -40,7 +40,7 @@ void NumberStandardItem::setNumber( float aNumber )
         setForeground( ( mNumber > 0 ) ? Qt::darkGreen : Qt::red );
     }
     setText( "$" + QString::number(mNumber,'f',2) );
-    setTextAlignment( Qt::AlignRight );
+    setTextAlignment( Qt::AlignRight | Qt::AlignVCenter );
 } // NumberStandardItem::setNumber
 
 //----------------------------------------------------------------------------
@@ -66,18 +66,14 @@ TransactionListModel::~TransactionListModel()
 } // TransactionListModel::~TransactionListModel
 
 //----------------------------------------------------------------------------
-// setTransactionList
+// setTransactionFilter
 //----------------------------------------------------------------------------
-void TransactionListModel::setTransactionList
-    (
-    QList<Transaction*>& aTransactionList
-    )
+void TransactionListModel::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    mTransactionList = aTransactionList;
+    mTransactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
     setRowCount( mTransactionList.size() );
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
-        // Date
         QStandardItem* item = new QStandardItem();
         item->setTextAlignment( Qt::AlignCenter );
         item->setText( mTransactionList[i]->getTransactionDate().toString("yyyy-MM-dd") );
@@ -92,10 +88,19 @@ void TransactionListModel::setTransactionList
         setItem( i, (int)HDR_BALANCE, numberItem );
         setItem( i, (int)HDR_CATEGORY, new QStandardItem( Category::getCategoryText( mTransactionList[i]->getCategory() ) ) );
     }
-} // TransactionListModel::setTransactionList
+} // TransactionListModel::setTransactionFilter
 
 //----------------------------------------------------------------------------
-// setTransactionList
+// clear
+//----------------------------------------------------------------------------
+void TransactionListModel::clear()
+{
+    mTransactionList.clear();
+    setRowCount( 0 );
+} // TransactionListModel::clear
+
+//----------------------------------------------------------------------------
+// setupTableView
 //----------------------------------------------------------------------------
 void TransactionListModel::setupTableView
     (
@@ -115,9 +120,8 @@ void TransactionListModel::setupTableView
         mTableView->setColumnWidth( (int)HDR_CATEGORY, columnWidth*2 );
         mTableView->horizontalHeader()->setStretchLastSection( true );
         mTableView->setSortingEnabled( true );
-        mTableView->sortByColumn ( (int)HDR_NAME, Qt::AscendingOrder );
     }
-} // TransactionListModel::setTransactionList
+} // TransactionListModel::setupTableView
 
 //----------------------------------------------------------------------------
 // resort

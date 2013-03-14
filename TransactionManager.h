@@ -40,16 +40,6 @@ public:
 
         TAB_CNT
     };
-    struct TransactionFilterType
-    {
-        bool allAccounts;
-        QList<Account*> accountList;
-        bool allCategories;
-        QList<Category::CategoryIdType> categoriesList;
-        bool allLabels;
-        QList<Category::LabelIdType> LabelList;
-        TransactionFilterType(): allAccounts(true), allCategories(true), allLabels(true){} 
-    };
 
     // Functions
     explicit TransactionManager(QWidget *parent = 0);
@@ -104,8 +94,7 @@ private:
     void updateTransactionsTab();
     void initReportsTab();
     void updateReportsTab();
-    QList<Account*> filterAccountList( TabType aTabType );
-    QList<Transaction*> filterTransactionList( TabType aTabType );
+    Transaction::FilterType getTransactionFilter( TabType aTabType );
 
     // Variables
     Ui::TransactionManager *ui;
@@ -122,6 +111,8 @@ private:
     QButtonGroup mReportAccountsCheckBoxGroup;
     QButtonGroup mReportCategoriesCheckBoxGroup;
     QButtonGroup mReportLabelsCheckBoxGroup;
+    Transaction::FilterType mTransactionFilter;
+    Transaction::FilterType mReportFilter;
     GraphWidget mReportNetIncomeGraph;
     GraphWidget mReportNetWorthGraph;
     ReportTableView mReportTableView;

@@ -8,6 +8,11 @@
 #include "Account.h"
 #include "TransactionManager.h"
 
+// Static functions
+static bool accountSortLessThan( Account* arg1, Account* &arg2 )
+{
+     return arg1->getName() < arg2->getName();
+}
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
@@ -107,6 +112,18 @@ QString Account::getInfo()
     info += mCloseDate.toString("yyyy-MM-dd");
     return info;
 } // Account::getInfo
+
+//----------------------------------------------------------------------------
+// updateAccountList
+//----------------------------------------------------------------------------
+void Account::updateAccountList()
+{
+    qSort( TransactionManager::mAccountList.begin(), TransactionManager::mAccountList.end(), accountSortLessThan );
+    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    {
+        TransactionManager::mAccountList[i]->updateData();
+    }
+} // Account::updateAccountList
 
 //----------------------------------------------------------------------------
 // getAccountIndex

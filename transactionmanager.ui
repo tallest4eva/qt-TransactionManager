@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1182</width>
-    <height>673</height>
+    <width>1204</width>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -395,7 +395,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>232</width>
-                <height>393</height>
+                <height>405</height>
                </rect>
               </property>
               <attribute name="label">
@@ -721,7 +721,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>232</width>
-                <height>393</height>
+                <height>405</height>
                </rect>
               </property>
               <attribute name="label">
@@ -894,6 +894,7 @@
            <attribute name="toolTip">
             <string>Assets/Debts Pie Chart by Account</string>
            </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_9"/>
           </widget>
           <widget class="QWidget" name="reportCategoryTab">
            <attribute name="title">
@@ -902,6 +903,7 @@
            <attribute name="toolTip">
             <string>Income/Expense Pie Chart by Category</string>
            </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_10"/>
           </widget>
          </widget>
         </item>
@@ -916,7 +918,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1182</width>
+     <width>1204</width>
      <height>18</height>
     </rect>
    </property>

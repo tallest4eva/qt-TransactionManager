@@ -91,9 +91,9 @@ void Transaction::setLabels
 } // Transaction::setLabels
 
 //----------------------------------------------------------------------------
-// Set Labels
+// matchLabels
 //----------------------------------------------------------------------------
-bool Transaction::matchLabels( Category::LabelIdType aLabel )
+bool Transaction::matchLabel( Category::LabelIdType aLabel )
 {
     bool found = false;
     for( int i = 0; i < mLabels.size(); i++ )
@@ -105,7 +105,65 @@ bool Transaction::matchLabels( Category::LabelIdType aLabel )
         }
     }
     return found;
-} // Transaction::setLabels
+} // Transaction::matchLabel
+
+//----------------------------------------------------------------------------
+// matchLabels
+//----------------------------------------------------------------------------
+bool Transaction::matchLabels( const QVector<bool> aLabelMask )
+{
+    bool found = false;
+    for( int i = 0; i < mLabels.size(); i++ )
+    {
+        if( aLabelMask[(int)mLabels[i]] )
+        {
+            found = true;
+            break;
+        }
+    }
+    return found;
+} // Transaction::matchLabels
+
+//----------------------------------------------------------------------------
+// matchTransaction
+//----------------------------------------------------------------------------
+bool Transaction::matchTransaction( const FilterType& aFilter )
+{ 
+    // Match acounts
+    bool match = true;
+    if( !aFilter.mAllAccounts )
+    {
+        match = false;
+        for( int i = 0; i < aFilter.mAccountList.size(); i++ )
+        {
+            if( aFilter.mAccountList[i] == mAccount )
+            {
+                match = true;
+                break;
+            }
+        }
+    }
+
+    // Match categories
+    if( match && !aFilter.mAllCategories )
+    {
+        match = false;
+        match = aFilter.mCategoryList[(int)mCategory];
+    }
+
+    // Match labels
+    if( match && !aFilter.mAllLabels )
+    {
+        match = matchLabels( aFilter.mLabelList );
+    }
+
+    // Match dates
+    if( match && !aFilter.mAllDates )
+    {
+        match &= ( mTransactionDate >= aFilter.mStartDate && mTransactionDate <= aFilter.mEndDate );
+    }
+    return match;
+} // Transaction::matchTransaction
 
 //----------------------------------------------------------------------------
 // Get Info
@@ -130,4 +188,29 @@ QString Transaction::getInfo()
     info += Category::getCategoryText( mCategory );
     return info;
 } // Transaction::getInfo
+
+//----------------------------------------------------------------------------
+// filterTransactions
+//----------------------------------------------------------------------------
+QList<Transaction*> Transaction::filterTransactions
+    (
+    const QList<Transaction*>& aTransactionList,
+    const FilterType& aFilter
+    )
+{
+    QList<Transaction*> transactionList;
+    if( aFilter.mAllAccounts && aFilter.mAllCategories && aFilter.mAllLabels && aFilter.mAllDates )
+    {
+        return aTransactionList;
+    }
+    for( int i = 0; i < aTransactionList.size(); i++ )
+    {
+        Transaction* transaction = aTransactionList[i];
+        if( transaction->matchTransaction( aFilter ) )
+        {
+            transactionList.push_back( transaction );
+        }
+    }
+    return transactionList;
+} // Transaction::filterTransactions
 

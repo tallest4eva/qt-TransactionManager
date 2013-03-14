@@ -47,15 +47,6 @@ public:
         BAR_NET_WORTH,
     };
 
-    struct MonthDataType
-    {
-        float income;
-        float expense;
-        float netWorth;
-        QDate date;
-        MonthDataType(): income(0.0), expense(0.0), netWorth(0.0), date(2000,1,1){}
-    };
-
     // Variable
     static const QDate REFERENCE_DATE;
 
@@ -70,13 +61,7 @@ public:
     QSize sizeHint() const { return QSize(100, 100); }
 
     void setGraphMode( BarChartType aGraphMode );
-    void setTransactionData
-        (
-        const QDate& aStartDate,
-        const QDate& aEndDate,
-        const QList<Account*>& aAccountList,
-        const QList<Transaction*>& aTransactionList
-        );
+    void setTransactionFilter( const Transaction::FilterType& aFilter );
 
 signals:
     void dateSelected( QDate aStartDate, QDate aEndDate );
@@ -97,7 +82,6 @@ private:
     QwtPlotHistogram* mNegativeHistogram;
     DisplayLabel mDisplayLabel;
     QTimer mDisplayTimer;
-    QList<MonthDataType> mMonthDataList;
 
 };
 

@@ -4,6 +4,7 @@
 //******************************************************************************
 
 #include <QGridLayout>
+#include <QHeaderView>
 
 #include "ReportTableView.h"
 #include "TransactionListModel.h"
@@ -17,7 +18,7 @@ ReportTableView::ReportTableView
     QWidget* parent
     ):
     QTableView(parent)
-  , mStartDate( 2000, 1, 1 ),
+  , mStartDate( 2000, 1, 1 )
   , mEndDate( 2000, 1, 1 )
   , mModel( NULL )
 {
@@ -28,6 +29,7 @@ ReportTableView::ReportTableView
     setGridStyle(Qt::DashLine);
     setWordWrap(false);
     horizontalHeader()->setProperty("showSortIndicator", QVariant(true));
+    horizontalHeader()->setSortIndicatorShown( false );
     verticalHeader()->setVisible(false);
     
     mModel = new QStandardItemModel( 0, 0 );
@@ -62,17 +64,13 @@ ReportTableView::~ReportTableView()
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
-void ReportTableView::setDateRange
-    (
-    QDate aStartDate,
-    QDate aEndDate
-    )
+void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    mStartDate.setDate( aStartDate.year(), aStartDate.month(), 1 );
-    mEndDate.setDate( aEndDate.year(), aEndDate.month(), 1 );
+    mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
+    mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
     mEndDate = mEndDate.addMonths(1);
     int rowCount = 0;
-    setRowCount( rowCount );
+    mModel->setRowCount( rowCount );
     for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
     {
         // Date
@@ -82,20 +80,21 @@ void ReportTableView::setDateRange
             QStandardItem* item = new QStandardItem();
             item->setTextAlignment( Qt::AlignCenter );
             item->setText( month->getDate().toString("MMM yyyy") );
-            setItem( rowCount, (int)HDR_DATE, item );
-            
+            mModel->setItem( rowCount, (int)HDR_DATE, item );
+            float income = month->getIncome( aFilter );
+            float expense = month->getExpense( aFilter );
             NumberStandardItem* numberItem = new NumberStandardItem();
-            numberItem->setNumber( month->getIncome() );
-            setItem( rowCount, (int)HDR_INCOME, numberItem );
+            numberItem->setNumber( income );
+            mModel->setItem( rowCount, (int)HDR_INCOME, numberItem );
             numberItem = new NumberStandardItem();
-            numberItem->setNumber( month->getExpense() );
-            setItem( rowCount, (int)HDR_EXPENSE, numberItem );
+            numberItem->setNumber( expense );
+            mModel->setItem( rowCount, (int)HDR_EXPENSE, numberItem );
             numberItem = new NumberStandardItem();
-            numberItem->setNumber( month->getIncome() - month->getExpense() );
-            setItem( rowCount, (int)HDR_NET_INCOME, numberItem );
+            numberItem->setNumber( income + expense );
+            mModel->setItem( rowCount, (int)HDR_NET_INCOME, numberItem );
             numberItem = new NumberStandardItem();
-            numberItem->setNumber( month->getNetWorth() );
-            setItem( rowCount, (int)HDR_NET_WORTH, numberItem );
+            numberItem->setNumber( month->getNetWorth( aFilter ) );
+            mModel->setItem( rowCount, (int)HDR_NET_WORTH, numberItem );
             rowCount++;
         }
     }

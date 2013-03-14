@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'transactionmanager.ui'
 **
-** Created: Tue Mar 12 16:49:20 2013
+** Created: Wed Mar 13 18:38:03 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -144,7 +144,9 @@ public:
     QWidget *reportListTab;
     QHBoxLayout *horizontalLayout_7;
     QWidget *reportAccountTab;
+    QHBoxLayout *horizontalLayout_9;
     QWidget *reportCategoryTab;
+    QHBoxLayout *horizontalLayout_10;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuHelp;
@@ -155,7 +157,7 @@ public:
     {
         if (TransactionManager->objectName().isEmpty())
             TransactionManager->setObjectName(QString::fromUtf8("TransactionManager"));
-        TransactionManager->resize(1182, 673);
+        TransactionManager->resize(1204, 685);
         actionOpen = new QAction(TransactionManager);
         actionOpen->setObjectName(QString::fromUtf8("actionOpen"));
         actionSave = new QAction(TransactionManager);
@@ -417,7 +419,7 @@ public:
         transactionToolBox->addItem(transactionLabelsToolBox, QString::fromUtf8("Labels"));
         transactionDateToolBox = new QWidget();
         transactionDateToolBox->setObjectName(QString::fromUtf8("transactionDateToolBox"));
-        transactionDateToolBox->setGeometry(QRect(0, 0, 232, 393));
+        transactionDateToolBox->setGeometry(QRect(0, 0, 232, 405));
         formLayout_1 = new QFormLayout(transactionDateToolBox);
         formLayout_1->setSpacing(6);
         formLayout_1->setContentsMargins(11, 11, 11, 11);
@@ -607,7 +609,7 @@ public:
         reportToolBox->addItem(reportLabelsToolBox, QString::fromUtf8("Labels"));
         reportDateToolBox = new QWidget();
         reportDateToolBox->setObjectName(QString::fromUtf8("reportDateToolBox"));
-        reportDateToolBox->setGeometry(QRect(0, 0, 232, 393));
+        reportDateToolBox->setGeometry(QRect(0, 0, 232, 405));
         formLayout_2 = new QFormLayout(reportDateToolBox);
         formLayout_2->setSpacing(6);
         formLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -709,9 +711,17 @@ public:
         reportDisplayTabWidget->addTab(reportListTab, QString());
         reportAccountTab = new QWidget();
         reportAccountTab->setObjectName(QString::fromUtf8("reportAccountTab"));
+        horizontalLayout_9 = new QHBoxLayout(reportAccountTab);
+        horizontalLayout_9->setSpacing(6);
+        horizontalLayout_9->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
         reportDisplayTabWidget->addTab(reportAccountTab, QString());
         reportCategoryTab = new QWidget();
         reportCategoryTab->setObjectName(QString::fromUtf8("reportCategoryTab"));
+        horizontalLayout_10 = new QHBoxLayout(reportCategoryTab);
+        horizontalLayout_10->setSpacing(6);
+        horizontalLayout_10->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
         reportDisplayTabWidget->addTab(reportCategoryTab, QString());
 
         horizontalLayout_6->addWidget(reportDisplayTabWidget);
@@ -723,7 +733,7 @@ public:
         TransactionManager->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(TransactionManager);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1182, 18));
+        menuBar->setGeometry(QRect(0, 0, 1204, 18));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuHelp = new QMenu(menuBar);
@@ -754,10 +764,10 @@ public:
 
         retranslateUi(TransactionManager);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(0);
         transactionToolBox->setCurrentIndex(3);
         reportToolBox->setCurrentIndex(3);
-        reportDisplayTabWidget->setCurrentIndex(1);
+        reportDisplayTabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(TransactionManager);

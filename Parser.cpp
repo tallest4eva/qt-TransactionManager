@@ -8,7 +8,7 @@
 
 #include "Parser.h"
 #include "Category.h"
-#include "Logger.h"
+//#include "Logger.h"
 #include "Month.h"
 #include "TransactionManager.h"
 
@@ -60,16 +60,6 @@ const int Parser::cDefaultEntryList[] =
 	4,          /* ENTRY_ACCOUNT_ALT_NAMES    */
 };
 
-// Static functions
-static bool accountSortLessThan( Account* arg1, Account* &arg2 )
-{
-     return arg1->getName() < arg2->getName();
-}
-static bool monthSortLessThan( Month* arg1, Month* &arg2 )
-{
-     return *arg1 < *arg2;
-}
-
 //----------------------------------------------------------------------------
 // Restore
 //----------------------------------------------------------------------------
@@ -117,8 +107,8 @@ void Parser::parseFile
                 account->setStatus( ( tokens[sEntryList[ENTRY_ACCOUNT_STATUS]] == "Open" ) ? Account::STATUS_OPEN : Account::STATUS_CLOSED );
                 account->setAccountComplete( ( tokens[sEntryList[ENTRY_ACCOUNT_STATE]] == "Complete" ) ? true : false );
                 TransactionManager::mAccountList.push_back( account );
-                logStr = "Adding account:" + QString(account->getInfo());
-                Logger::logString( logStr );
+                //logStr = "Adding account:" + QString(account->getInfo());
+                //Logger::logString( logStr );
             }
             else
             {
@@ -136,8 +126,8 @@ void Parser::parseFile
                 transaction->setCategory( Category::getCategoryId( tokens[sEntryList[ENTRY_TRANS_CATEGORY]] ) );
                 transaction->setLabels( tokens[sEntryList[ENTRY_TRANS_LABELS]].split(' ',QString::SkipEmptyParts) );
                 TransactionManager::mTransactionList.push_back( transaction );
-                logStr = "Adding to account:" + QString(transaction->getAccount()->getName()) + QString(transaction->getInfo());
-                Logger::logString( logStr );
+                //logStr = "Adding to account:" + QString(transaction->getAccount()->getName()) + QString(transaction->getInfo());
+                //Logger::logString( logStr );
 
                 // Update transaction dates
                 if( transaction->getTransactionDate() < TransactionManager::mFirstTransactionDate )
@@ -152,17 +142,7 @@ void Parser::parseFile
         }
     }
     
-    // Sort and update info
-    qSort( TransactionManager::mAccountList.begin(), TransactionManager::mAccountList.end(), accountSortLessThan );
-    qSort( TransactionManager::mMonthList.begin(), TransactionManager::mMonthList.end(), monthSortLessThan );
-    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
-    {
-        TransactionManager::mAccountList[i]->updateData();
-        Logger::logString( QString(TransactionManager::mAccountList[i]->getInfo()) );
-    }
-    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
-    {
-        TransactionManager::mMonthList[i]->updateData();
-    }
-    
+    // update lists
+    Account::updateAccountList();
+    Month::updateMonthList();
 } // Parser::parseFile
