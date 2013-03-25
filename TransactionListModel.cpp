@@ -7,6 +7,7 @@
 #include <QHeaderView>
 
 #include "TransactionListModel.h"
+#include "TransactionManager.h"
 #include "Account.h"
 
 // Static variables

@@ -49,6 +49,7 @@ public:
     bool operator> ( const Month& aMonth ) const;
 
     static void updateMonthList();
+    static Month* getMonth( const QDate& aDate );
     static bool addToMonth( const QDate& aDate, Transaction* aTransaction );
 
 private:

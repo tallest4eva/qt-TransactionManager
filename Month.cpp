@@ -59,15 +59,15 @@ void Month::addTransaction( Transaction* aTransaction )
 //----------------------------------------------------------------------------
 float Month::getIncome( const Transaction::FilterType& aFilter ) const
 {
-    float income = 0.0;
     if( aFilter.mAllAccounts && aFilter.mAllCategories && aFilter.mAllLabels && aFilter.mAllDates )
     {
         return mIncome;
     }
+    float income = 0.0;
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         Transaction* transaction = mTransactionList[i];
-        if( transaction->getAmount() >= 0 && transaction->matchTransaction( aFilter ) )
+        if( transaction->isIncomeOrExpense() && transaction->getAmount() >= 0 && transaction->matchTransaction( aFilter ) )
         {
             income += transaction->getAmount();
         }
@@ -80,15 +80,15 @@ float Month::getIncome( const Transaction::FilterType& aFilter ) const
 //----------------------------------------------------------------------------
 float Month::getExpense( const Transaction::FilterType& aFilter ) const
 {
-    float expense = 0.0;
     if( aFilter.mAllAccounts && aFilter.mAllCategories && aFilter.mAllLabels && aFilter.mAllDates )
     {
         return mExpense;
     }
+    float expense = 0.0;
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         Transaction* transaction = mTransactionList[i];
-        if( transaction->getAmount() < 0 && transaction->matchTransaction( aFilter ) )
+        if( transaction->isIncomeOrExpense() && transaction->getAmount() < 0 && transaction->matchTransaction( aFilter ) )
         {
             expense += transaction->getAmount();
         }
@@ -114,13 +114,20 @@ float Month::getNetWorth() const
 //----------------------------------------------------------------------------
 float Month::getNetWorth( const Transaction::FilterType& aFilter ) const
 {
-    float netWorth = 0.0;
-    int idx = 0;
-    for( int i = 0; i < mNetWorthList.size(); i++ )
+    if( aFilter.mAllAccounts )
     {
-        if( mNetWorthList[i].mAccount == aFilter.mAccountList[idx] )
+        return getNetWorth();
+    }
+    float netWorth = 0.0;
+    for( int i = 0; i < aFilter.mAccountList.size(); i++ )
+    {
+        for( int j = 0; j < mNetWorthList.size(); j++ )
         {
-            netWorth += mNetWorthList[i].mNetWorth;
+            if( aFilter.mAccountList[i] == mNetWorthList[j].mAccount  )
+            {
+                netWorth += mNetWorthList[j].mNetWorth;
+                break;
+            }
         }
     }
     return netWorth;
@@ -153,9 +160,10 @@ void Month::updateData( Month* aPreviousMonth )
     {
         for( int i = 0; i < mNetWorthList.size(); i++ )
         {
-            if( aPreviousMonth->mNetWorthList[i].mAccount )
+            Account* prevAccount = aPreviousMonth->mNetWorthList[i].mAccount;
+            if( prevAccount && prevAccount->getCloseDate() > mDate )
             {
-                mNetWorthList[i].mAccount = aPreviousMonth->mNetWorthList[i].mAccount;
+                mNetWorthList[i].mAccount = prevAccount;
                 mNetWorthList[i].mNetWorth = aPreviousMonth->mNetWorthList[i].mNetWorth;
             }
         }
@@ -176,25 +184,16 @@ void Month::updateData( Month* aPreviousMonth )
             }
 
             // Skip excluded transfer categories
-            Category::CategoryIdType category = transaction->getCategory();
-            switch( category )
+            if( transaction->isIncomeOrExpense() )
             {
-            case Category::TRANSFER:
-            case Category::CREDIT_CARD_PAYMENT:
-            case Category::FAMILY_TRANSFER:
-            case Category::TRANSFER_FOR_CASH_SPENDING:
-            case Category::ACCOUNT_BALANCE:
-                continue;
-            default:
-                break;
-            }
-            if( transaction->getAmount() >= 0 )
-            {
-                mIncome += transaction->getAmount();
-            }
-            else
-            {
-                mExpense += transaction->getAmount();
+                if( transaction->getAmount() >= 0 )
+                {
+                    mIncome += transaction->getAmount();
+                }
+                else
+                {
+                    mExpense += transaction->getAmount();
+                }
             }
         }
      }
@@ -230,6 +229,23 @@ void Month::updateMonthList()
     }
 } // Month::updateMonthList
 
+//----------------------------------------------------------------------------
+// getMonth
+//----------------------------------------------------------------------------
+Month* Month::getMonth( const QDate& aDate )
+{
+    Month* month = NULL;
+    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+    {
+        QDate curDate = TransactionManager::mMonthList[i]->getDate();
+        if( aDate.year() == curDate.year() && aDate.month() == curDate.month() )
+        {
+            month = TransactionManager::mMonthList[i];
+            break;
+        }
+    }
+    return month;
+} // Month::getMonth
 //----------------------------------------------------------------------------
 // addToMonth
 //----------------------------------------------------------------------------

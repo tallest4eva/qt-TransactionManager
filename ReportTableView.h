@@ -33,13 +33,12 @@ public:
     explicit ReportTableView(QWidget* parent = 0);
     ~ReportTableView();
     void setTransactionFilter( const Transaction::FilterType& aFilter );
+    void clear();
 
 private:
     // Functions
 
     // Variables
-    QDate mStartDate;
-    QDate mEndDate;
     QStandardItemModel* mModel;
 };
 

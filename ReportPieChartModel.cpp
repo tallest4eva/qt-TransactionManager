@@ -7,19 +7,9 @@
 #include <QHeaderView>
 
 #include "ReportPieChartModel.h"
+#include "TransactionManager.h"
 #include "Account.h"
-
-// Static variables
-const char* ReportPieChartModel::cHeaderList[] =
-{
-    "Date",
-    "Account",
-    "Description",
-    "Amount",
-    "Balance",
-    "Category",
-    //"Labels"
-};
+#include "Month.h"
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -29,6 +19,7 @@ ReportPieChartModel::ReportPieChartModel( PieChartType aChartType ):
     mChartType( aChartType ),
     mPieView( NULL )
 {
+    setColumnCount( COLUMN_CNT );
 } // ReportPieChartModel::ReportPieChartModel
 
 //----------------------------------------------------------------------------
@@ -39,37 +30,96 @@ ReportPieChartModel::~ReportPieChartModel()
 } // ReportPieChartModel::~ReportPieChartModel
 
 //----------------------------------------------------------------------------
+// clear
+//----------------------------------------------------------------------------
+void ReportPieChartModel::clear()
+{
+    setRowCount( 0 );
+    if( mPieView )
+    {
+        mPieView->update();
+    }
+} // ReportPieChartModel::clear
+
+//----------------------------------------------------------------------------
 // ReportPieChartModel
 //----------------------------------------------------------------------------
 void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    setData( index(0,0), "Value 1" );
-    setData( index(0,0), Qt::red, Qt::DecorationRole );
-    setData( index(0,1), 10 );
-    setData( index(1,0), "Value 2" );
-    setData( index(1,0), Qt::blue, Qt::DecorationRole );
-    setData( index(1,1), 30 );
-    setData( index(2,0), "Value 3" );
-    setData( index(2,0), Qt::green, Qt::DecorationRole );
-    setData( index(2,1), 40 );
-
-    mTransactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
-    setRowCount( mTransactionList.size() );
-    for( int i = 0; i < mTransactionList.size(); i++ )
+    QColor baseColor;
+    QList<PieDataType> dataList;
+    switch( mChartType )
     {
-        QStandardItem* item = new QStandardItem();
-        item->setTextAlignment( Qt::AlignCenter );
-        item->setText( mTransactionList[i]->getTransactionDate().toString("yyyy-MM-dd") );
-        setItem( i, (int)HDR_DATE, item );
-        setItem( i, (int)HDR_NAME, new QStandardItem( ( mTransactionList[i]->getAccount() ) ? mTransactionList[i]->getAccount()->getName() : "None" ) );
-        setItem( i, (int)HDR_DESCRIPTION, new QStandardItem( mTransactionList[i]->getDescription() ) );
-        NumberStandardItem* numberItem = new NumberStandardItem();
-        numberItem->setNumber( mTransactionList[i]->getAmount() );
-        setItem( i, (int)HDR_AMOUNT, numberItem );
-        numberItem = new NumberStandardItem();
-        numberItem->setNumber( mTransactionList[i]->getCurrentBalance() );
-        setItem( i, (int)HDR_BALANCE, numberItem );
-        setItem( i, (int)HDR_CATEGORY, new QStandardItem( Category::getCategoryText( mTransactionList[i]->getCategory() ) ) );
+    case ASSET_BY_ACCOUNT:
+    case DEBT_BY_ACCOUNT:
+        {
+            baseColor = ( mChartType == ASSET_BY_ACCOUNT ) ? QColor(Qt::darkGreen).toHsv() : QColor(Qt::darkRed).toHsv();
+            baseColor = QColor(0x8A, 0x56, 0xE2);
+            Month* month = Month::getMonth( aFilter.mEndDate );
+            if( month )
+            {
+                for( int i = 0; i < aFilter.mAccountList.size(); i++ )
+                {
+                    Account* account = aFilter.mAccountList[i];
+                    bool accountExist = false;
+                    float netWorth = month->getNetWorth( account, &accountExist );
+                    if( accountExist )
+                    {
+                        bool allow = false;
+                        if( netWorth >= 0 )
+                        {
+                            allow = (mChartType == ASSET_BY_ACCOUNT);
+                        }
+                        else
+                        {
+                            allow = (mChartType == DEBT_BY_ACCOUNT);
+                            netWorth = -netWorth;
+                        }
+                        if( allow )
+                        {
+                            PieDataType data;
+                            data.mName = account->getName();
+                            data.mValue = netWorth;
+                            dataList.push_back( data );
+                        }
+                    }
+                }
+            }
+        }
+        break;
+    case INCOME_BY_CATEGORY:
+    case EXPENSE_BY_CATEGORY:
+        {
+            baseColor = ( mChartType == INCOME_BY_CATEGORY ) ? QColor(Qt::darkGreen).toHsv() : QColor(Qt::darkRed).toHsv();
+            QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
+            for( int i = 0; i < transactionList.size(); i++ )
+            {
+                Transaction* transaction = transactionList[i];
+                if( transaction->isIncomeOrExpense() )
+                {
+                }
+            }
+        }
+        break;
+    }
+
+    if( dataList.size() > 0 )
+    {
+        setRowCount( dataList.size() );
+        const int colorRange = 240;
+        int step = (colorRange / dataList.size());
+        int h = baseColor.hue();
+        int s = baseColor.saturation();
+        int v = baseColor.value();
+        for (int i = 0; i < dataList.size(); ++i)
+        {
+            QColor nextColor;
+            int newH = (h + step*i)%colorRange;
+            nextColor.setHsv( newH, s, v );
+            setData( index(i,(int)COLUMN_NAME), dataList[i].mName );
+            setData( index(i,(int)COLUMN_NAME), nextColor, Qt::DecorationRole );
+            setData( index(i,(int)COLUMN_VALUE), dataList[i].mValue );
+        }
     }
 } // ReportPieChartModel::setTransactionFilter
 
@@ -78,23 +128,27 @@ void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& a
 //----------------------------------------------------------------------------
 void ReportPieChartModel::setupPieView
     (
-    QTableView* aTableView
+    PieView* aPieView
     )
 {
-    mPieView = aTableView;
+    mPieView = aPieView;
     if( mPieView )
     {
-        // Set transaction column widths
-        const int columnWidth = 95;
-        mPieView->setColumnWidth( (int)HDR_DATE, columnWidth );
-        mPieView->setColumnWidth( (int)HDR_NAME, columnWidth*2 );
-        mPieView->setColumnWidth( (int)HDR_DESCRIPTION, columnWidth*3 );
-        mPieView->setColumnWidth( (int)HDR_AMOUNT, columnWidth );
-        mPieView->setColumnWidth( (int)HDR_BALANCE, columnWidth );
-        mPieView->setColumnWidth( (int)HDR_CATEGORY, columnWidth*2 );
-        mPieView->horizontalHeader()->setStretchLastSection( true );
-        mPieView->setSortingEnabled( true );
-        mPieView->sortByColumn ( (int)HDR_NAME, Qt::AscendingOrder );
+        switch( mChartType )
+        {
+        case ASSET_BY_ACCOUNT:
+            mPieView->setTitle( "Assets by Account" );
+            break;
+        case DEBT_BY_ACCOUNT:
+            mPieView->setTitle( "Assets by Debt" );
+            break;
+        case INCOME_BY_CATEGORY:
+            mPieView->setTitle( "Income by Category" );
+            break;
+        case EXPENSE_BY_CATEGORY:
+            mPieView->setTitle( "Expense by Category" );
+            break;
+        }
     }
 } // ReportPieChartModel::setupPieView
 

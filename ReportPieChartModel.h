@@ -8,8 +8,8 @@
 
 #include <QStandardItemModel>
 #include <QList>
-#include <QPieView>
 
+#include "PieView.h"
 #include "Transaction.h"
 
 class ReportPieChartModel : public QStandardItemModel
@@ -17,17 +17,12 @@ class ReportPieChartModel : public QStandardItemModel
 
 public:
     // Types
-    enum HeaderType
+    enum ColumnType
     {
-        HDR_DATE,
-        HDR_NAME,
-        HDR_DESCRIPTION,
-        HDR_AMOUNT,
-        HDR_BALANCE,
-        HDR_CATEGORY,
-//        HDR_LABELS
+        COLUMN_NAME,
+        COLUMN_VALUE,
 
-        HDR_CNT
+        COLUMN_CNT
     };
     enum PieChartType
     {
@@ -36,22 +31,28 @@ public:
         INCOME_BY_CATEGORY,
         EXPENSE_BY_CATEGORY,
 
-        HDR_CNT
+        PIE_CHART_CNT
+    };
+    struct PieDataType
+    {
+        QString mName;
+        float mValue;
+        PieDataType(): mValue(0.0){}
     };
 
     // Functions
     explicit ReportPieChartModel( PieChartType aChartType = ASSET_BY_ACCOUNT );
     ~ReportPieChartModel();
     void setTransactionFilter( const Transaction::FilterType& aFilter );
-    void setupPieView( QPieView* aPieView );
+    void setupPieView( PieView* aPieView );
+    void clear();
 
 private:
     // Functions
 
     // Variables
     PieChartType mChartType;
-    QList<Transaction*> mTransactionList;
-    QPieView* mPieView;
+    PieView* mPieView;
 };
 
 #endif // ReportPieChartModel_H

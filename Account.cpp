@@ -22,7 +22,7 @@ Account::Account() :
     mStatus( STATUS_INVALID ),
     mComplete( false ),
     mOpenDate( 2000, 1, 1 ),
-    mCloseDate( 2000, 1, 1 )
+    mCloseDate( QDate::currentDate() )
 {
 } // Account::Account
 

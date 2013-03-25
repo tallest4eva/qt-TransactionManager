@@ -69,6 +69,7 @@ public:
     bool matchLabel( Category::LabelIdType aLabel );
     bool matchLabels( const QVector<bool> aLabelMask );
     bool matchTransaction( const FilterType& aFilter );
+    bool isIncomeOrExpense();
     QString getInfo();
 
     // Comparators

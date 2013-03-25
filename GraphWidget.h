@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTimer>
 #include <QWidget>
+#include <QRubberBand>
 
 #include <qwt_plot.h>
 #include <qwt_plot_grid.h>
@@ -55,6 +56,8 @@ public:
 
     ~GraphWidget();
 
+    virtual void mousePressEvent( QMouseEvent* aEvent );
+    virtual void mouseMoveEvent( QMouseEvent* aEvent );
     virtual void mouseReleaseEvent( QMouseEvent * aEvent );
 
     QSize minimumSizeHint() const { return QSize(50, 50); }
@@ -62,6 +65,7 @@ public:
 
     void setGraphMode( BarChartType aGraphMode );
     void setTransactionFilter( const Transaction::FilterType& aFilter );
+    void clear();
 
 signals:
     void dateSelected( QDate aStartDate, QDate aEndDate );
@@ -82,6 +86,10 @@ private:
     QwtPlotHistogram* mNegativeHistogram;
     DisplayLabel mDisplayLabel;
     QTimer mDisplayTimer;
+    Transaction::FilterType mFilter;
+    QPoint mOrigin;
+    QRubberBand* mRubberBand;
+    bool mDrag;
 
 };
 

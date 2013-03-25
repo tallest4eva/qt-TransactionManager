@@ -18,8 +18,6 @@ ReportTableView::ReportTableView
     QWidget* parent
     ):
     QTableView(parent)
-  , mStartDate( 2000, 1, 1 )
-  , mEndDate( 2000, 1, 1 )
   , mModel( NULL )
 {
     setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -62,20 +60,28 @@ ReportTableView::~ReportTableView()
 } // ReportTableView::~ReportTableView
 
 //----------------------------------------------------------------------------
+// clear
+//----------------------------------------------------------------------------
+void ReportTableView::clear()
+{
+    mModel->setRowCount( 0 );
+} // ReportTableView::clear
+
+//----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
 void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
-    mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
-    mEndDate = mEndDate.addMonths(1);
+    QDate startDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
+    QDate endDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
+    endDate = endDate.addMonths(1);
     int rowCount = 0;
     mModel->setRowCount( rowCount );
     for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
     {
         // Date
         Month* month = TransactionManager::mMonthList[i];
-        if( mStartDate <= month->getDate() && mEndDate > month->getDate() )
+        if( startDate <= month->getDate() && endDate > month->getDate() )
         {
             QStandardItem* item = new QStandardItem();
             item->setTextAlignment( Qt::AlignCenter );

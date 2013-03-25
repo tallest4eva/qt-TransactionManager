@@ -32,6 +32,8 @@ GraphWidget::GraphWidget(QWidget *parent) :
   , mIncomeCurve( NULL )
   , mPositiveHistogram( NULL )
   , mNegativeHistogram( NULL )
+  , mDrag( false )
+  , mRubberBand( NULL )
 {
     setBackgroundRole(QPalette::Base);
     mStartDate.setDate( 2000, 1, 1 );
@@ -94,6 +96,10 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mDisplayLabel.setFont( font );
     mDisplayTimer.setSingleShot( true );
     connect( &mDisplayTimer, SIGNAL(timeout()), this, SLOT(hideDisplayLabel()) );
+    mRubberBand = new QRubberBand( QRubberBand::Rectangle, this );
+    //QPalette pal;
+    //pal.setBrush(QPalette::Highlight, QBrush(Qt::red));
+    //mRubberBand->setPalette( pal );    
 } // GraphWidget::GraphWidget
 
 //----------------------------------------------------------------------------
@@ -102,6 +108,7 @@ GraphWidget::GraphWidget(QWidget *parent) :
 GraphWidget::~GraphWidget()
 {
     mDisplayTimer.stop();
+    delete mRubberBand;
     delete mGrid;
     delete mIncomeCurve;
     delete mPositiveHistogram;
@@ -128,12 +135,45 @@ void GraphWidget::handleDisplayClicked()
 } // GraphWidget::handleDisplayClicked
 
 //----------------------------------------------------------------------------
+// mousePressEvent
+//----------------------------------------------------------------------------
+void GraphWidget::mousePressEvent( QMouseEvent* aEvent )
+{
+    mDrag = false;
+    QWidget::mousePressEvent( aEvent );
+    QRectF rect = mPlot.plotLayout()->canvasRect();
+    mOrigin = QPoint( aEvent->x(), rect.y() );
+    mRubberBand->setGeometry( QRect( mOrigin, QSize(0,rect.height()) ) );
+    mRubberBand->show();
+} // GraphWidget::mousePressEvent
+
+//----------------------------------------------------------------------------
+// mouseMoveEvent
+//----------------------------------------------------------------------------
+void GraphWidget::mouseMoveEvent( QMouseEvent* aEvent )
+{
+    mDrag = true;
+    QWidget::mouseMoveEvent( aEvent );
+    mRubberBand->setGeometry( QRect(mOrigin, QSize(aEvent->x()-mOrigin.x(),height())) );
+} // GraphWidget::mouseMoveEvent
+    
+//----------------------------------------------------------------------------
 // mouseReleaseEvent
 //----------------------------------------------------------------------------
 void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
 {
     QWidget::mouseReleaseEvent( aEvent );
 
+    mRubberBand->hide();
+    if( mDrag )
+    {
+        mDrag = false;
+        QRectF rect = mPlot.plotLayout()->canvasRect();
+        int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - rect.x() );
+        QDate date = REFERENCE_DATE.addDays( dateVal-10 );
+        return;
+    }
+    
     if( mDisplayTimer.isActive() )
     {
         hideDisplayLabel();
@@ -165,10 +205,10 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
             if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
             {
                 QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
-                str += "Income: <font color=\"green\">$" + QString::number( month->getIncome(), 'f', 2 ) + "</font><br>";
-                str += "Expense: <font color=\"red\">$" + QString::number( month->getExpense(), 'f', 2 ) + "</font><br>";
+                str += "Income: <font color=\"green\">$" + QString::number( month->getIncome( mFilter ), 'f', 2 ) + "</font><br>";
+                str += "Expense: <font color=\"red\">$" + QString::number( month->getExpense( mFilter ), 'f', 2 ) + "</font><br>";
                 str += "Net Worth: ";
-                float netWorth = month->getNetWorth();
+                float netWorth = month->getNetWorth( mFilter );
                 if( netWorth != 0 )
                 {
                     str += ( netWorth > 0 ) ? "<font color=\"green\">" : "<font color=\"red\">";
@@ -211,10 +251,26 @@ void GraphWidget::setGraphMode( BarChartType aGraphMode )
 } // GraphWidget::setGraphMode
 
 //----------------------------------------------------------------------------
+// clear
+//----------------------------------------------------------------------------
+void GraphWidget::clear()
+{
+    mFilter = Transaction::FilterType();
+    mStartDate.setDate( 2000, 1, 1 );
+    mEndDate.setDate( 2001, 1, 1 );
+    mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mStartDate), REFERENCE_DATE.daysTo(mEndDate), 30.416 );
+    mPlot.setAxisScale( QwtPlot::yLeft, -1000, 1000 );
+    //mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
+    mPositiveHistogram->setSamples( QVector<QwtIntervalSample>() );
+    mNegativeHistogram->setSamples( QVector<QwtIntervalSample>() );
+} // GraphWidget::clear
+
+//----------------------------------------------------------------------------
 // Set Transaction Data
 //----------------------------------------------------------------------------
 void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
+    mFilter = aFilter;
     mStartDate = aFilter.mStartDate;
     mEndDate = aFilter.mEndDate;
     hideDisplayLabel();
@@ -263,13 +319,13 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
             switch( mGraphMode )
             {
             case BAR_NET_INCOME:
-                positiveValue = month->getIncome();
-                negativeValue = month->getExpense();
+                positiveValue = month->getIncome( mFilter );
+                negativeValue = month->getExpense( mFilter );
                 curveXSamples.push_back( REFERENCE_DATE.daysTo(month->getDate())+14 );
                 curveYSamples.push_back( positiveValue + negativeValue );
                 break;
             case BAR_NET_WORTH:
-                netWorth = month->getNetWorth();
+                netWorth = month->getNetWorth( mFilter );
                 ( netWorth > 0 ) ? positiveValue = netWorth : negativeValue = netWorth;
                 break;
             }

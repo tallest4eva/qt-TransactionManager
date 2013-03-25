@@ -10,6 +10,7 @@
 #include <QSize>
 #include <QPoint>
 #include <QWidget>
+#include <QLabel>
 
 class QRubberBand;
 
@@ -18,11 +19,19 @@ class PieView : public QAbstractItemView
     Q_OBJECT
 
 public:
+    // Types
+    enum KeyPositionType
+    {
+        RIGHT,
+        BOTTOM
+    };
+
     PieView(QWidget *parent = 0);
 
     QRect visualRect(const QModelIndex &index) const;
     void scrollTo(const QModelIndex &index, ScrollHint hint = EnsureVisible);
     QModelIndex indexAt(const QPoint &point) const;
+    void setTitle( const QString& aTitle );
 
 protected slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -42,7 +51,6 @@ protected:
     void setSelection(const QRect&, QItemSelectionModel::SelectionFlags command);
 
     void mousePressEvent(QMouseEvent *event);
-
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 
@@ -58,13 +66,16 @@ private:
     int rows(const QModelIndex &index = QModelIndex()) const;
     void updateGeometries();
 
-    int margin;
-    int totalSize;
-    int pieSize;
-    int validItems;
-    double totalValue;
-    QPoint origin;
-    QRubberBand *rubberBand;
+    int mMargin;
+    int mTotalSize;
+    int mPieSize;
+    int mValidItems;
+    double mTotalValue;
+    QPoint mOrigin;
+    QRubberBand* mRubberBand;
+    double mStartAngle;
+    KeyPositionType mKeyPosition;
+    QLabel mTitle;
 };
 
 #endif

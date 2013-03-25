@@ -108,10 +108,18 @@ void TransactionManager::init()
     ui->reportAccountTab->layout()->addWidget( &mDebtsPieChart );
     ui->reportCategoryTab->layout()->addWidget( &mIncomePieChart );
     ui->reportCategoryTab->layout()->addWidget( &mExpensePieChart );
-    mAssetsPieChart.setModel( new ReportPieChartModel() );
-    mDebtsPieChart.setModel( new ReportPieChartModel() );
-    mIncomePieChart.setModel( new ReportPieChartModel() );
-    mExpensePieChart.setModel( new ReportPieChartModel() );
+    ReportPieChartModel* pModel = new ReportPieChartModel( ReportPieChartModel::ASSET_BY_ACCOUNT );
+    mAssetsPieChart.setModel( pModel );
+    pModel->setupPieView( &mAssetsPieChart );
+    pModel = new ReportPieChartModel( ReportPieChartModel::DEBT_BY_ACCOUNT );
+    mDebtsPieChart.setModel( pModel );
+    pModel->setupPieView( &mDebtsPieChart );
+    pModel = new ReportPieChartModel( ReportPieChartModel::INCOME_BY_CATEGORY );
+    mIncomePieChart.setModel( pModel );
+    pModel->setupPieView( &mIncomePieChart );
+    pModel = new ReportPieChartModel( ReportPieChartModel::EXPENSE_BY_CATEGORY );
+    mExpensePieChart.setModel( pModel );
+    pModel->setupPieView( &mExpensePieChart );
 
 } // TransactionManager::init()
 
@@ -432,7 +440,8 @@ void TransactionManager::initTransactionsTab()
     }
 
     // Init table
-    ui->transactionTableView->model()->setRowCount( 0 );
+    TransactionListModel* model = (TransactionListModel*)ui->transactionTableView->model();
+    model->clear();
     ui->transactionTableView->sortByColumn ( (int)TransactionListModel::HDR_NAME, Qt::AscendingOrder );
 
     // Update transaction table
@@ -453,6 +462,7 @@ void TransactionManager::updateTransactionsTab()
     }
     else
     {
+        mTransactionFilter = Transaction::FilterType();
         model->clear();
     }
 } // TransactionManager::updateTransactionsTab()
@@ -549,10 +559,38 @@ void TransactionManager::initReportsTab()
 //----------------------------------------------------------------------------
 void TransactionManager::updateReportsTab()
 {
-    mReportFilter = getTransactionFilter( REPORT_TAB );
-    mReportNetIncomeGraph.setTransactionFilter( mReportFilter );
-    mReportNetWorthGraph.setTransactionFilter( mReportFilter );
-    mReportTableView.setTransactionFilter( mReportFilter );
+    if( !mFileName.isEmpty() )
+    {
+        mReportFilter = getTransactionFilter( REPORT_TAB );
+        mReportNetIncomeGraph.setTransactionFilter( mReportFilter );
+        mReportNetWorthGraph.setTransactionFilter( mReportFilter );
+        mReportTableView.setTransactionFilter( mReportFilter );
+        ReportPieChartModel* model = NULL;
+        model = (ReportPieChartModel*)mAssetsPieChart.model();
+        model->setTransactionFilter( mReportFilter );
+        model = (ReportPieChartModel*)mDebtsPieChart.model();
+        model->setTransactionFilter( mReportFilter );
+        model = (ReportPieChartModel*)mIncomePieChart.model();
+        model->setTransactionFilter( mReportFilter );
+        model = (ReportPieChartModel*)mExpensePieChart.model();
+        model->setTransactionFilter( mReportFilter );
+    }
+    else
+    {
+        mReportFilter = Transaction::FilterType();
+        mReportNetIncomeGraph.clear();
+        mReportNetWorthGraph.clear();
+        mReportTableView.clear();
+        ReportPieChartModel* model = NULL;
+        model = (ReportPieChartModel*)mAssetsPieChart.model();
+        model->clear();
+        model = (ReportPieChartModel*)mDebtsPieChart.model();
+        model->clear();
+        model = (ReportPieChartModel*)mIncomePieChart.model();
+        model->clear();
+        model = (ReportPieChartModel*)mExpensePieChart.model();
+        model->clear();
+    }
 } // TransactionManager::updateReportsTab()
 
 //----------------------------------------------------------------------------

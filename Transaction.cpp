@@ -147,7 +147,6 @@ bool Transaction::matchTransaction( const FilterType& aFilter )
     // Match categories
     if( match && !aFilter.mAllCategories )
     {
-        match = false;
         match = aFilter.mCategoryList[(int)mCategory];
     }
 
@@ -164,6 +163,27 @@ bool Transaction::matchTransaction( const FilterType& aFilter )
     }
     return match;
 } // Transaction::matchTransaction
+
+//----------------------------------------------------------------------------
+// isIncomeOrExpense
+//----------------------------------------------------------------------------
+bool Transaction::isIncomeOrExpense()
+{
+    bool success = true;
+    switch( mCategory )
+    {
+    case Category::TRANSFER:
+    case Category::CREDIT_CARD_PAYMENT:
+    case Category::FAMILY_TRANSFER:
+    case Category::TRANSFER_FOR_CASH_SPENDING:
+    case Category::ACCOUNT_BALANCE:
+        success = false;
+        break;
+    default:
+        break;
+    }
+    return success;
+} // Transaction::isIncomeOrExpense()
 
 //----------------------------------------------------------------------------
 // Get Info
