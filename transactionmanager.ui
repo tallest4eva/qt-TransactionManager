@@ -275,15 +275,15 @@
               <enum>QFrame::Plain</enum>
              </property>
              <property name="currentIndex">
-              <number>3</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="transactionAccountToolBox">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>149</width>
-                <height>100</height>
+                <width>232</width>
+                <height>405</height>
                </rect>
               </property>
               <attribute name="label">
@@ -601,15 +601,15 @@
               <enum>QFrame::Plain</enum>
              </property>
              <property name="currentIndex">
-              <number>3</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="reportAccountToolBox">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>149</width>
-                <height>100</height>
+                <width>232</width>
+                <height>405</height>
                </rect>
               </property>
               <attribute name="label">
@@ -894,7 +894,24 @@
            <attribute name="toolTip">
             <string>Assets/Debts Pie Chart by Account</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_9"/>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QGroupBox" name="reportAssetGroupBox">
+              <property name="title">
+               <string>Assets by Account</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_13"/>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="reportDebtGroupBox">
+              <property name="title">
+               <string>Assets by Debt</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_14"/>
+             </widget>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="reportCategoryTab">
            <attribute name="title">
@@ -903,7 +920,24 @@
            <attribute name="toolTip">
             <string>Income/Expense Pie Chart by Category</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_10"/>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QGroupBox" name="reportIncomeGroupBox">
+              <property name="title">
+               <string>Income By Category</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_11"/>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="reportExpenseGroupBox">
+              <property name="title">
+               <string>Expense By Category</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_12"/>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>

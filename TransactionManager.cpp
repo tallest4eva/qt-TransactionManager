@@ -97,17 +97,19 @@ void TransactionManager::init()
     // Init graph
     mReportNetIncomeGraph.setGraphMode( GraphWidget::BAR_NET_INCOME );
     mReportNetWorthGraph.setGraphMode( GraphWidget::BAR_NET_WORTH );
-    connect( &mReportNetIncomeGraph, SIGNAL(dateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
-    connect( &mReportNetWorthGraph, SIGNAL(dateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
+    connect( &mReportNetIncomeGraph, SIGNAL(transactionDateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
+    connect( &mReportNetWorthGraph, SIGNAL(transactionDateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
+    connect( &mReportNetIncomeGraph, SIGNAL(reportDateSelected(QDate,QDate)), this, SLOT(handleShowReportByDate(QDate,QDate)) );
+    connect( &mReportNetWorthGraph, SIGNAL(reportDateSelected(QDate,QDate)), this, SLOT(handleShowReportByDate(QDate,QDate)) );
     ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
     ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
     
     // Init report
     ui->reportListTab->layout()->addWidget( &mReportTableView );
-    ui->reportAccountTab->layout()->addWidget( &mAssetsPieChart );
-    ui->reportAccountTab->layout()->addWidget( &mDebtsPieChart );
-    ui->reportCategoryTab->layout()->addWidget( &mIncomePieChart );
-    ui->reportCategoryTab->layout()->addWidget( &mExpensePieChart );
+    ui->reportAssetGroupBox->layout()->addWidget( &mAssetsPieChart );
+    ui->reportDebtGroupBox->layout()->addWidget( &mDebtsPieChart );
+    ui->reportIncomeGroupBox->layout()->addWidget( &mIncomePieChart );
+    ui->reportExpenseGroupBox->layout()->addWidget( &mExpensePieChart );
     ReportPieChartModel* pModel = new ReportPieChartModel( ReportPieChartModel::ASSET_BY_ACCOUNT );
     mAssetsPieChart.setModel( pModel );
     pModel->setupPieView( &mAssetsPieChart );
@@ -653,8 +655,27 @@ void TransactionManager::handleShowTransactionByDate( QDate aStartDate, QDate aE
     ui->transactionToolBox->setCurrentWidget( ui->transactionDateToolBox );
     ui->transactionStartDateEdit->setDate( aStartDate );
     ui->transactionEndDateEdit->setDate( aEndDate );
+    ui->transactionAllAccountsCheckBox->setCheckState( Qt::Checked );
+    on_transactionAllAccountsCheckBox_stateChanged( (int)Qt::Checked );
+    ui->transactionAllCategoriesCheckBox->setCheckState( Qt::Checked );
+    on_transactionAllCategoriesCheckBox_stateChanged( (int)Qt::Checked );
+    ui->transactionAllLabelsCheckBox->setCheckState( Qt::Checked );
+    on_transactionAllLabelsCheckBox_stateChanged( (int)Qt::Checked );
     on_transactionSelectButton_clicked();
 } // TransactionManager::handleShowTransactionByDate()
+
+//----------------------------------------------------------------------------
+// Handle Show Report By Date
+//----------------------------------------------------------------------------
+void TransactionManager::handleShowReportByDate( QDate aStartDate, QDate aEndDate )
+{
+    // Switch to report tab
+    ui->tabWidget->setCurrentWidget( ui->reportTab );
+    ui->reportToolBox->setCurrentWidget( ui->reportDateToolBox );
+    ui->reportStartDateEdit->setDate( aStartDate );
+    ui->reportEndDateEdit->setDate( aEndDate );
+    on_reportSelectButton_clicked();
+} // TransactionManager::handleShowReportByDate()
 
 //----------------------------------------------------------------------------
 // Button clicked

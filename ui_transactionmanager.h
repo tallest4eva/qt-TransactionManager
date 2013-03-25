@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'transactionmanager.ui'
 **
-** Created: Wed Mar 13 18:38:03 2013
+** Created: Mon Mar 25 15:06:33 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -145,8 +145,16 @@ public:
     QHBoxLayout *horizontalLayout_7;
     QWidget *reportAccountTab;
     QHBoxLayout *horizontalLayout_9;
+    QGroupBox *reportAssetGroupBox;
+    QHBoxLayout *horizontalLayout_13;
+    QGroupBox *reportDebtGroupBox;
+    QHBoxLayout *horizontalLayout_14;
     QWidget *reportCategoryTab;
     QHBoxLayout *horizontalLayout_10;
+    QGroupBox *reportIncomeGroupBox;
+    QHBoxLayout *horizontalLayout_11;
+    QGroupBox *reportExpenseGroupBox;
+    QHBoxLayout *horizontalLayout_12;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuHelp;
@@ -343,7 +351,7 @@ public:
         transactionToolBox->setFrameShadow(QFrame::Plain);
         transactionAccountToolBox = new QWidget();
         transactionAccountToolBox->setObjectName(QString::fromUtf8("transactionAccountToolBox"));
-        transactionAccountToolBox->setGeometry(QRect(0, 0, 149, 100));
+        transactionAccountToolBox->setGeometry(QRect(0, 0, 232, 405));
         verticalLayout_2 = new QVBoxLayout(transactionAccountToolBox);
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -535,7 +543,7 @@ public:
         reportToolBox->setFrameShadow(QFrame::Plain);
         reportAccountToolBox = new QWidget();
         reportAccountToolBox->setObjectName(QString::fromUtf8("reportAccountToolBox"));
-        reportAccountToolBox->setGeometry(QRect(0, 0, 149, 100));
+        reportAccountToolBox->setGeometry(QRect(0, 0, 232, 405));
         verticalLayout_8 = new QVBoxLayout(reportAccountToolBox);
         verticalLayout_8->setSpacing(6);
         verticalLayout_8->setContentsMargins(11, 11, 11, 11);
@@ -715,6 +723,24 @@ public:
         horizontalLayout_9->setSpacing(6);
         horizontalLayout_9->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        reportAssetGroupBox = new QGroupBox(reportAccountTab);
+        reportAssetGroupBox->setObjectName(QString::fromUtf8("reportAssetGroupBox"));
+        horizontalLayout_13 = new QHBoxLayout(reportAssetGroupBox);
+        horizontalLayout_13->setSpacing(6);
+        horizontalLayout_13->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
+
+        horizontalLayout_9->addWidget(reportAssetGroupBox);
+
+        reportDebtGroupBox = new QGroupBox(reportAccountTab);
+        reportDebtGroupBox->setObjectName(QString::fromUtf8("reportDebtGroupBox"));
+        horizontalLayout_14 = new QHBoxLayout(reportDebtGroupBox);
+        horizontalLayout_14->setSpacing(6);
+        horizontalLayout_14->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_14->setObjectName(QString::fromUtf8("horizontalLayout_14"));
+
+        horizontalLayout_9->addWidget(reportDebtGroupBox);
+
         reportDisplayTabWidget->addTab(reportAccountTab, QString());
         reportCategoryTab = new QWidget();
         reportCategoryTab->setObjectName(QString::fromUtf8("reportCategoryTab"));
@@ -722,6 +748,24 @@ public:
         horizontalLayout_10->setSpacing(6);
         horizontalLayout_10->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
+        reportIncomeGroupBox = new QGroupBox(reportCategoryTab);
+        reportIncomeGroupBox->setObjectName(QString::fromUtf8("reportIncomeGroupBox"));
+        horizontalLayout_11 = new QHBoxLayout(reportIncomeGroupBox);
+        horizontalLayout_11->setSpacing(6);
+        horizontalLayout_11->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
+
+        horizontalLayout_10->addWidget(reportIncomeGroupBox);
+
+        reportExpenseGroupBox = new QGroupBox(reportCategoryTab);
+        reportExpenseGroupBox->setObjectName(QString::fromUtf8("reportExpenseGroupBox"));
+        horizontalLayout_12 = new QHBoxLayout(reportExpenseGroupBox);
+        horizontalLayout_12->setSpacing(6);
+        horizontalLayout_12->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
+
+        horizontalLayout_10->addWidget(reportExpenseGroupBox);
+
         reportDisplayTabWidget->addTab(reportCategoryTab, QString());
 
         horizontalLayout_6->addWidget(reportDisplayTabWidget);
@@ -765,8 +809,8 @@ public:
         retranslateUi(TransactionManager);
 
         tabWidget->setCurrentIndex(0);
-        transactionToolBox->setCurrentIndex(3);
-        reportToolBox->setCurrentIndex(3);
+        transactionToolBox->setCurrentIndex(0);
+        reportToolBox->setCurrentIndex(0);
         reportDisplayTabWidget->setCurrentIndex(0);
 
 
@@ -847,8 +891,12 @@ public:
         reportDisplayTabWidget->setTabText(reportDisplayTabWidget->indexOf(reportNetWorthTab), QApplication::translate("TransactionManager", "Net Worth", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabToolTip(reportDisplayTabWidget->indexOf(reportNetWorthTab), QApplication::translate("TransactionManager", "Net Worth Bar Chart", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabText(reportDisplayTabWidget->indexOf(reportListTab), QApplication::translate("TransactionManager", "List", 0, QApplication::UnicodeUTF8));
+        reportAssetGroupBox->setTitle(QApplication::translate("TransactionManager", "Assets by Account", 0, QApplication::UnicodeUTF8));
+        reportDebtGroupBox->setTitle(QApplication::translate("TransactionManager", "Assets by Debt", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabText(reportDisplayTabWidget->indexOf(reportAccountTab), QApplication::translate("TransactionManager", "Assets/Debts by Account", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabToolTip(reportDisplayTabWidget->indexOf(reportAccountTab), QApplication::translate("TransactionManager", "Assets/Debts Pie Chart by Account", 0, QApplication::UnicodeUTF8));
+        reportIncomeGroupBox->setTitle(QApplication::translate("TransactionManager", "Income By Category", 0, QApplication::UnicodeUTF8));
+        reportExpenseGroupBox->setTitle(QApplication::translate("TransactionManager", "Expense By Category", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabText(reportDisplayTabWidget->indexOf(reportCategoryTab), QApplication::translate("TransactionManager", "Income/Expense by Category", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabToolTip(reportDisplayTabWidget->indexOf(reportCategoryTab), QApplication::translate("TransactionManager", "Income/Expense Pie Chart by Category", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(reportTab), QApplication::translate("TransactionManager", "Reports", 0, QApplication::UnicodeUTF8));

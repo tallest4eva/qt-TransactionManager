@@ -31,7 +31,6 @@ public:
     QRect visualRect(const QModelIndex &index) const;
     void scrollTo(const QModelIndex &index, ScrollHint hint = EnsureVisible);
     QModelIndex indexAt(const QPoint &point) const;
-    void setTitle( const QString& aTitle );
 
 protected slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -75,7 +74,7 @@ private:
     QRubberBand* mRubberBand;
     double mStartAngle;
     KeyPositionType mKeyPosition;
-    QLabel mTitle;
+    QSize mSize;
 };
 
 #endif

@@ -105,6 +105,7 @@ void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& a
 
     if( dataList.size() > 0 )
     {
+        qSort( dataList.begin(), dataList.end(), qGreater<PieDataType>() );
         setRowCount( dataList.size() );
         const int colorRange = 240;
         int step = (colorRange / dataList.size());
@@ -134,21 +135,6 @@ void ReportPieChartModel::setupPieView
     mPieView = aPieView;
     if( mPieView )
     {
-        switch( mChartType )
-        {
-        case ASSET_BY_ACCOUNT:
-            mPieView->setTitle( "Assets by Account" );
-            break;
-        case DEBT_BY_ACCOUNT:
-            mPieView->setTitle( "Assets by Debt" );
-            break;
-        case INCOME_BY_CATEGORY:
-            mPieView->setTitle( "Income by Category" );
-            break;
-        case EXPENSE_BY_CATEGORY:
-            mPieView->setTitle( "Expense by Category" );
-            break;
-        }
     }
 } // ReportPieChartModel::setupPieView
 

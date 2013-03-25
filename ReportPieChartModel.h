@@ -38,6 +38,7 @@ public:
         QString mName;
         float mValue;
         PieDataType(): mValue(0.0){}
+        bool operator< ( const PieDataType& aValue ) const { return( mValue < aValue.mValue ); }
     };
 
     // Functions

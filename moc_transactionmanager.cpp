@@ -1,13 +1,13 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'TransactionManager.h'
 **
-** Created: Tue Mar 12 16:49:45 2013
+** Created: Mon Mar 25 12:04:31 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "TransactionManager.h"
+#include "../../TransactionManager/TransactionManager.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'TransactionManager.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 63
@@ -23,7 +23,7 @@ static const uint qt_meta_data_TransactionManager[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      28,   14, // methods
+      29,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -59,6 +59,7 @@ static const uint qt_meta_data_TransactionManager[] = {
      990,  775,   19,   19, 0x08,
     1039,  775,   19,   19, 0x08,
     1104, 1084,   19,   19, 0x08,
+    1145, 1084,   19,   19, 0x08,
 
        0        // eod
 };
@@ -94,6 +95,7 @@ static const char qt_meta_stringdata_TransactionManager[] = {
     "on_reportAllLabelsCheckBox_stateChanged(int)\0"
     "aStartDate,aEndDate\0"
     "handleShowTransactionByDate(QDate,QDate)\0"
+    "handleShowReportByDate(QDate,QDate)\0"
 };
 
 void TransactionManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -130,6 +132,7 @@ void TransactionManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         case 25: _t->on_reportAllCategoriesCheckBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 26: _t->on_reportAllLabelsCheckBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 27: _t->handleShowTransactionByDate((*reinterpret_cast< QDate(*)>(_a[1])),(*reinterpret_cast< QDate(*)>(_a[2]))); break;
+        case 28: _t->handleShowReportByDate((*reinterpret_cast< QDate(*)>(_a[1])),(*reinterpret_cast< QDate(*)>(_a[2]))); break;
         default: ;
         }
     }
@@ -167,9 +170,9 @@ int TransactionManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 28)
+        if (_id < 29)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 28;
+        _id -= 29;
     }
     return _id;
 }

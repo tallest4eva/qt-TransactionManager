@@ -33,6 +33,7 @@ GraphWidget::GraphWidget(QWidget *parent) :
   , mPositiveHistogram( NULL )
   , mNegativeHistogram( NULL )
   , mDrag( false )
+  , mDataSet( false )
   , mRubberBand( NULL )
 {
     setBackgroundRole(QPalette::Base);
@@ -97,9 +98,6 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mDisplayTimer.setSingleShot( true );
     connect( &mDisplayTimer, SIGNAL(timeout()), this, SLOT(hideDisplayLabel()) );
     mRubberBand = new QRubberBand( QRubberBand::Rectangle, this );
-    //QPalette pal;
-    //pal.setBrush(QPalette::Highlight, QBrush(Qt::red));
-    //mRubberBand->setPalette( pal );    
 } // GraphWidget::GraphWidget
 
 //----------------------------------------------------------------------------
@@ -131,7 +129,7 @@ void GraphWidget::handleDisplayClicked()
 {
     hideDisplayLabel();
     QDate date = mDisplayLabel.getDate();
-    dateSelected( date, date.addMonths(1).addDays(-1) );
+    transactionDateSelected( date, date.addMonths(1).addDays(-1) );
 } // GraphWidget::handleDisplayClicked
 
 //----------------------------------------------------------------------------
@@ -141,10 +139,14 @@ void GraphWidget::mousePressEvent( QMouseEvent* aEvent )
 {
     mDrag = false;
     QWidget::mousePressEvent( aEvent );
-    QRectF rect = mPlot.plotLayout()->canvasRect();
-    mOrigin = QPoint( aEvent->x(), rect.y() );
-    mRubberBand->setGeometry( QRect( mOrigin, QSize(0,rect.height()) ) );
-    mRubberBand->show();
+
+    if( mDataSet )
+    {
+        QRectF rect = mPlot.plotLayout()->canvasRect();
+        mOrigin = QPoint( aEvent->x(), rect.y()+10 );
+        mRubberBand->setGeometry( QRect( mOrigin, QSize(0,rect.height()) ) );
+        mRubberBand->show();
+    }
 } // GraphWidget::mousePressEvent
 
 //----------------------------------------------------------------------------
@@ -154,7 +156,12 @@ void GraphWidget::mouseMoveEvent( QMouseEvent* aEvent )
 {
     mDrag = true;
     QWidget::mouseMoveEvent( aEvent );
-    mRubberBand->setGeometry( QRect(mOrigin, QSize(aEvent->x()-mOrigin.x(),height())) );
+
+    if( mDataSet )
+    {
+        QRectF rect = mRubberBand->rect();
+        mRubberBand->setGeometry( QRect(mOrigin, QSize( aEvent->x() - mOrigin.x(),rect.height() )) );
+    }
 } // GraphWidget::mouseMoveEvent
     
 //----------------------------------------------------------------------------
@@ -165,12 +172,21 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
     QWidget::mouseReleaseEvent( aEvent );
 
     mRubberBand->hide();
+    int offset = mPlot.plotLayout()->canvasRect().x()+10;
     if( mDrag )
     {
         mDrag = false;
-        QRectF rect = mPlot.plotLayout()->canvasRect();
-        int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - rect.x() );
-        QDate date = REFERENCE_DATE.addDays( dateVal-10 );
+        if( mDataSet )
+        {
+            int startDateVal = mPlot.invTransform( QwtPlot::xBottom, mOrigin.x() - offset );
+            QDate startDate = REFERENCE_DATE.addDays( startDateVal );
+            int endDateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
+            QDate endDate = REFERENCE_DATE.addDays( endDateVal );
+            if( endDate > startDate.addMonths(1) )
+            {
+                reportDateSelected( startDate, endDate );
+            }
+        }
         return;
     }
     
@@ -194,10 +210,9 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
         mDisplayLabel.hide();
 
         // Get point info
-        QRectF rect = mPlot.plotLayout()->canvasRect();
-        int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - rect.x() );
-        QDate date = REFERENCE_DATE.addDays( dateVal-10 );
-        QString ref = date.toString("yyyy-MM-dd");
+        int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
+        QDate date = REFERENCE_DATE.addDays( dateVal );
+        QString ref = date.toString("yyyy-MM-dd") + " " + QString::number( aEvent->x() - offset );
         mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
         for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
         {
@@ -263,6 +278,7 @@ void GraphWidget::clear()
     //mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
     mPositiveHistogram->setSamples( QVector<QwtIntervalSample>() );
     mNegativeHistogram->setSamples( QVector<QwtIntervalSample>() );
+    mDataSet = false;
 } // GraphWidget::clear
 
 //----------------------------------------------------------------------------
@@ -270,6 +286,7 @@ void GraphWidget::clear()
 //----------------------------------------------------------------------------
 void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
+    mDataSet = false;
     mFilter = aFilter;
     mStartDate = aFilter.mStartDate;
     mEndDate = aFilter.mEndDate;
@@ -339,6 +356,7 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
             // Set max values
             maxValue = ( positiveValue > maxValue ) ? positiveValue : maxValue;
             minValue = ( negativeValue < minValue ) ? negativeValue : minValue;
+            mDataSet = true;
         }
     }
 

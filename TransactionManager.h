@@ -84,6 +84,7 @@ private slots:
     void on_reportAllCategoriesCheckBox_stateChanged( int aCheckState );
     void on_reportAllLabelsCheckBox_stateChanged( int aCheckState );
     void handleShowTransactionByDate( QDate aStartDate, QDate aEndDate );
+    void handleShowReportByDate( QDate aStartDate, QDate aEndDate );
 
 private:
     // Functions

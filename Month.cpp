@@ -223,7 +223,6 @@ void Month::updateMonthList()
 
         for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
         {
-            Month* month = TransactionManager::mMonthList[i];
             TransactionManager::mMonthList[i]->updateData( (i > 0) ? TransactionManager::mMonthList[i-1]: NULL );
         }
     }

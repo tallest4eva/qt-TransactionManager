@@ -13,7 +13,8 @@ PieView::PieView(QWidget *parent)
    horizontalScrollBar()->setRange(0, 0);
    verticalScrollBar()->setRange(0, 0);
 
-   mMargin = 20;
+   mSize = QSize( 0, 0 );
+   mMargin = 15;
    mTotalSize = 300;
    mPieSize = mTotalSize - 2*mMargin;
    mValidItems = 0;
@@ -21,18 +22,6 @@ PieView::PieView(QWidget *parent)
    mRubberBand = 0;
    mStartAngle = 90.0;
    mKeyPosition = BOTTOM;
-   
-   // Setup title
-   mTitle.setParent( this );
-   QFont font;
-   font.setPointSize( 13 );
-   mTitle.setFont( font );
-   mTitle.move( 5, 5 );
-}
-
-void PieView::setTitle( const QString& aTitle )
-{
-    mTitle.setText( aTitle );
 }
 
 void PieView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -76,7 +65,8 @@ QModelIndex PieView::indexAt(const QPoint &point) const
     int wx = point.x() + horizontalScrollBar()->value();
     int wy = point.y() + verticalScrollBar()->value();
 
-    if (wx < mTotalSize) {
+    if (wx < mTotalSize)
+    {
         double cx = wx - mTotalSize/2;
         double cy = mTotalSize/2 - wy; // positive cy for items above the center
 
@@ -230,25 +220,25 @@ void PieView::mousePressEvent(QMouseEvent *event)
 {
     QAbstractItemView::mousePressEvent(event);
     mOrigin = event->pos();
-    if (!mRubberBand)
-        mRubberBand = new QRubberBand(QRubberBand::Rectangle, viewport());
-    mRubberBand->setGeometry(QRect(mOrigin, QSize()));
-    mRubberBand->show();
+    //if (!mRubberBand)
+    //    mRubberBand = new QRubberBand(QRubberBand::Rectangle, viewport());
+    //mRubberBand->setGeometry(QRect(mOrigin, QSize()));
+    //mRubberBand->show();
 }
 
 void PieView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (mRubberBand)
-        mRubberBand->setGeometry(QRect(mOrigin, event->pos()).normalized());
+    //if (mRubberBand)
+    //    mRubberBand->setGeometry(QRect(mOrigin, event->pos()).normalized());
     QAbstractItemView::mouseMoveEvent(event);
 }
 
 void PieView::mouseReleaseEvent(QMouseEvent *event)
 {
     QAbstractItemView::mouseReleaseEvent(event);
-    if (mRubberBand)
-        mRubberBand->hide();
-    viewport()->update();
+    //if (mRubberBand)
+    //    mRubberBand->hide();
+    //viewport()->update();
 }
 
 QModelIndex PieView::moveCursor(QAbstractItemView::CursorAction cursorAction,
@@ -291,7 +281,7 @@ void PieView::paintEvent(QPaintEvent *event)
         mTotalSize = rect().width()/2;
         break;
     case BOTTOM:
-        mTotalSize = rect().width();
+        mTotalSize = qMin( rect().width(), 300 );
         break;
     }
     mPieSize = mTotalSize - 2*mMargin;
@@ -364,6 +354,7 @@ void PieView::paintEvent(QPaintEvent *event)
                     option.state |= QStyle::State_HasFocus;
                 itemDelegate()->paint(&painter, option, labelIndex);
                 keyNumber++;
+                mSize.setHeight( qMax( mSize.height(), option.rect.bottom() ) );
             }
         }
     }
@@ -445,6 +436,7 @@ void PieView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlag
 {
     // Use content widget coordinates because we will use the itemRegion()
     // function to check for intersections.
+    return;
     QRect contentsRect = rect.translated(
                             horizontalScrollBar()->value(),
                             verticalScrollBar()->value()).normalized();
@@ -490,10 +482,10 @@ void PieView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlag
 
 void PieView::updateGeometries()
 {
-    horizontalScrollBar()->setPageStep(viewport()->width());
-    horizontalScrollBar()->setRange(0, qMax(0, 2*mTotalSize - viewport()->width()));
-    verticalScrollBar()->setPageStep(viewport()->height());
-    verticalScrollBar()->setRange(0, qMax(0, mTotalSize - viewport()->height()));
+    //horizontalScrollBar()->setPageStep( viewport()->width() );
+    //horizontalScrollBar()->setRange( 0, viewport()->width() );
+    verticalScrollBar()->setPageStep( viewport()->height() );
+    verticalScrollBar()->setRange(0, qMax(0, mSize.height() ));
 }
 
 int PieView::verticalOffset() const

@@ -68,7 +68,8 @@ public:
     void clear();
 
 signals:
-    void dateSelected( QDate aStartDate, QDate aEndDate );
+    void transactionDateSelected( QDate aStartDate, QDate aEndDate );
+    void reportDateSelected( QDate aStartDate, QDate aEndDate );
 
 private slots:
     void hideDisplayLabel();
@@ -90,6 +91,7 @@ private:
     QPoint mOrigin;
     QRubberBand* mRubberBand;
     bool mDrag;
+    bool mDataSet;
 
 };
 
