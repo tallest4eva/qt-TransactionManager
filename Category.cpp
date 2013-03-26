@@ -125,7 +125,7 @@ const Category::CategoryType Category::cCategoryList[] =
     { LOANS,                "Loans" },
     { LOANS,                "Loan Fees and Charges" },
     { LOANS,                "Loan Insurance" },
-    { LOANS,                "Laon Interest" },
+    { LOANS,                "Loan Interest" },
     { LOANS,                "Loan Payment" },
     { LOANS,                "Loan Principal" },
     

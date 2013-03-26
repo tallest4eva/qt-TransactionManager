@@ -92,11 +92,13 @@ void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& a
         {
             baseColor = ( mChartType == INCOME_BY_CATEGORY ) ? QColor(Qt::darkGreen).toHsv() : QColor(Qt::darkRed).toHsv();
             QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
+            QVector<float> categoryList( (int)Category::CATEGORY_TYPE_CNT, 0 );
             for( int i = 0; i < transactionList.size(); i++ )
             {
                 Transaction* transaction = transactionList[i];
                 if( transaction->isIncomeOrExpense() )
                 {
+                    //categoryList[ transaction->getCategory() ] += transaction
                 }
             }
         }

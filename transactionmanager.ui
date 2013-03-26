@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="overviewTab">
        <attribute name="title">
@@ -250,7 +250,7 @@
          <widget class="QWidget" name="transactionSelectWidget" native="true">
           <property name="minimumSize">
            <size>
-            <width>250</width>
+            <width>300</width>
             <height>0</height>
            </size>
           </property>
@@ -282,8 +282,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>232</width>
-                <height>405</height>
+                <width>282</width>
+                <height>370</height>
                </rect>
               </property>
               <attribute name="label">
@@ -518,6 +518,18 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="transactionAllButton">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Show All</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="transactionSelectButton">
              <property name="font">
               <font>
@@ -576,7 +588,7 @@
          <widget class="QWidget" name="reportSelectWidget" native="true">
           <property name="minimumSize">
            <size>
-            <width>250</width>
+            <width>300</width>
             <height>0</height>
            </size>
           </property>
@@ -608,8 +620,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>232</width>
-                <height>405</height>
+                <width>282</width>
+                <height>370</height>
                </rect>
               </property>
               <attribute name="label">
@@ -838,6 +850,18 @@
                </item>
               </layout>
              </widget>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="reportAllButton">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Show All</string>
+             </property>
             </widget>
            </item>
            <item>

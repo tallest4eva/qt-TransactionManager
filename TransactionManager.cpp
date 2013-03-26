@@ -75,11 +75,11 @@ void TransactionManager::init()
     ui->reportOpenAccountsCheckBox->setDisabled( true );
     for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
     {
-        QCheckBox* checkbox = new QCheckBox( Category::getCategoryText((Category::CategoryIdType)i), ui->transactionCategoriesGroupBox );
+        QCheckBox* checkbox = new QCheckBox( Category::getCategoryText( (Category::CategoryIdType)i, true ), ui->transactionCategoriesGroupBox );
         ui->transactionCategoriesGroupBox->layout()->addWidget( checkbox );
         mTransactionCategoriesCheckBoxList.push_back( checkbox );
 
-        checkbox = new QCheckBox( Category::getCategoryText((Category::CategoryIdType)i), ui->reportCategoriesGroupBox );
+        checkbox = new QCheckBox( Category::getCategoryText( (Category::CategoryIdType)i, true ), ui->reportCategoriesGroupBox );
         ui->reportCategoriesGroupBox->layout()->addWidget( checkbox );
         mReportCategoriesCheckBoxList.push_back( checkbox );
     }

@@ -177,6 +177,8 @@ bool Transaction::isIncomeOrExpense()
     case Category::FAMILY_TRANSFER:
     case Category::TRANSFER_FOR_CASH_SPENDING:
     case Category::ACCOUNT_BALANCE:
+    case Category::STUDENT_LOAN:
+    case Category::LOAN_PAYMENT:
         success = false;
         break;
     default:
