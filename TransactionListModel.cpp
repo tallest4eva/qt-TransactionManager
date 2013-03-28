@@ -119,7 +119,7 @@ void TransactionListModel::setupTableView
         mTableView->setColumnWidth( (int)HDR_AMOUNT, columnWidth );
         mTableView->setColumnWidth( (int)HDR_BALANCE, columnWidth );
         mTableView->setColumnWidth( (int)HDR_CATEGORY, columnWidth*2 );
-        mTableView->horizontalHeader()->setStretchLastSection( true );
+        //mTableView->horizontalHeader()->setStretchLastSection( true );
         mTableView->setSortingEnabled( true );
     }
 } // TransactionListModel::setupTableView

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1204</width>
+    <width>1234</width>
     <height>685</height>
    </rect>
   </property>
@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="overviewTab">
        <attribute name="title">
@@ -406,8 +406,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>232</width>
-                <height>405</height>
+                <width>221</width>
+                <height>255</height>
                </rect>
               </property>
               <attribute name="label">
@@ -744,8 +744,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>232</width>
-                <height>405</height>
+                <width>221</width>
+                <height>255</height>
                </rect>
               </property>
               <attribute name="label">
@@ -909,6 +909,9 @@
            <attribute name="title">
             <string>Report List</string>
            </attribute>
+           <attribute name="toolTip">
+            <string>Income/Expense/Net Worth List</string>
+           </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_7"/>
           </widget>
           <widget class="QWidget" name="reportAccountTab">
@@ -916,7 +919,7 @@
             <string>Assets/Debts by Account</string>
            </attribute>
            <attribute name="toolTip">
-            <string>Assets/Debts Pie Chart by Account</string>
+            <string>Assets/Debts Pie Charts by Account at End Date</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
@@ -942,7 +945,7 @@
             <string>Income/Expense by Parent Category</string>
            </attribute>
            <attribute name="toolTip">
-            <string>Income/Expense Pie Chart by Parent Category</string>
+            <string>Income/Expense Pie Charts by Parent Category at End Date</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
@@ -968,15 +971,15 @@
             <string>Income/Expense by Sub Category</string>
            </attribute>
            <attribute name="toolTip">
-            <string>Income/Expense Pie Chart by Sub Category</string>
+            <string>Income/Expense Pie Charst by Sub Category at End Date</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <layout class="QHBoxLayout" name="horizontalLayout_15">
             <item>
              <widget class="QGroupBox" name="reportIncomeSubGroupBox">
               <property name="title">
                <string>Income By Sub Category</string>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_14"/>
+              <layout class="QHBoxLayout" name="horizontalLayout_16"/>
              </widget>
             </item>
             <item>
@@ -984,7 +987,7 @@
               <property name="title">
                <string>Expense By Sub Category</string>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_15"/>
+              <layout class="QHBoxLayout" name="horizontalLayout_17"/>
              </widget>
             </item>
            </layout>
@@ -1002,7 +1005,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1204</width>
+     <width>1234</width>
      <height>18</height>
     </rect>
    </property>

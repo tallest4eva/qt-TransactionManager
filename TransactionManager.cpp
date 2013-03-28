@@ -108,10 +108,10 @@ void TransactionManager::init()
     ui->reportListTab->layout()->addWidget( &mReportTableView );
     ui->reportAssetGroupBox->layout()->addWidget( &mAssetsPieChart );
     ui->reportDebtGroupBox->layout()->addWidget( &mDebtsPieChart );
-    ui->reportIncomeGroupBox->layout()->addWidget( &mIncomeParentPieChart );
-    ui->reportExpenseGroupBox->layout()->addWidget( &mExpenseParentPieChart );
-    ui->reportIncomeGroupBox->layout()->addWidget( &mIncomeSubPieChart );
-    ui->reportExpenseGroupBox->layout()->addWidget( &mExpenseSubPieChart );
+    ui->reportIncomeParentGroupBox->layout()->addWidget( &mIncomeParentPieChart );
+    ui->reportExpenseParentGroupBox->layout()->addWidget( &mExpenseParentPieChart );
+    ui->reportIncomeSubGroupBox->layout()->addWidget( &mIncomeSubPieChart );
+    ui->reportExpenseSubGroupBox->layout()->addWidget( &mExpenseSubPieChart );
 
     mPieChartList.push_back( &mAssetsPieChart );
     mPieChartList.push_back( &mDebtsPieChart );

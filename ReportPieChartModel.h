@@ -39,7 +39,7 @@ public:
     ~ReportPieChartModel();
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void setupPieView( PieView* aPieView );
-    void setGroupCategories( bool aGroupCategories ){ mGroupCategories = aGroupCategories }
+    void setGroupCategories( bool aGroupCategories ){ mGroupCategories = aGroupCategories; }
     void clear();
 
 private:

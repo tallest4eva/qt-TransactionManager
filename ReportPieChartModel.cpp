@@ -42,6 +42,7 @@ void ReportPieChartModel::clear()
     setRowCount( 0 );
     if( mPieView )
     {
+        mPieView->updateViewport();
         mPieView->update();
     }
 } // ReportPieChartModel::clear
@@ -107,7 +108,7 @@ void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& a
             {
                 Transaction* transaction = transactionList[i];
                 Transaction::TransactionType transType = transaction->getTransactionType();
-                CategoryIdType category = transaction->getCategory();
+                Category::CategoryIdType category = transaction->getCategory();
                 if( mGroupCategories )
                 {
                     category = Category::getParentCategoryId( category );

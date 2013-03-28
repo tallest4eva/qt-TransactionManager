@@ -127,7 +127,6 @@ void GraphWidget::hideDisplayLabel()
 //----------------------------------------------------------------------------
 void GraphWidget::handleDisplayClicked()
 {
-    hideDisplayLabel();
     QDate date = mDisplayLabel.getDate();
     transactionDateSelected( date, date.addMonths(1).addDays(-1) );
 } // GraphWidget::handleDisplayClicked
@@ -190,7 +189,7 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
         return;
     }
     
-    if( mDisplayTimer.isActive() )
+    if( !mDisplayLabel.isHidden() )
     {
         hideDisplayLabel();
     }
@@ -212,32 +211,33 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
         // Get point info
         int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
         QDate date = REFERENCE_DATE.addDays( dateVal );
-        QString ref = date.toString("yyyy-MM-dd") + " " + QString::number( aEvent->x() - offset );
-        mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
-        for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+        if( mFilter.mStartDate <= date && mFilter.mEndDate >= date )
         {
-            Month* month = TransactionManager::mMonthList[i];
-            if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
+            mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
+            for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
             {
-                QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
-                str += "Income: <font color=\"green\">$" + QString::number( month->getIncome( mFilter ), 'f', 2 ) + "</font><br>";
-                str += "Expense: <font color=\"red\">$" + QString::number( month->getExpense( mFilter ), 'f', 2 ) + "</font><br>";
-                str += "Net Worth: ";
-                float netWorth = month->getNetWorth( mFilter );
-                if( netWorth != 0 )
+                Month* month = TransactionManager::mMonthList[i];
+                if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
                 {
-                    str += ( netWorth > 0 ) ? "<font color=\"green\">" : "<font color=\"red\">";
+                    QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
+                    str += "Income: <font color=\"green\">$" + QString::number( month->getIncome( mFilter ), 'f', 2 ) + "</font><br>";
+                    str += "Expense: <font color=\"red\">$" + QString::number( month->getExpense( mFilter ), 'f', 2 ) + "</font><br>";
+                    str += "Net Worth: ";
+                    float netWorth = month->getNetWorth( mFilter );
+                    if( netWorth != 0 )
+                    {
+                        str += ( netWorth > 0 ) ? "<font color=\"green\">" : "<font color=\"red\">";
+                    }
+                    str += "$" + QString::number( netWorth, 'f', 2 );
+                    if( netWorth != 0 )
+                    {
+                        str += "</font>";
+                    }
+                    str += "<center><font color=\"blue\">See Transactions</font></center>";
+                    mDisplayLabel.setText( str );
+                    mDisplayLabel.show();
+                    break;
                 }
-                str += "$" + QString::number( netWorth, 'f', 2 );
-                if( netWorth != 0 )
-                {
-                    str += "</font>";
-                }
-                str += "<center><font color=\"blue\">See Transactions</font></center>";
-                mDisplayLabel.setText( str );
-                mDisplayLabel.show();
-                mDisplayTimer.start( DISPLAY_LABEL_TIMOEUT );
-                break;
             }
         }
     }
@@ -294,7 +294,7 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
     // Setup date axis
     mFilter.mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
     mFilter.mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
-    if( mFilter.mStartDate < mFilter.mEndDate )
+    if( aFilter.mStartDate < aFilter.mEndDate )
     {
         int monthStep = 1;
         mFilter.mEndDate = mFilter.mEndDate.addMonths(1).addDays(-1);
