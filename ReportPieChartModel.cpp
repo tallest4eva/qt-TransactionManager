@@ -11,15 +11,20 @@
 #include "Account.h"
 #include "Month.h"
 
+static const int COLOR_RANGE = 260;
+static const int MAX_COLOR_STEP = 40;
+static QColor BASE_COLOR = QColor(140, 80, 230);
+
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
 ReportPieChartModel::ReportPieChartModel( PieChartType aChartType ):
     QStandardItemModel( 0, 0 ),
     mChartType( aChartType ),
-    mPieView( NULL )
+    mPieView( NULL ),
+    mGroupCategories( false )
 {
-    setColumnCount( COLUMN_CNT );
+    setColumnCount( PieView::COLUMN_CNT );
 } // ReportPieChartModel::ReportPieChartModel
 
 //----------------------------------------------------------------------------
@@ -46,15 +51,16 @@ void ReportPieChartModel::clear()
 //----------------------------------------------------------------------------
 void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    QColor baseColor;
+    QColor baseColor = BASE_COLOR.toHsv();
+    QColor secondaryLabelColor;
     QList<PieDataType> dataList;
     switch( mChartType )
     {
     case ASSET_BY_ACCOUNT:
     case DEBT_BY_ACCOUNT:
         {
-            baseColor = ( mChartType == ASSET_BY_ACCOUNT ) ? QColor(Qt::darkGreen).toHsv() : QColor(Qt::darkRed).toHsv();
-            baseColor = QColor(0x8A, 0x56, 0xE2);
+            //baseColor = ( mChartType == ASSET_BY_ACCOUNT ) ? QColor(Qt::green).toHsv() : QColor(Qt::red).toHsv();
+            secondaryLabelColor = ( mChartType == ASSET_BY_ACCOUNT ) ? QColor(Qt::green) : QColor(Qt::red);
             Month* month = Month::getMonth( aFilter.mEndDate );
             if( month )
             {
@@ -90,27 +96,51 @@ void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& a
     case INCOME_BY_CATEGORY:
     case EXPENSE_BY_CATEGORY:
         {
-            baseColor = ( mChartType == INCOME_BY_CATEGORY ) ? QColor(Qt::darkGreen).toHsv() : QColor(Qt::darkRed).toHsv();
-            QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
+            //baseColor = ( mChartType == INCOME_BY_CATEGORY ) ? QColor(Qt::darkGreen).toHsv() : QColor(Qt::darkRed).toHsv();
+            secondaryLabelColor = ( mChartType == INCOME_BY_CATEGORY ) ? QColor(Qt::green) : QColor(Qt::red);
+            Transaction::FilterType filter = aFilter;
+            //filter.mStartDate.setDate( filter.mStartDate.year(), filter.mStartDate.month(), 1 );
+            //filter.mEndDate = filter.mEndDate.addMonths(1).addDays(-1);
+            QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, filter );
             QVector<float> categoryList( (int)Category::CATEGORY_TYPE_CNT, 0 );
             for( int i = 0; i < transactionList.size(); i++ )
             {
                 Transaction* transaction = transactionList[i];
-                if( transaction->isIncomeOrExpense() )
+                Transaction::TransactionType transType = transaction->getTransactionType();
+                CategoryIdType category = transaction->getCategory();
+                if( mGroupCategories )
                 {
-                    //categoryList[ transaction->getCategory() ] += transaction
+                    category = Category::getParentCategoryId( category );
+                }
+                if( transType == Transaction::INCOME && mChartType == INCOME_BY_CATEGORY )
+                {
+                    categoryList[(int)category] += transaction->getAmount();
+                }
+                else if( transType == Transaction::EXPENSE && mChartType == EXPENSE_BY_CATEGORY )
+                {
+                    categoryList[(int)category] -= transaction->getAmount();
+                }
+            }
+            for( int i = 0; i < categoryList.size(); i++ )
+            {
+                if( categoryList[i] > 0 )
+                {
+                    PieDataType data;
+                    data.mName = Category::getCategoryText( (Category::CategoryIdType)i, true );
+                    data.mValue = categoryList[i];
+                    dataList.push_back( data );
                 }
             }
         }
         break;
     }
 
+    setRowCount( dataList.size() );
     if( dataList.size() > 0 )
     {
         qSort( dataList.begin(), dataList.end(), qGreater<PieDataType>() );
-        setRowCount( dataList.size() );
-        const int colorRange = 240;
-        int step = (colorRange / dataList.size());
+        const int colorRange = COLOR_RANGE;
+        int step = qMin( MAX_COLOR_STEP, (colorRange / dataList.size()) );
         int h = baseColor.hue();
         int s = baseColor.saturation();
         int v = baseColor.value();
@@ -119,10 +149,17 @@ void ReportPieChartModel::setTransactionFilter( const Transaction::FilterType& a
             QColor nextColor;
             int newH = (h + step*i)%colorRange;
             nextColor.setHsv( newH, s, v );
-            setData( index(i,(int)COLUMN_NAME), dataList[i].mName );
-            setData( index(i,(int)COLUMN_NAME), nextColor, Qt::DecorationRole );
-            setData( index(i,(int)COLUMN_VALUE), dataList[i].mValue );
+            setData( index(i,(int)PieView::COLUMN_LABEL), dataList[i].mName );
+            setData( index(i,(int)PieView::COLUMN_LABEL), nextColor, Qt::DecorationRole );
+            setData( index(i,(int)PieView::COLUMN_VALUE), dataList[i].mValue );
+            setData( index(i,(int)PieView::COLUMN_SEC_LABEL), "$" + QString::number(dataList[i].mValue, 'f', 2 ) );
+            setData( index(i,(int)PieView::COLUMN_SEC_LABEL), secondaryLabelColor, Qt::DecorationRole );
         }
+    }
+    if( mPieView )
+    {
+        mPieView->updateViewport();
+        mPieView->update();
     }
 } // ReportPieChartModel::setTransactionFilter
 
@@ -135,8 +172,5 @@ void ReportPieChartModel::setupPieView
     )
 {
     mPieView = aPieView;
-    if( mPieView )
-    {
-    }
 } // ReportPieChartModel::setupPieView
 

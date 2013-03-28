@@ -20,10 +20,13 @@ class PieView : public QAbstractItemView
 
 public:
     // Types
-    enum KeyPositionType
+    enum ColumnType
     {
-        RIGHT,
-        BOTTOM
+        COLUMN_LABEL,
+        COLUMN_VALUE,
+        COLUMN_SEC_LABEL,
+
+        COLUMN_CNT
     };
 
     PieView(QWidget *parent = 0);
@@ -31,6 +34,7 @@ public:
     QRect visualRect(const QModelIndex &index) const;
     void scrollTo(const QModelIndex &index, ScrollHint hint = EnsureVisible);
     QModelIndex indexAt(const QPoint &point) const;
+    void updateViewport();
 
 protected slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -73,7 +77,6 @@ private:
     QPoint mOrigin;
     QRubberBand* mRubberBand;
     double mStartAngle;
-    KeyPositionType mKeyPosition;
     QSize mSize;
 };
 

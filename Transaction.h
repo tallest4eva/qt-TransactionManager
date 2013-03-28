@@ -18,11 +18,18 @@ class Transaction
 {
 public:
     // Types
-    enum TransactionType
+    enum Type
     {
         TRANSACTION_DEBIT,
         TRANSACTION_CREDIT,
         TRANSACTION_INVALID
+    };
+    enum TransactionType
+    {
+        INCOME,
+        EXPENSE,
+        TRANSFER,
+        INVALID
     };
     struct FilterType
     {
@@ -57,8 +64,9 @@ public:
     QString getDescription() const { return mDescription; }
     void  setDescription( const QString& aDescription ){ mDescription = aDescription; }
     void  setOriginalDescription( const QString& aOriginalDescription ){ mOriginalDescription = aOriginalDescription; }
-    TransactionType getType(){ return mType; }
-    void  setType( TransactionType aType ){ mType = aType; }
+    Type getType() const { return mType; }
+    void  setType( Type aType ){ mType = aType; }
+    TransactionType getTransactionType() const;
     float getAmount() const { return mAmount; }
     void  setAmount( float aAmount ){ mAmount = aAmount; }
     float getCurrentBalance() const { return mCurrentBalance; }
@@ -90,7 +98,7 @@ private:
     int mNumber;
     QString mDescription;
     QString mOriginalDescription;
-    TransactionType mType;
+    Type mType;
     float mAmount;
     float mCurrentBalance;
     Category::CategoryIdType mCategory;

@@ -165,11 +165,11 @@ bool Transaction::matchTransaction( const FilterType& aFilter )
 } // Transaction::matchTransaction
 
 //----------------------------------------------------------------------------
-// isIncomeOrExpense
+// getTransactionType
 //----------------------------------------------------------------------------
-bool Transaction::isIncomeOrExpense()
+Transaction::TransactionType Transaction::getTransactionType() const
 {
-    bool success = true;
+    TransactionType transType = INVALID;
     switch( mCategory )
     {
     case Category::TRANSFER:
@@ -179,13 +179,39 @@ bool Transaction::isIncomeOrExpense()
     case Category::ACCOUNT_BALANCE:
     case Category::STUDENT_LOAN:
     case Category::LOAN_PAYMENT:
-        success = false;
+    case Category::STOCK_PURCHASE:
+    case Category::STOCK_SALE:
+        transType = TRANSFER;
+        break;
+    case Category::INCOME:
+    case Category::BONUS:
+    case Category::INTEREST_INCOME:
+    case Category::MISC_INCOME:
+    case Category::PAYCHECK:
+    case Category::REIMBURSEMENT:
+    case Category::RENTAL_INCOME:
+    case Category::RETURNED_PURCHASE:
+    case Category::REWARDS_INCOME:
+    case Category::TAX_REFUND:
+    case Category::FAMILY_INCOME:
+    case Category::DIVIDEND_AND_CAP_GAINS:
+    case Category::RETIREMENT_DEPOSIT:
+    case Category::RETIREMENT_DIVIDENDS:
+        transType = INCOME;
+        break;
+    case Category::UNCATEGORIZED:
+    case Category::CASH_AND_ATM:
+    case Category::CHECK:
+    case Category::FAMILY_LOAN:
+    case Category::PERSONAL_LOAN:
+        transType = ( mAmount >= 0 ) ? INCOME : EXPENSE;
         break;
     default:
+        transType = EXPENSE;
         break;
     }
-    return success;
-} // Transaction::isIncomeOrExpense()
+    return transType;
+} // Transaction::getTransactionType()
 
 //----------------------------------------------------------------------------
 // Get Info

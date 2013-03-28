@@ -130,7 +130,7 @@ public:
         LOANS,
         LOAN_FEES_AND_CHARGES,
         LOAN_INSURANCE,
-        LAON_INTEREST,
+        LOAN_INTEREST,
         LOAN_PAYMENT,
         LOAN_PRINCIPAL,
         
@@ -158,6 +158,7 @@ public:
         PROPERTY_TAX,
         SALES_TAX,
         STATE_TAX,
+        TAX_REFUND,
         
         TRANSFER,
         CREDIT_CARD_PAYMENT,
@@ -204,6 +205,10 @@ public:
     static CategoryIdType getCategoryId
         (
         const QString& aCategory
+        );
+    static CategoryIdType getParentCategoryId
+        (
+        CategoryIdType aCategoryId
         );
     static QString getCategoryText
         (

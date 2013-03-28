@@ -78,8 +78,6 @@ private slots:
 private:
     // Date graph widget
     BarChartType mGraphMode;
-    QDate mStartDate;
-    QDate mEndDate;
     QwtPlot mPlot;
     QwtPlotGrid* mGrid;
     QwtPlotCurve* mIncomeCurve;

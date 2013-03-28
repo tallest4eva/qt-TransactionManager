@@ -37,8 +37,6 @@ GraphWidget::GraphWidget(QWidget *parent) :
   , mRubberBand( NULL )
 {
     setBackgroundRole(QPalette::Base);
-    mStartDate.setDate( 2000, 1, 1 );
-    mEndDate.setDate( 2001, 1, 1 );
 
     // Create graph
     mPlot.setCanvasBackground( QColor(Qt::white) );
@@ -98,6 +96,8 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mDisplayTimer.setSingleShot( true );
     connect( &mDisplayTimer, SIGNAL(timeout()), this, SLOT(hideDisplayLabel()) );
     mRubberBand = new QRubberBand( QRubberBand::Rectangle, this );
+    
+    clear();
 } // GraphWidget::GraphWidget
 
 //----------------------------------------------------------------------------
@@ -271,13 +271,14 @@ void GraphWidget::setGraphMode( BarChartType aGraphMode )
 void GraphWidget::clear()
 {
     mFilter = Transaction::FilterType();
-    mStartDate.setDate( 2000, 1, 1 );
-    mEndDate.setDate( 2001, 1, 1 );
-    mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mStartDate), REFERENCE_DATE.daysTo(mEndDate), 30.416 );
+    mFilter.mStartDate.setDate( 2000, 1, 1 );
+    mFilter.mEndDate.setDate( 2001, 1, 1 );
+    mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mFilter.mStartDate), REFERENCE_DATE.daysTo(mFilter.mEndDate), 30.416 );
     mPlot.setAxisScale( QwtPlot::yLeft, -1000, 1000 );
-    //mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
+    mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
     mPositiveHistogram->setSamples( QVector<QwtIntervalSample>() );
     mNegativeHistogram->setSamples( QVector<QwtIntervalSample>() );
+    mPlot.replot();
     mDataSet = false;
 } // GraphWidget::clear
 
@@ -288,30 +289,28 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
     mDataSet = false;
     mFilter = aFilter;
-    mStartDate = aFilter.mStartDate;
-    mEndDate = aFilter.mEndDate;
     hideDisplayLabel();
 
     // Setup date axis
-    mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
-    mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
-    if( mStartDate < mEndDate )
+    mFilter.mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
+    mFilter.mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
+    if( mFilter.mStartDate < mFilter.mEndDate )
     {
-        mEndDate = mEndDate.addMonths(1);
         int monthStep = 1;
-        if( mStartDate.daysTo(mEndDate) > 365*7 )
+        mFilter.mEndDate = mFilter.mEndDate.addMonths(1).addDays(-1);
+        if( mFilter.mStartDate.daysTo(mFilter.mEndDate) > 365*7 )
         {
             monthStep = 12;
         }
-        else if( mStartDate.daysTo(mEndDate) > 365*3 )
+        else if( mFilter.mStartDate.daysTo(mFilter.mEndDate) > 365*3 )
         {
             monthStep = 6;
         }
-        else if( mStartDate.daysTo(mEndDate) > 365*1.5 )
+        else if( mFilter.mStartDate.daysTo(mFilter.mEndDate) > 365*1.5 )
         {
             monthStep = 2;
         }
-        mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mStartDate), REFERENCE_DATE.daysTo(mEndDate), 30.416*monthStep );
+        mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mFilter.mStartDate), REFERENCE_DATE.daysTo(mFilter.mEndDate), 30.416*monthStep );
         mPlot.updateAxes();
     }
 
@@ -326,7 +325,7 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
     {
         // Date
         Month* month = TransactionManager::mMonthList[i];
-        if( mStartDate <= month->getDate() && mEndDate > month->getDate() )
+        if( mFilter.mStartDate <= month->getDate() && mFilter.mEndDate >= month->getDate() )
         {
             float startDay = REFERENCE_DATE.daysTo(month->getDate()) + 2;
             float endDay = startDay + month->getDate().daysInMonth() - 4;
@@ -361,7 +360,7 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
     }
 
     mPlot.setAxisScale( QwtPlot::yLeft, minValue*1.20, maxValue*1.20 );
-    //mIncomeCurve->setSamples( curveXSamples, curveYSamples );
+    ( positiveSamples.size() < 15 ) ? mIncomeCurve->setSamples( curveXSamples, curveYSamples ) : mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
     mPositiveHistogram->setSamples( positiveSamples );
     mNegativeHistogram->setSamples( negativeSamples );
     mPlot.replot();

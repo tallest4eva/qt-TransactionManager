@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'transactionmanager.ui'
 **
-** Created: Tue Mar 26 18:00:19 2013
+** Created: Wed Mar 27 14:23:55 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -73,6 +73,7 @@ public:
     QHBoxLayout *horizontalLayout_5;
     QWidget *transactionSelectWidget;
     QVBoxLayout *verticalLayout_14;
+    QPushButton *transactionAllButton;
     QToolBox *transactionToolBox;
     QWidget *transactionAccountToolBox;
     QVBoxLayout *verticalLayout_2;
@@ -101,13 +102,13 @@ public:
     QPushButton *transactionDate5YearButton;
     QPushButton *transactionDate10YearButton;
     QPushButton *transactionDateAllTimeButton;
-    QPushButton *transactionAllButton;
     QPushButton *transactionSelectButton;
     QTableView *transactionTableView;
     QWidget *reportTab;
     QHBoxLayout *horizontalLayout_6;
     QWidget *reportSelectWidget;
     QVBoxLayout *verticalLayout_15;
+    QPushButton *reportAllButton;
     QToolBox *reportToolBox;
     QWidget *reportAccountToolBox;
     QVBoxLayout *verticalLayout_8;
@@ -136,7 +137,6 @@ public:
     QPushButton *reportDate5YearButton;
     QPushButton *reportDate10YearButton;
     QPushButton *reportDateAllTimeButton;
-    QPushButton *reportAllButton;
     QPushButton *reportSelectButton;
     QTabWidget *reportDisplayTabWidget;
     QWidget *reportNetIncomeTab;
@@ -346,6 +346,12 @@ public:
         verticalLayout_14->setSpacing(6);
         verticalLayout_14->setContentsMargins(11, 11, 11, 11);
         verticalLayout_14->setObjectName(QString::fromUtf8("verticalLayout_14"));
+        transactionAllButton = new QPushButton(transactionSelectWidget);
+        transactionAllButton->setObjectName(QString::fromUtf8("transactionAllButton"));
+        transactionAllButton->setFont(font2);
+
+        verticalLayout_14->addWidget(transactionAllButton);
+
         transactionToolBox = new QToolBox(transactionSelectWidget);
         transactionToolBox->setObjectName(QString::fromUtf8("transactionToolBox"));
         transactionToolBox->setFont(font2);
@@ -500,12 +506,6 @@ public:
 
         verticalLayout_14->addWidget(transactionToolBox);
 
-        transactionAllButton = new QPushButton(transactionSelectWidget);
-        transactionAllButton->setObjectName(QString::fromUtf8("transactionAllButton"));
-        transactionAllButton->setFont(font2);
-
-        verticalLayout_14->addWidget(transactionAllButton);
-
         transactionSelectButton = new QPushButton(transactionSelectWidget);
         transactionSelectButton->setObjectName(QString::fromUtf8("transactionSelectButton"));
         transactionSelectButton->setFont(font2);
@@ -544,6 +544,12 @@ public:
         verticalLayout_15->setSpacing(6);
         verticalLayout_15->setContentsMargins(11, 11, 11, 11);
         verticalLayout_15->setObjectName(QString::fromUtf8("verticalLayout_15"));
+        reportAllButton = new QPushButton(reportSelectWidget);
+        reportAllButton->setObjectName(QString::fromUtf8("reportAllButton"));
+        reportAllButton->setFont(font2);
+
+        verticalLayout_15->addWidget(reportAllButton);
+
         reportToolBox = new QToolBox(reportSelectWidget);
         reportToolBox->setObjectName(QString::fromUtf8("reportToolBox"));
         reportToolBox->setFont(font2);
@@ -692,12 +698,6 @@ public:
 
         verticalLayout_15->addWidget(reportToolBox);
 
-        reportAllButton = new QPushButton(reportSelectWidget);
-        reportAllButton->setObjectName(QString::fromUtf8("reportAllButton"));
-        reportAllButton->setFont(font2);
-
-        verticalLayout_15->addWidget(reportAllButton);
-
         reportSelectButton = new QPushButton(reportSelectWidget);
         reportSelectButton->setObjectName(QString::fromUtf8("reportSelectButton"));
         reportSelectButton->setFont(font2);
@@ -822,7 +822,7 @@ public:
 
         retranslateUi(TransactionManager);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(1);
         transactionToolBox->setCurrentIndex(0);
         reportToolBox->setCurrentIndex(0);
         reportDisplayTabWidget->setCurrentIndex(0);
@@ -855,6 +855,7 @@ public:
         overviewLastDateLabel->setText(QApplication::translate("TransactionManager", "Date of Last Transaction:", 0, QApplication::UnicodeUTF8));
         overviewLastDateValue->setText(QApplication::translate("TransactionManager", "TextLabel", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(overviewTab), QApplication::translate("TransactionManager", "Overview", 0, QApplication::UnicodeUTF8));
+        transactionAllButton->setText(QApplication::translate("TransactionManager", "Show All", 0, QApplication::UnicodeUTF8));
         transactionAllAccountsCheckBox->setText(QApplication::translate("TransactionManager", "All Acounts", 0, QApplication::UnicodeUTF8));
         transactionOpenAccountsCheckBox->setText(QApplication::translate("TransactionManager", "Open Accounts", 0, QApplication::UnicodeUTF8));
         transactionAccountGroupBox->setTitle(QString());
@@ -876,9 +877,9 @@ public:
         transactionDate10YearButton->setText(QApplication::translate("TransactionManager", "10 Years", 0, QApplication::UnicodeUTF8));
         transactionDateAllTimeButton->setText(QApplication::translate("TransactionManager", "All Time", 0, QApplication::UnicodeUTF8));
         transactionToolBox->setItemText(transactionToolBox->indexOf(transactionDateToolBox), QApplication::translate("TransactionManager", "Date", 0, QApplication::UnicodeUTF8));
-        transactionAllButton->setText(QApplication::translate("TransactionManager", "Show All", 0, QApplication::UnicodeUTF8));
         transactionSelectButton->setText(QApplication::translate("TransactionManager", "Update", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(transactionsTab), QApplication::translate("TransactionManager", "Transactions", 0, QApplication::UnicodeUTF8));
+        reportAllButton->setText(QApplication::translate("TransactionManager", "Show All", 0, QApplication::UnicodeUTF8));
         reportAllAccountsCheckBox->setText(QApplication::translate("TransactionManager", "All Acounts", 0, QApplication::UnicodeUTF8));
         reportOpenAccountsCheckBox->setText(QApplication::translate("TransactionManager", "Open Accounts", 0, QApplication::UnicodeUTF8));
         reportAccountGroupBox->setTitle(QString());
@@ -900,7 +901,6 @@ public:
         reportDate10YearButton->setText(QApplication::translate("TransactionManager", "10 Years", 0, QApplication::UnicodeUTF8));
         reportDateAllTimeButton->setText(QApplication::translate("TransactionManager", "All Time", 0, QApplication::UnicodeUTF8));
         reportToolBox->setItemText(reportToolBox->indexOf(reportDateToolBox), QApplication::translate("TransactionManager", "Date", 0, QApplication::UnicodeUTF8));
-        reportAllButton->setText(QApplication::translate("TransactionManager", "Show All", 0, QApplication::UnicodeUTF8));
         reportSelectButton->setText(QApplication::translate("TransactionManager", "Update", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabText(reportDisplayTabWidget->indexOf(reportNetIncomeTab), QApplication::translate("TransactionManager", "Net Income", 0, QApplication::UnicodeUTF8));
         reportDisplayTabWidget->setTabToolTip(reportDisplayTabWidget->indexOf(reportNetIncomeTab), QApplication::translate("TransactionManager", "Income/Expense Bar Chart", 0, QApplication::UnicodeUTF8));

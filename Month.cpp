@@ -67,7 +67,7 @@ float Month::getIncome( const Transaction::FilterType& aFilter ) const
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         Transaction* transaction = mTransactionList[i];
-        if( transaction->isIncomeOrExpense() && transaction->getAmount() >= 0 && transaction->matchTransaction( aFilter ) )
+        if( transaction->getTransactionType() == Transaction::INCOME && transaction->matchTransaction( aFilter ) )
         {
             income += transaction->getAmount();
         }
@@ -88,7 +88,7 @@ float Month::getExpense( const Transaction::FilterType& aFilter ) const
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         Transaction* transaction = mTransactionList[i];
-        if( transaction->isIncomeOrExpense() && transaction->getAmount() < 0 && transaction->matchTransaction( aFilter ) )
+        if( transaction->getTransactionType() == Transaction::EXPENSE && transaction->matchTransaction( aFilter ) )
         {
             expense += transaction->getAmount();
         }
@@ -184,16 +184,15 @@ void Month::updateData( Month* aPreviousMonth )
             }
 
             // Skip excluded transfer categories
-            if( transaction->isIncomeOrExpense() )
+            Transaction::TransactionType transType = transaction->getTransactionType();
+            switch( transType )
             {
-                if( transaction->getAmount() >= 0 )
-                {
-                    mIncome += transaction->getAmount();
-                }
-                else
-                {
-                    mExpense += transaction->getAmount();
-                }
+            case Transaction::INCOME:
+                mIncome += transaction->getAmount();
+                break;
+            case Transaction::EXPENSE:
+                mExpense += transaction->getAmount();
+                break;
             }
         }
      }

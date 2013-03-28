@@ -17,13 +17,6 @@ class ReportPieChartModel : public QStandardItemModel
 
 public:
     // Types
-    enum ColumnType
-    {
-        COLUMN_NAME,
-        COLUMN_VALUE,
-
-        COLUMN_CNT
-    };
     enum PieChartType
     {
         ASSET_BY_ACCOUNT,
@@ -46,6 +39,7 @@ public:
     ~ReportPieChartModel();
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void setupPieView( PieView* aPieView );
+    void setGroupCategories( bool aGroupCategories ){ mGroupCategories = aGroupCategories }
     void clear();
 
 private:
@@ -54,6 +48,7 @@ private:
     // Variables
     PieChartType mChartType;
     PieView* mPieView;
+    bool mGroupCategories;
 };
 
 #endif // ReportPieChartModel_H

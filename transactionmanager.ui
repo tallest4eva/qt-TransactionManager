@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="overviewTab">
        <attribute name="title">
@@ -261,6 +261,18 @@
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_14">
+           <item>
+            <widget class="QPushButton" name="transactionAllButton">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Show All</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QToolBox" name="transactionToolBox">
              <property name="font">
@@ -518,18 +530,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="transactionAllButton">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Show All</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="transactionSelectButton">
              <property name="font">
               <font>
@@ -599,6 +599,18 @@
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_15">
+           <item>
+            <widget class="QPushButton" name="reportAllButton">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Show All</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QToolBox" name="reportToolBox">
              <property name="font">
@@ -853,18 +865,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="reportAllButton">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Show All</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="reportSelectButton">
              <property name="font">
               <font>
@@ -907,7 +907,7 @@
           </widget>
           <widget class="QWidget" name="reportListTab">
            <attribute name="title">
-            <string>List</string>
+            <string>Report List</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_7"/>
           </widget>
@@ -939,26 +939,52 @@
           </widget>
           <widget class="QWidget" name="reportCategoryTab">
            <attribute name="title">
-            <string>Income/Expense by Category</string>
+            <string>Income/Expense by Parent Category</string>
            </attribute>
            <attribute name="toolTip">
-            <string>Income/Expense Pie Chart by Category</string>
+            <string>Income/Expense Pie Chart by Parent Category</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QGroupBox" name="reportIncomeGroupBox">
+             <widget class="QGroupBox" name="reportIncomeParentGroupBox">
               <property name="title">
-               <string>Income By Category</string>
+               <string>Income By Parent Category</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_11"/>
              </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="reportExpenseGroupBox">
+             <widget class="QGroupBox" name="reportExpenseParentGroupBox">
               <property name="title">
-               <string>Expense By Category</string>
+               <string>Expense By Parent Category</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_12"/>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="reportSubCategoryTab">
+           <attribute name="title">
+            <string>Income/Expense by Sub Category</string>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Income/Expense Pie Chart by Sub Category</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QGroupBox" name="reportIncomeSubGroupBox">
+              <property name="title">
+               <string>Income By Sub Category</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_14"/>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="reportExpenseSubGroupBox">
+              <property name="title">
+               <string>Expense By Sub Category</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_15"/>
              </widget>
             </item>
            </layout>

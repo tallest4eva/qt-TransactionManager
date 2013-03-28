@@ -71,11 +71,13 @@ private slots:
     void on_transactionDate5YearButton_clicked();
     void on_transactionDate10YearButton_clicked();
     void on_transactionDateAllTimeButton_clicked();
+    void on_transactionAllButton_clicked();
     void on_reportDateThisYearButton_clicked();
     void on_reportDate1YearButton_clicked();
     void on_reportDate5YearButton_clicked();
     void on_reportDate10YearButton_clicked();
     void on_reportDateAllTimeButton_clicked();
+    void on_reportAllButton_clicked();
 
     void on_transactionAllAccountsCheckBox_stateChanged( int aCheckState );
     void on_transactionAllCategoriesCheckBox_stateChanged( int aCheckState );
@@ -119,8 +121,11 @@ private:
     ReportTableView mReportTableView;
     PieView mAssetsPieChart;
     PieView mDebtsPieChart;
-    PieView mIncomePieChart;
-    PieView mExpensePieChart;
+    PieView mIncomeParentPieChart;
+    PieView mExpenseParentPieChart;
+    PieView mIncomeSubPieChart;
+    PieView mExpenseSubPieChart;
+    QList<PieView*> mPieChartList;
 };
 
 #endif // TRANSACTIONMANAGER_H

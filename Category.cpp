@@ -153,6 +153,7 @@ const Category::CategoryType Category::cCategoryList[] =
     { TAXES,                "Property Tax" },
     { TAXES,                "Sales Tax" },
     { TAXES,                "State Tax" },
+    { TAXES,                "Tax Refund" },
     
     { TRANSFER,             "Transfer" },
     { TRANSFER,             "Credit Card Payment" },
@@ -210,6 +211,22 @@ Category::CategoryIdType Category::getCategoryId
     }
     return id;
 } // Category::getCategoryId
+
+//----------------------------------------------------------------------------
+// getParentCategoryId
+//----------------------------------------------------------------------------
+Category::CategoryIdType Category::getParentCategoryId
+    (
+    CategoryIdType aCategoryId
+    )
+{
+    CategoryIdType id = UNCATEGORIZED;
+    if( aCategoryId < CATEGORY_TYPE_CNT )
+    {
+        id = cCategoryList[ aCategoryId ].parentCategory;
+    }
+    return id;
+} // Category::getParentCategoryId
 
 //----------------------------------------------------------------------------
 // getCategoryText

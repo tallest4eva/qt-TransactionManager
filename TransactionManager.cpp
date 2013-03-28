@@ -108,8 +108,18 @@ void TransactionManager::init()
     ui->reportListTab->layout()->addWidget( &mReportTableView );
     ui->reportAssetGroupBox->layout()->addWidget( &mAssetsPieChart );
     ui->reportDebtGroupBox->layout()->addWidget( &mDebtsPieChart );
-    ui->reportIncomeGroupBox->layout()->addWidget( &mIncomePieChart );
-    ui->reportExpenseGroupBox->layout()->addWidget( &mExpensePieChart );
+    ui->reportIncomeGroupBox->layout()->addWidget( &mIncomeParentPieChart );
+    ui->reportExpenseGroupBox->layout()->addWidget( &mExpenseParentPieChart );
+    ui->reportIncomeGroupBox->layout()->addWidget( &mIncomeSubPieChart );
+    ui->reportExpenseGroupBox->layout()->addWidget( &mExpenseSubPieChart );
+
+    mPieChartList.push_back( &mAssetsPieChart );
+    mPieChartList.push_back( &mDebtsPieChart );
+    mPieChartList.push_back( &mIncomeParentPieChart );
+    mPieChartList.push_back( &mExpenseParentPieChart );
+    mPieChartList.push_back( &mIncomeSubPieChart );
+    mPieChartList.push_back( &mExpenseSubPieChart );
+
     ReportPieChartModel* pModel = new ReportPieChartModel( ReportPieChartModel::ASSET_BY_ACCOUNT );
     mAssetsPieChart.setModel( pModel );
     pModel->setupPieView( &mAssetsPieChart );
@@ -117,11 +127,19 @@ void TransactionManager::init()
     mDebtsPieChart.setModel( pModel );
     pModel->setupPieView( &mDebtsPieChart );
     pModel = new ReportPieChartModel( ReportPieChartModel::INCOME_BY_CATEGORY );
-    mIncomePieChart.setModel( pModel );
-    pModel->setupPieView( &mIncomePieChart );
+    pModel->setGroupCategories( true );
+    mIncomeParentPieChart.setModel( pModel );
+    pModel->setupPieView( &mIncomeParentPieChart );
     pModel = new ReportPieChartModel( ReportPieChartModel::EXPENSE_BY_CATEGORY );
-    mExpensePieChart.setModel( pModel );
-    pModel->setupPieView( &mExpensePieChart );
+    pModel->setGroupCategories( true );
+    mExpenseParentPieChart.setModel( pModel );
+    pModel->setupPieView( &mExpenseParentPieChart );
+    pModel = new ReportPieChartModel( ReportPieChartModel::INCOME_BY_CATEGORY );
+    mIncomeSubPieChart.setModel( pModel );
+    pModel->setupPieView( &mIncomeSubPieChart );
+    pModel = new ReportPieChartModel( ReportPieChartModel::EXPENSE_BY_CATEGORY );
+    mExpenseSubPieChart.setModel( pModel );
+    pModel->setupPieView( &mExpenseSubPieChart );
 
 } // TransactionManager::init()
 
@@ -400,6 +418,7 @@ void TransactionManager::initTransactionsTab()
     ui->transactionDateAllTimeButton->setEnabled( false );
 
     ui->transactionSelectButton->setEnabled( false );
+    ui->transactionAllButton->setEnabled( false );
 
     if( !mFileName.isEmpty() )
     {
@@ -439,6 +458,7 @@ void TransactionManager::initTransactionsTab()
         ui->transactionDateAllTimeButton->setEnabled( true );
 
         ui->transactionSelectButton->setEnabled( true );
+        ui->transactionAllButton->setEnabled( true );
     }
 
     // Init table
@@ -510,6 +530,7 @@ void TransactionManager::initReportsTab()
     ui->reportDateAllTimeButton->setEnabled( false );
 
     ui->reportSelectButton->setEnabled( false );
+    ui->reportAllButton->setEnabled( false );
 
     // Update reports tab
     if( !mFileName.isEmpty() )
@@ -550,6 +571,7 @@ void TransactionManager::initReportsTab()
         ui->reportDateAllTimeButton->setEnabled( true );
 
         ui->reportSelectButton->setEnabled( true );
+        ui->reportAllButton->setEnabled( true );
     }
 
     // Update reports
@@ -567,15 +589,11 @@ void TransactionManager::updateReportsTab()
         mReportNetIncomeGraph.setTransactionFilter( mReportFilter );
         mReportNetWorthGraph.setTransactionFilter( mReportFilter );
         mReportTableView.setTransactionFilter( mReportFilter );
-        ReportPieChartModel* model = NULL;
-        model = (ReportPieChartModel*)mAssetsPieChart.model();
-        model->setTransactionFilter( mReportFilter );
-        model = (ReportPieChartModel*)mDebtsPieChart.model();
-        model->setTransactionFilter( mReportFilter );
-        model = (ReportPieChartModel*)mIncomePieChart.model();
-        model->setTransactionFilter( mReportFilter );
-        model = (ReportPieChartModel*)mExpensePieChart.model();
-        model->setTransactionFilter( mReportFilter );
+        for( int i = 0; i < mPieChartList.size(); i++ )
+        {
+            ReportPieChartModel* model = (ReportPieChartModel*)mPieChartList[i]->model();
+            model->setTransactionFilter( mReportFilter );
+        }
     }
     else
     {
@@ -583,15 +601,11 @@ void TransactionManager::updateReportsTab()
         mReportNetIncomeGraph.clear();
         mReportNetWorthGraph.clear();
         mReportTableView.clear();
-        ReportPieChartModel* model = NULL;
-        model = (ReportPieChartModel*)mAssetsPieChart.model();
-        model->clear();
-        model = (ReportPieChartModel*)mDebtsPieChart.model();
-        model->clear();
-        model = (ReportPieChartModel*)mIncomePieChart.model();
-        model->clear();
-        model = (ReportPieChartModel*)mExpensePieChart.model();
-        model->clear();
+        for( int i = 0; i < mPieChartList.size(); i++ )
+        {
+            ReportPieChartModel* model = (ReportPieChartModel*)mPieChartList[i]->model();
+            model->clear();
+        }
     }
 } // TransactionManager::updateReportsTab()
 
@@ -737,6 +751,28 @@ void TransactionManager::on_transactionDateAllTimeButton_clicked()
 //----------------------------------------------------------------------------
 // Button clicked
 //----------------------------------------------------------------------------
+void TransactionManager::on_transactionAllButton_clicked()
+{
+    ui->transactionStartDateEdit->setDate( mFirstTransactionDate );
+    ui->transactionEndDateEdit->setDate( mLastTransactionDate );
+    ui->transactionAllAccountsCheckBox->setCheckState( Qt::Checked );
+    on_transactionAllAccountsCheckBox_stateChanged( (int)Qt::Checked );
+    ui->transactionAllCategoriesCheckBox->setCheckState( Qt::Checked );
+    on_transactionAllCategoriesCheckBox_stateChanged( (int)Qt::Checked );
+    ui->transactionAllLabelsCheckBox->setCheckState( Qt::Checked );
+    on_transactionAllLabelsCheckBox_stateChanged( (int)Qt::Checked );
+    on_transactionSelectButton_clicked();
+}
+//----------------------------------------------------------------------------
+// on_transactionSelectButton_clicked
+//----------------------------------------------------------------------------
+void TransactionManager::on_transactionSelectButton_clicked()
+{
+    updateTransactionsTab();
+} // TransactionManager::on_transactionSelectButton_clicked()
+//----------------------------------------------------------------------------
+// Button clicked
+//----------------------------------------------------------------------------
 void TransactionManager::on_reportDateThisYearButton_clicked()
 {
     QDate date( QDate::currentDate().year(), 1, 1 );
@@ -791,15 +827,21 @@ void TransactionManager::on_reportDateAllTimeButton_clicked()
     ui->reportEndDateEdit->setDate( mLastTransactionDate );
     on_reportSelectButton_clicked();
 }
-
 //----------------------------------------------------------------------------
-// on_transactionSelectButton_clicked
+// Button clicked
 //----------------------------------------------------------------------------
-void TransactionManager::on_transactionSelectButton_clicked()
+void TransactionManager::on_reportAllButton_clicked()
 {
-    updateTransactionsTab();
-} // TransactionManager::on_transactionSelectButton_clicked()
-
+    ui->reportStartDateEdit->setDate( mFirstTransactionDate );
+    ui->reportEndDateEdit->setDate( mLastTransactionDate );
+    ui->reportAllAccountsCheckBox->setCheckState( Qt::Checked );
+    on_reportAllAccountsCheckBox_stateChanged( (int)Qt::Checked );
+    ui->reportAllCategoriesCheckBox->setCheckState( Qt::Checked );
+    on_reportAllCategoriesCheckBox_stateChanged( (int)Qt::Checked );
+    ui->reportAllLabelsCheckBox->setCheckState( Qt::Checked );
+    on_reportAllLabelsCheckBox_stateChanged( (int)Qt::Checked );
+    on_reportSelectButton_clicked();
+}
 //----------------------------------------------------------------------------
 // on_reportSelectButton_clicked
 //----------------------------------------------------------------------------
