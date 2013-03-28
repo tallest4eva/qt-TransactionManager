@@ -121,13 +121,10 @@ float Month::getNetWorth( const Transaction::FilterType& aFilter ) const
     float netWorth = 0.0;
     for( int i = 0; i < aFilter.mAccountList.size(); i++ )
     {
-        for( int j = 0; j < mNetWorthList.size(); j++ )
+        int index = Account::getAccountIndex( aFilter.mAccountList[i] );
+        if( index >= 0 && mNetWorthList[index].mAccount && aFilter.mAccountList[i] == mNetWorthList[index].mAccount  )
         {
-            if( aFilter.mAccountList[i] == mNetWorthList[j].mAccount  )
-            {
-                netWorth += mNetWorthList[j].mNetWorth;
-                break;
-            }
+            netWorth += mNetWorthList[index].mNetWorth;
         }
     }
     return netWorth;

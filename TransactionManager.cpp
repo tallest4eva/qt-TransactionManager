@@ -12,9 +12,10 @@
 #include <QListWidgetItem>
 #include <QStandardItemModel>
 
-#include "GraphWidget.h"
-#include "TransactionManager.h"
 #include "ui_transactionmanager.h"
+#include "Account.h"
+#include "TransactionManager.h"
+#include "Month.h"
 #include "Parser.h"
 #include "OverviewAccountListItem.h"
 #include "TransactionListModel.h"
@@ -95,16 +96,17 @@ void TransactionManager::init()
     }
 
     // Init graph
-    mReportNetIncomeGraph.setGraphMode( GraphWidget::BAR_NET_INCOME );
-    mReportNetWorthGraph.setGraphMode( GraphWidget::BAR_NET_WORTH );
-    connect( &mReportNetIncomeGraph, SIGNAL(transactionDateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
-    connect( &mReportNetWorthGraph, SIGNAL(transactionDateSelected(QDate,QDate)), this, SLOT(handleShowTransactionByDate(QDate,QDate)) );
+    mReportNetIncomeGraph.setGraphMode( BarGraph::BAR_NET_INCOME );
+    mReportNetWorthGraph.setGraphMode( BarGraph::BAR_NET_WORTH );
+    connect( &mReportNetIncomeGraph, SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
+    connect( &mReportNetWorthGraph, SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
     connect( &mReportNetIncomeGraph, SIGNAL(reportDateSelected(QDate,QDate)), this, SLOT(handleShowReportByDate(QDate,QDate)) );
     connect( &mReportNetWorthGraph, SIGNAL(reportDateSelected(QDate,QDate)), this, SLOT(handleShowReportByDate(QDate,QDate)) );
     ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
     ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
     
     // Init report
+    connect( &mReportTableView, SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
     ui->reportListTab->layout()->addWidget( &mReportTableView );
     ui->reportAssetGroupBox->layout()->addWidget( &mAssetsPieChart );
     ui->reportDebtGroupBox->layout()->addWidget( &mDebtsPieChart );
@@ -263,7 +265,7 @@ void TransactionManager::on_actionFileInputConfig_triggered()
 void TransactionManager::on_actionAbout_triggered()
 {
     QMessageBox msgBox;
-    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 0.1");
+    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 1.0");
     msgBox.setIcon( QMessageBox::Information );
     msgBox.exec();
 } // TransactionManager::on_actionDisplayLog_triggered()
@@ -658,6 +660,36 @@ Transaction::FilterType TransactionManager::getTransactionFilter( TabType aTabTy
     }
     return filter;
 } // TransactionManager::getTransactionFilter()
+
+//----------------------------------------------------------------------------
+// Handle Show Transaction By Date
+//----------------------------------------------------------------------------
+void TransactionManager::handleShowTransactionByFilter( const Transaction::FilterType& aFilter )
+{
+    // Switch to transaction tab
+    ui->tabWidget->setCurrentWidget( ui->transactionsTab );
+    ui->transactionToolBox->setCurrentWidget( ui->transactionDateToolBox );
+    on_transactionAllAccountsCheckBox_stateChanged( (int)Qt::Unchecked );
+    for( int i = 0; i < aFilter.mAccountList.size(); i++ )
+    {
+        int index = Account::getAccountIndex( aFilter.mAccountList[i] );
+        if( index >= 0 )
+        {
+            mTransactionAccountsCheckBoxList[index]->setCheckState( Qt::Checked );
+        }
+    }
+    for( int i = 0; i < aFilter.mCategoryList.size(); i++ )
+    {
+        mTransactionCategoriesCheckBoxList[i]->setCheckState( ( aFilter.mCategoryList[i] ) ? Qt::Checked : Qt::Unchecked );
+    }
+    for( int i = 0; i < aFilter.mLabelList.size(); i++ )
+    {
+        mTransactionLabelsCheckBoxList[i]->setCheckState( ( aFilter.mLabelList[i] ) ? Qt::Checked : Qt::Unchecked );
+    }
+    ui->transactionStartDateEdit->setDate( aFilter.mStartDate );
+    ui->transactionEndDateEdit->setDate( aFilter.mEndDate );
+    on_transactionSelectButton_clicked();
+} // TransactionManager::handleShowTransactionByFilter
 
 //----------------------------------------------------------------------------
 // Handle Show Transaction By Date

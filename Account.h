@@ -10,7 +10,8 @@
 #include <QList>
 #include <QString>
 #include <QStringList>
-#include "Transaction.h"
+
+class Transaction;
 
 class Account
 {
@@ -29,6 +30,8 @@ public:
     QString getName() const { return mName; }
     void  setName( const QString& aAccountName ){ mName = aAccountName; }
     void  setAlternateNames( const QStringList& aAlternateNames ){ mAlternateNames = aAlternateNames; }
+    int   getNumber() const { return mNumber; }
+    void  setNumber( int aNumber ){ mNumber = aNumber; }
     float getBalance() const { return mBalance; }
     void  setBalance( float aBalance ){ mBalance = aBalance; }
     StatusType getStatus() const { return mStatus; }
@@ -53,6 +56,7 @@ public:
 
 private:
     QString mName;
+    int mNumber;
     QStringList mAlternateNames;
     float mBalance;
     StatusType mStatus;

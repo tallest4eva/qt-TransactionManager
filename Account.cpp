@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include "Account.h"
+#include "Transaction.h"
 #include "TransactionManager.h"
 
 // Static functions
@@ -18,6 +19,7 @@ static bool accountSortLessThan( Account* arg1, Account* &arg2 )
 //----------------------------------------------------------------------------
 Account::Account() :
     mName( "None" ),
+    mNumber( -1 ),
     mBalance( 0 ),
     mStatus( STATUS_INVALID ),
     mComplete( false ),
@@ -122,6 +124,7 @@ void Account::updateAccountList()
     for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
     {
         TransactionManager::mAccountList[i]->updateData();
+        TransactionManager::mAccountList[i]->setNumber( i );
     }
 } // Account::updateAccountList
 
@@ -131,13 +134,9 @@ void Account::updateAccountList()
 int Account::getAccountIndex( Account* aAccount )
 {
     int index = -1;
-    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    if( aAccount )
     {
-        if( aAccount == TransactionManager::mAccountList[i] )
-        {
-            index = i;
-            break;
-        }
+        index = aAccount->getNumber();
     }
     return index;
 } // Account::getAccountIndex

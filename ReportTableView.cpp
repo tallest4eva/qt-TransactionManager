@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QHeaderView>
 
+#include "Month.h"
 #include "ReportTableView.h"
 #include "TransactionListModel.h"
 #include "TransactionManager.h"
@@ -48,6 +49,8 @@ ReportTableView::ReportTableView
     setColumnWidth( (int)HDR_NET_INCOME, columnWidth );
     setColumnWidth( (int)HDR_NET_WORTH, columnWidth );
 
+    connect( this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(handleItemDoubleClicked(const QModelIndex&)) );
+
     show();
 } // ReportTableView::ReportTableView
 
@@ -64,6 +67,7 @@ ReportTableView::~ReportTableView()
 //----------------------------------------------------------------------------
 void ReportTableView::clear()
 {
+    mFilter = Transaction::FilterType();
     mModel->setRowCount( 0 );
 } // ReportTableView::clear
 
@@ -72,11 +76,13 @@ void ReportTableView::clear()
 //----------------------------------------------------------------------------
 void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
+    mFilter = aFilter;
     QDate startDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
     QDate endDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
     endDate = endDate.addMonths(1);
     int rowCount = 0;
     mModel->setRowCount( rowCount );
+    mMonthList.clear();
     for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
     {
         // Date
@@ -103,5 +109,21 @@ void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilt
             mModel->setItem( rowCount, (int)HDR_NET_WORTH, numberItem );
             rowCount++;
         }
+        mMonthList.push_back( month );
     }
 } // ReportTableView::setDateRange
+
+//----------------------------------------------------------------------------
+// handleItemDoubleClicked
+//----------------------------------------------------------------------------
+void ReportTableView::handleItemDoubleClicked( const QModelIndex& aIndex )
+{
+    if( aIndex.row() >= 0 && aIndex.row() < mMonthList.size() )
+    {
+        Month* month = mMonthList[ aIndex.row() ];
+        Transaction::FilterType filter = mFilter;
+        filter.mStartDate = month->getDate();
+        filter.mEndDate = month->getDate().addMonths(1).addDays(-1);
+        transactionFilterSelected( filter );
+    }
+} // ReportTableView::handleItemDoubleClicked

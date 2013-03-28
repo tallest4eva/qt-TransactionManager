@@ -15,12 +15,13 @@
 #include <QListWidgetItem>
 #include <QCheckBox>
 
-#include "Account.h"
-#include "Month.h"
 #include "Transaction.h"
-#include "GraphWidget.h"
+#include "BarGraph.h"
 #include "PieView.h"
 #include "ReportTableView.h"
+
+class Account;
+class Month;
 
 namespace Ui
 {
@@ -85,6 +86,8 @@ private slots:
     void on_reportAllAccountsCheckBox_stateChanged( int aCheckState );
     void on_reportAllCategoriesCheckBox_stateChanged( int aCheckState );
     void on_reportAllLabelsCheckBox_stateChanged( int aCheckState );
+
+    void handleShowTransactionByFilter( const Transaction::FilterType& aFilter );
     void handleShowTransactionByDate( QDate aStartDate, QDate aEndDate );
     void handleShowReportByDate( QDate aStartDate, QDate aEndDate );
 
@@ -116,8 +119,8 @@ private:
     QButtonGroup mReportLabelsCheckBoxGroup;
     Transaction::FilterType mTransactionFilter;
     Transaction::FilterType mReportFilter;
-    GraphWidget mReportNetIncomeGraph;
-    GraphWidget mReportNetWorthGraph;
+    BarGraph mReportNetIncomeGraph;
+    BarGraph mReportNetWorthGraph;
     ReportTableView mReportTableView;
     PieView mAssetsPieChart;
     PieView mDebtsPieChart;

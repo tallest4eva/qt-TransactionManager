@@ -14,10 +14,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         Account.cpp\
+        BarGraph.cpp\
         Category.cpp\
         DisplayDialog.cpp\
         FileConfigDialog.cpp\
-        GraphWidget.cpp\
         Logger.cpp\
         Month.cpp\
         OverviewAccountListItem.cpp\
@@ -31,9 +31,9 @@ SOURCES += main.cpp\
 
 HEADERS  += Account.h\
         Category.h\
+        BarGraph.h\
         DisplayDialog.h\
         FileConfigDialog.h\
-        GraphWidget.h\
         Logger.h\
         Month.h\
         OverviewAccountListItem.h\

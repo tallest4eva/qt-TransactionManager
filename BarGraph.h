@@ -1,10 +1,10 @@
 //******************************************************************************
 //
-//  HEADER NAME: GraphWidget.h
+//  HEADER NAME: BarGraph.h
 //******************************************************************************
 
-#ifndef GraphWidget_H
-#define GraphWidget_H
+#ifndef BarGraph_H
+#define BarGraph_H
 
 #include <QDate>
 #include <QLabel>
@@ -27,7 +27,7 @@ class DisplayLabel : public QLabel
 {
     Q_OBJECT
 public:
-    virtual void mouseReleaseEvent( QMouseEvent * aEvent ){ QLabel::mouseReleaseEvent( aEvent ); clicked(); }
+    virtual void mouseDoubleClickEvent( QMouseEvent* aEvent ){ QLabel::mouseDoubleClickEvent( aEvent ); clicked(); }
     QDate getDate() const { return mDate; }
     void  setDate( QDate aDate ){ mDate = aDate; }
 signals:
@@ -36,7 +36,7 @@ private:
     QDate mDate;
 };
 
-class GraphWidget : public QWidget
+class BarGraph : public QWidget
 {
     Q_OBJECT
 
@@ -52,9 +52,9 @@ public:
     static const QDate REFERENCE_DATE;
 
     // Functions
-    GraphWidget(QWidget *parent = 0);
+    BarGraph(QWidget *parent = 0);
 
-    ~GraphWidget();
+    ~BarGraph();
 
     virtual void mousePressEvent( QMouseEvent* aEvent );
     virtual void mouseMoveEvent( QMouseEvent* aEvent );
@@ -68,6 +68,7 @@ public:
     void clear();
 
 signals:
+    void transactionFilterSelected( const Transaction::FilterType& aFilter );
     void transactionDateSelected( QDate aStartDate, QDate aEndDate );
     void reportDateSelected( QDate aStartDate, QDate aEndDate );
 
@@ -93,4 +94,4 @@ private:
 
 };
 
-#endif // RENDERAREA_H
+#endif // BarGraph_H

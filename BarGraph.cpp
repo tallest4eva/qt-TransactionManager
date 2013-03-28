@@ -1,6 +1,6 @@
 //******************************************************************************
 //
-//  HEADER NAME: GraphWidget.cpp
+//  HEADER NAME: BarGraph.cpp
 //******************************************************************************
 
 #include <QtGui>
@@ -8,11 +8,11 @@
 
 #include <qwt_plot_layout.h>
 
-#include "GraphWidget.h"
+#include "BarGraph.h"
 #include "Month.h"
 #include "TransactionManager.h"
 
-const QDate GraphWidget::REFERENCE_DATE = QDate(1990,1,1);
+const QDate BarGraph::REFERENCE_DATE = QDate(1990,1,1);
 static const int DISPLAY_LABEL_TIMOEUT = 5000;              // Display label timeout
 
 class TimeScaleDraw : public QwtScaleDraw
@@ -20,12 +20,12 @@ class TimeScaleDraw : public QwtScaleDraw
 public:
     virtual QwtText label( double aValue ) const
     {
-        QDate date = GraphWidget::REFERENCE_DATE.addDays( aValue );
+        QDate date = BarGraph::REFERENCE_DATE.addDays( aValue );
         return QwtText( date.toString("MMMyy") );
     }
 };
 
-GraphWidget::GraphWidget(QWidget *parent) :
+BarGraph::BarGraph(QWidget *parent) :
     QWidget(parent)
   , mGraphMode( BAR_NET_INCOME )
   , mGrid( NULL )
@@ -83,7 +83,7 @@ GraphWidget::GraphWidget(QWidget *parent) :
     // Set up display label
     mDisplayLabel.setParent( this );
     mDisplayLabel.hide();
-    mDisplayLabel.setGeometry( 0, 0, 150, 90 );
+    mDisplayLabel.setGeometry( 0, 0, 160, 90 );
     mDisplayLabel.setFrameShadow( QFrame::Raised );
     mDisplayLabel.setFrameShape( QFrame::StyledPanel );
     mDisplayLabel.setPalette( QPalette(Qt::black,Qt::white) );
@@ -98,12 +98,12 @@ GraphWidget::GraphWidget(QWidget *parent) :
     mRubberBand = new QRubberBand( QRubberBand::Rectangle, this );
     
     clear();
-} // GraphWidget::GraphWidget
+} // BarGraph::BarGraph
 
 //----------------------------------------------------------------------------
 // Destructor
 //----------------------------------------------------------------------------
-GraphWidget::~GraphWidget()
+BarGraph::~BarGraph()
 {
     mDisplayTimer.stop();
     delete mRubberBand;
@@ -111,30 +111,33 @@ GraphWidget::~GraphWidget()
     delete mIncomeCurve;
     delete mPositiveHistogram;
     delete mNegativeHistogram;
-} // GraphWidget::~GraphWidget
+} // BarGraph::~BarGraph
 
 //----------------------------------------------------------------------------
 // hideDisplayLabel
 //----------------------------------------------------------------------------
-void GraphWidget::hideDisplayLabel()
+void BarGraph::hideDisplayLabel()
 {
     mDisplayTimer.stop();
     mDisplayLabel.hide();
-} // GraphWidget::hideDisplayLabel
+} // BarGraph::hideDisplayLabel
 
 //----------------------------------------------------------------------------
 // handle Display Clicked
 //----------------------------------------------------------------------------
-void GraphWidget::handleDisplayClicked()
+void BarGraph::handleDisplayClicked()
 {
     QDate date = mDisplayLabel.getDate();
-    transactionDateSelected( date, date.addMonths(1).addDays(-1) );
-} // GraphWidget::handleDisplayClicked
+    Transaction::FilterType filter = mFilter;
+    filter.mStartDate = date;
+    filter.mEndDate = date.addMonths(1).addDays(-1);
+    transactionFilterSelected( filter );
+} // BarGraph::handleDisplayClicked
 
 //----------------------------------------------------------------------------
 // mousePressEvent
 //----------------------------------------------------------------------------
-void GraphWidget::mousePressEvent( QMouseEvent* aEvent )
+void BarGraph::mousePressEvent( QMouseEvent* aEvent )
 {
     mDrag = false;
     QWidget::mousePressEvent( aEvent );
@@ -146,12 +149,12 @@ void GraphWidget::mousePressEvent( QMouseEvent* aEvent )
         mRubberBand->setGeometry( QRect( mOrigin, QSize(0,rect.height()) ) );
         mRubberBand->show();
     }
-} // GraphWidget::mousePressEvent
+} // BarGraph::mousePressEvent
 
 //----------------------------------------------------------------------------
 // mouseMoveEvent
 //----------------------------------------------------------------------------
-void GraphWidget::mouseMoveEvent( QMouseEvent* aEvent )
+void BarGraph::mouseMoveEvent( QMouseEvent* aEvent )
 {
     mDrag = true;
     QWidget::mouseMoveEvent( aEvent );
@@ -161,12 +164,12 @@ void GraphWidget::mouseMoveEvent( QMouseEvent* aEvent )
         QRectF rect = mRubberBand->rect();
         mRubberBand->setGeometry( QRect(mOrigin, QSize( aEvent->x() - mOrigin.x(),rect.height() )) );
     }
-} // GraphWidget::mouseMoveEvent
+} // BarGraph::mouseMoveEvent
     
 //----------------------------------------------------------------------------
 // mouseReleaseEvent
 //----------------------------------------------------------------------------
-void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
+void BarGraph::mouseReleaseEvent( QMouseEvent * aEvent )
 {
     QWidget::mouseReleaseEvent( aEvent );
 
@@ -233,7 +236,7 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
                     {
                         str += "</font>";
                     }
-                    str += "<center><font color=\"blue\">See Transactions</font></center>";
+                    str += "<center><font size=\"-2\" color=\"blue\">Dbl click to See Transactions</font></center>";
                     mDisplayLabel.setText( str );
                     mDisplayLabel.show();
                     break;
@@ -241,12 +244,12 @@ void GraphWidget::mouseReleaseEvent( QMouseEvent * aEvent )
             }
         }
     }
-} // GraphWidget::mouseReleaseEvent
+} // BarGraph::mouseReleaseEvent
 
 //----------------------------------------------------------------------------
 // Set Graph Mode
 //----------------------------------------------------------------------------
-void GraphWidget::setGraphMode( BarChartType aGraphMode )
+void BarGraph::setGraphMode( BarChartType aGraphMode )
 {
     mGraphMode = aGraphMode;
     switch( mGraphMode )
@@ -263,12 +266,12 @@ void GraphWidget::setGraphMode( BarChartType aGraphMode )
         mPlot.setAxisTitle( QwtPlot::xBottom, "Date" );
         break;
     }
-} // GraphWidget::setGraphMode
+} // BarGraph::setGraphMode
 
 //----------------------------------------------------------------------------
 // clear
 //----------------------------------------------------------------------------
-void GraphWidget::clear()
+void BarGraph::clear()
 {
     mFilter = Transaction::FilterType();
     mFilter.mStartDate.setDate( 2000, 1, 1 );
@@ -280,12 +283,12 @@ void GraphWidget::clear()
     mNegativeHistogram->setSamples( QVector<QwtIntervalSample>() );
     mPlot.replot();
     mDataSet = false;
-} // GraphWidget::clear
+} // BarGraph::clear
 
 //----------------------------------------------------------------------------
 // Set Transaction Data
 //----------------------------------------------------------------------------
-void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
+void BarGraph::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
     mDataSet = false;
     mFilter = aFilter;
@@ -321,14 +324,15 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
     QVector<double> curveYSamples;
     float maxValue = 0;
     float minValue = 0;
+    const int BAR_BUFFER = 3;
     for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
     {
         // Date
         Month* month = TransactionManager::mMonthList[i];
         if( mFilter.mStartDate <= month->getDate() && mFilter.mEndDate >= month->getDate() )
         {
-            float startDay = REFERENCE_DATE.daysTo(month->getDate()) + 2;
-            float endDay = startDay + month->getDate().daysInMonth() - 4;
+            float startDay = REFERENCE_DATE.daysTo(month->getDate()) + BAR_BUFFER;
+            float endDay = startDay + month->getDate().daysInMonth() - BAR_BUFFER*2;
             float positiveValue = 0;
             float negativeValue = 0;
             float netWorth = 0;
@@ -364,5 +368,5 @@ void GraphWidget::setTransactionFilter( const Transaction::FilterType& aFilter )
     mPositiveHistogram->setSamples( positiveSamples );
     mNegativeHistogram->setSamples( negativeSamples );
     mPlot.replot();
-} // GraphWidget::setTransactionData()
+} // BarGraph::setTransactionData()
 

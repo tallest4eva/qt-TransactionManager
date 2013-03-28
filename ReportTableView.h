@@ -7,14 +7,18 @@
 #define ReportTableView_H
 
 #include <QDate>
+#include <QList>
 #include <QWidget>
 #include <QTableView>
 #include <QStandardItemModel>
 
 #include "Transaction.h"
 
+class Month;
+
 class ReportTableView : public QTableView
 {
+    Q_OBJECT
 
 public:
     // Types
@@ -35,11 +39,19 @@ public:
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void clear();
 
+signals:
+    void transactionFilterSelected( const Transaction::FilterType& aFilter );
+
+private slots:
+    void handleItemDoubleClicked( const QModelIndex& aIndex );
+
 private:
     // Functions
 
     // Variables
+    Transaction::FilterType mFilter;
     QStandardItemModel* mModel;
+    QList<Month*> mMonthList;
 };
 
 #endif // ReportTableView_H
