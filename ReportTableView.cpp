@@ -108,8 +108,8 @@ void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilt
             numberItem->setNumber( month->getNetWorth( aFilter ) );
             mModel->setItem( rowCount, (int)HDR_NET_WORTH, numberItem );
             rowCount++;
+            mMonthList.push_back( month );
         }
-        mMonthList.push_back( month );
     }
 } // ReportTableView::setDateRange
 

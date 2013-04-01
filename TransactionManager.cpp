@@ -385,6 +385,10 @@ void TransactionManager::updateOverviewTab()
 void TransactionManager::initTransactionsTab()
 {
     // Clear transactions tab
+    ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionAccountToolBox), "Account" );
+    ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionCategoriesToolBox), "Categories" );
+    ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionLabelsToolBox), "Labels" );
+    ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionDateToolBox), "Date" );
     for( int i = 0; i < mTransactionAccountsCheckBoxList.size(); i++ )
     {
         ui->transactionAccountGroupBox->layout()->removeWidget( mTransactionAccountsCheckBoxList[i] );
@@ -418,7 +422,6 @@ void TransactionManager::initTransactionsTab()
     ui->transactionDate5YearButton->setEnabled( false );
     ui->transactionDate10YearButton->setEnabled( false );
     ui->transactionDateAllTimeButton->setEnabled( false );
-
     ui->transactionSelectButton->setEnabled( false );
     ui->transactionAllButton->setEnabled( false );
 
@@ -458,7 +461,6 @@ void TransactionManager::initTransactionsTab()
         ui->transactionDate5YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-5) );
         ui->transactionDate10YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-10) );
         ui->transactionDateAllTimeButton->setEnabled( true );
-
         ui->transactionSelectButton->setEnabled( true );
         ui->transactionAllButton->setEnabled( true );
     }
@@ -483,6 +485,16 @@ void TransactionManager::updateTransactionsTab()
         mTransactionFilter = getTransactionFilter( TRANSACTION_TAB );
         model->setTransactionFilter( mTransactionFilter );
         model->resort();
+
+        // Update tool box text
+        QString str = (mTransactionFilter.mAllAccounts) ? "All" : "Some";
+        ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionAccountToolBox), "Account: " + str );
+        str = (mTransactionFilter.mAllCategories) ? "All" : "Some";
+        ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionCategoriesToolBox), "Categories: " + str );
+        str = (mTransactionFilter.mAllLabels) ? "All" : "Some";
+        ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionLabelsToolBox), "Labels: " + str );
+        str = (mTransactionFilter.mAllDates) ? "All" : "Some";
+        ui->transactionToolBox->setItemText( ui->transactionToolBox->indexOf(ui->transactionDateToolBox), "Date: " + str );
     }
     else
     {
@@ -497,6 +509,10 @@ void TransactionManager::updateTransactionsTab()
 void TransactionManager::initReportsTab()
 {
     // Clear reports tab
+    ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportAccountToolBox), "Account" );
+    ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportCategoriesToolBox), "Categories" );
+    ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportLabelsToolBox), "Labels" );
+    ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportDateToolBox), "Date" );
     for( int i = 0; i < mReportAccountsCheckBoxList.size(); i++ )
     {
         ui->reportAccountGroupBox->layout()->removeWidget( mReportAccountsCheckBoxList[i] );
@@ -530,7 +546,6 @@ void TransactionManager::initReportsTab()
     ui->reportDate5YearButton->setEnabled( false );
     ui->reportDate10YearButton->setEnabled( false );
     ui->reportDateAllTimeButton->setEnabled( false );
-
     ui->reportSelectButton->setEnabled( false );
     ui->reportAllButton->setEnabled( false );
 
@@ -571,7 +586,6 @@ void TransactionManager::initReportsTab()
         ui->reportDate5YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-5) );
         ui->reportDate10YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-10) );
         ui->reportDateAllTimeButton->setEnabled( true );
-
         ui->reportSelectButton->setEnabled( true );
         ui->reportAllButton->setEnabled( true );
     }
@@ -596,6 +610,16 @@ void TransactionManager::updateReportsTab()
             ReportPieChartModel* model = (ReportPieChartModel*)mPieChartList[i]->model();
             model->setTransactionFilter( mReportFilter );
         }
+
+        // Update tool box text
+        QString str = (mReportFilter.mAllAccounts) ? "All" : "Some";
+        ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportAccountToolBox), "Account: " + str );
+        str = (mReportFilter.mAllCategories) ? "All" : "Some";
+        ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportCategoriesToolBox), "Categories: " + str );
+        str = (mReportFilter.mAllLabels) ? "All" : "Some";
+        ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportLabelsToolBox), "Labels: " + str );
+        str = (mReportFilter.mAllDates) ? "All" : "Some";
+        ui->reportToolBox->setItemText( ui->reportToolBox->indexOf(ui->reportDateToolBox), "Date: " + str );
     }
     else
     {

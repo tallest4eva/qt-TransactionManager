@@ -3,8 +3,6 @@
 //  HEADER NAME: Month.cpp
 //******************************************************************************
 
-#include <QDebug>
-
 #include "Month.h"
 #include "TransactionManager.h"
 
@@ -202,7 +200,10 @@ void Month::updateMonthList()
 {
     if( TransactionManager::mMonthList.size() > 0 )
     {
+        // Sort month list
         qSort( TransactionManager::mMonthList.begin(), TransactionManager::mMonthList.end(), monthSortLessThan );
+
+        // Insert missing months
         QDate date = TransactionManager::mMonthList[0]->getDate();
         for( QList<Month*>::iterator i = TransactionManager::mMonthList.begin(); i != TransactionManager::mMonthList.end(); i++ )
         {
@@ -216,7 +217,7 @@ void Month::updateMonthList()
             date = date.addMonths(1);
         }
 
-
+        // Update month info
         for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
         {
             TransactionManager::mMonthList[i]->updateData( (i > 0) ? TransactionManager::mMonthList[i-1]: NULL );

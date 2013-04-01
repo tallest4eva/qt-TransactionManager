@@ -184,7 +184,7 @@ void BarGraph::mouseReleaseEvent( QMouseEvent * aEvent )
             QDate startDate = REFERENCE_DATE.addDays( startDateVal );
             int endDateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
             QDate endDate = REFERENCE_DATE.addDays( endDateVal );
-            if( endDate > startDate.addMonths(1) )
+            if( endDate > startDate )
             {
                 reportDateSelected( startDate, endDate );
             }

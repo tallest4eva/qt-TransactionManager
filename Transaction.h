@@ -51,10 +51,7 @@ public:
     // Functions
     explicit Transaction();
     virtual ~Transaction();
-    void init
-        (
-        const QString& aString
-        );
+    void init( const QString& aString );
     Account* getAccount() const { return mAccount; }
     void  setAccount( Account* aAccount ){ mAccount = aAccount; }
     QDate getTransactionDate() const { return mTransactionDate; }
@@ -77,7 +74,6 @@ public:
     bool matchLabel( Category::LabelIdType aLabel );
     bool matchLabels( const QVector<bool> aLabelMask );
     bool matchTransaction( const FilterType& aFilter );
-    bool isIncomeOrExpense();
     QString getInfo();
 
     // Comparators

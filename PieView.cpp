@@ -403,7 +403,7 @@ void PieView::scrollTo(const QModelIndex &index, ScrollHint)
 */
 void PieView::setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command)
 {
-    // Skip
+    // Obi: Skip
     return;
     // Use content widget coordinates because we will use the itemRegion()
     // function to check for intersections.
