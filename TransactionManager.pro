@@ -23,7 +23,7 @@ SOURCES += main.cpp\
         OverviewAccountListItem.cpp\
         Parser.cpp\
         PieView.cpp\
-        ReportPieChartModel.cpp\
+        ReportPieChart.cpp\
         ReportTableView.cpp\
         Transaction.cpp\
         TransactionListModel.cpp\
@@ -39,7 +39,7 @@ HEADERS  += Account.h\
         OverviewAccountListItem.h\
         Parser.h\
         PieView.h\
-        ReportPieChartModel.h\
+        ReportPieChart.h\
         ReportTableView.h\
         Transaction.h\
         TransactionListModel.h\

@@ -89,7 +89,6 @@ BarGraph::BarGraph(QWidget *parent) :
     mDisplayLabel.setPalette( QPalette(Qt::black,Qt::white) );
     mDisplayLabel.setAutoFillBackground( true );
     connect( &mDisplayLabel, SIGNAL(clicked()), this, SLOT(handleDisplayClicked()) );
-
     QFont font;
     font.setPointSize( 10 );
     mDisplayLabel.setFont( font );
@@ -145,8 +144,8 @@ void BarGraph::mousePressEvent( QMouseEvent* aEvent )
     if( mDataSet )
     {
         QRectF rect = mPlot.plotLayout()->canvasRect();
-        mOrigin = QPoint( aEvent->x(), rect.y()+10 );
-        mRubberBand->setGeometry( QRect( mOrigin, QSize(0,rect.height()) ) );
+        mMousePosition = QPoint( aEvent->x(), rect.y()+10 );
+        mRubberBand->setGeometry( QRect( mMousePosition, QSize(0,rect.height()) ) );
         mRubberBand->show();
     }
 } // BarGraph::mousePressEvent
@@ -162,14 +161,14 @@ void BarGraph::mouseMoveEvent( QMouseEvent* aEvent )
     if( mDataSet )
     {
         QRectF rect = mRubberBand->rect();
-        mRubberBand->setGeometry( QRect(mOrigin, QSize( aEvent->x() - mOrigin.x(),rect.height() )) );
+        mRubberBand->setGeometry( QRect(mMousePosition, QSize( aEvent->x() - mMousePosition.x(),rect.height() )) );
     }
 } // BarGraph::mouseMoveEvent
     
 //----------------------------------------------------------------------------
 // mouseReleaseEvent
 //----------------------------------------------------------------------------
-void BarGraph::mouseReleaseEvent( QMouseEvent * aEvent )
+void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
 {
     QWidget::mouseReleaseEvent( aEvent );
 
@@ -181,7 +180,7 @@ void BarGraph::mouseReleaseEvent( QMouseEvent * aEvent )
         if( mDataSet )
         {
             // Set new report date interval
-            int startDateVal = mPlot.invTransform( QwtPlot::xBottom, mOrigin.x() - offset );
+            int startDateVal = mPlot.invTransform( QwtPlot::xBottom, mMousePosition.x() - offset );
             QDate startDate = REFERENCE_DATE.addDays( startDateVal );
             int endDateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
             QDate endDate = REFERENCE_DATE.addDays( endDateVal );

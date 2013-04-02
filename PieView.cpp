@@ -64,7 +64,7 @@ QModelIndex PieView::indexAt(const QPoint &point) const
     int wx = point.x() + horizontalScrollBar()->value();
     int wy = point.y() + verticalScrollBar()->value();
 
-    if (wx < mTotalSize)
+    if (wy < mTotalSize)
     {
         double cx = wx - mTotalSize/2;
         double cy = mTotalSize/2 - wy; // positive cy for items above the center
@@ -77,8 +77,10 @@ QModelIndex PieView::indexAt(const QPoint &point) const
 
         // Determine the angle of the point.
         double angle = (180 / M_PI) * acos(cx/d);
-        if (cy < 0)
+        if( cy < 0 )
             angle = 360 - angle;
+        if( angle < mStartAngle )
+            angle += 360;
 
         // Find the relevant slice of the pie.
         double startAngle = mStartAngle;
@@ -98,7 +100,7 @@ QModelIndex PieView::indexAt(const QPoint &point) const
     else
     {
         double itemHeight = QFontMetrics(viewOptions().font).height();
-        int listItem = int((wy - mMargin) / itemHeight);
+        int listItem = int((wy - mTotalSize) / itemHeight);
         int validRow = 0;
         for (int row = 0; row < model()->rowCount(rootIndex()); ++row)
         {

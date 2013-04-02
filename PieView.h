@@ -63,7 +63,7 @@ protected:
 
     QRegion visualRegionForSelection(const QItemSelection &selection) const;
 
-private:
+protected:
     QRect itemRect(const QModelIndex &item) const;
     QRegion itemRegion(const QModelIndex &index) const;
     int rows(const QModelIndex &index = QModelIndex()) const;

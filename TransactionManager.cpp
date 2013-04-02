@@ -23,7 +23,6 @@
 #include "Logger.h"
 #include "DisplayDialog.h"
 #include "FileConfigDialog.h"
-#include "ReportPieChartModel.h"
 
 // Static variables
 QStringList TransactionManager::mFileContents;
@@ -125,27 +124,14 @@ void TransactionManager::init()
     mPieChartList.push_back( &mIncomeSubPieChart );
     mPieChartList.push_back( &mExpenseSubPieChart );
 
-    ReportPieChartModel* pModel = new ReportPieChartModel( ReportPieChartModel::ASSET_BY_ACCOUNT );
-    mAssetsPieChart.setModel( pModel );
-    pModel->setupPieView( &mAssetsPieChart );
-    pModel = new ReportPieChartModel( ReportPieChartModel::DEBT_BY_ACCOUNT );
-    mDebtsPieChart.setModel( pModel );
-    pModel->setupPieView( &mDebtsPieChart );
-    pModel = new ReportPieChartModel( ReportPieChartModel::INCOME_BY_CATEGORY );
-    pModel->setGroupCategories( true );
-    mIncomeParentPieChart.setModel( pModel );
-    pModel->setupPieView( &mIncomeParentPieChart );
-    pModel = new ReportPieChartModel( ReportPieChartModel::EXPENSE_BY_CATEGORY );
-    pModel->setGroupCategories( true );
-    mExpenseParentPieChart.setModel( pModel );
-    pModel->setupPieView( &mExpenseParentPieChart );
-    pModel = new ReportPieChartModel( ReportPieChartModel::INCOME_BY_CATEGORY );
-    mIncomeSubPieChart.setModel( pModel );
-    pModel->setupPieView( &mIncomeSubPieChart );
-    pModel = new ReportPieChartModel( ReportPieChartModel::EXPENSE_BY_CATEGORY );
-    mExpenseSubPieChart.setModel( pModel );
-    pModel->setupPieView( &mExpenseSubPieChart );
-
+    mAssetsPieChart.setChartType( ReportPieChart::ASSET_BY_ACCOUNT );
+    mDebtsPieChart.setChartType( ReportPieChart::DEBT_BY_ACCOUNT );
+    mIncomeParentPieChart.setChartType( ReportPieChart::INCOME_BY_CATEGORY );
+    mIncomeParentPieChart.setGroupCategories( true );
+    mExpenseParentPieChart.setChartType( ReportPieChart::EXPENSE_BY_CATEGORY );
+    mExpenseParentPieChart.setGroupCategories( true );
+    mIncomeSubPieChart.setChartType( ReportPieChart::INCOME_BY_CATEGORY );
+    mExpenseSubPieChart.setChartType( ReportPieChart::EXPENSE_BY_CATEGORY );
 } // TransactionManager::init()
 
 //----------------------------------------------------------------------------
@@ -611,8 +597,7 @@ void TransactionManager::updateReportsTab()
         mReportTableView.setTransactionFilter( mReportFilter );
         for( int i = 0; i < mPieChartList.size(); i++ )
         {
-            ReportPieChartModel* model = (ReportPieChartModel*)mPieChartList[i]->model();
-            model->setTransactionFilter( mReportFilter );
+            mPieChartList[i]->setTransactionFilter( mReportFilter );
         }
 
         // Update tool box text
@@ -633,8 +618,7 @@ void TransactionManager::updateReportsTab()
         mReportTableView.clear();
         for( int i = 0; i < mPieChartList.size(); i++ )
         {
-            ReportPieChartModel* model = (ReportPieChartModel*)mPieChartList[i]->model();
-            model->clear();
+            mPieChartList[i]->clear();
         }
     }
 } // TransactionManager::updateReportsTab()

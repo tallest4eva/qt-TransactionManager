@@ -17,7 +17,7 @@
 
 #include "Transaction.h"
 #include "BarGraph.h"
-#include "PieView.h"
+#include "ReportPieChart.h"
 #include "ReportTableView.h"
 
 class Account;
@@ -124,13 +124,13 @@ private:
     BarGraph mReportNetIncomeGraph;
     BarGraph mReportNetWorthGraph;
     ReportTableView mReportTableView;
-    PieView mAssetsPieChart;
-    PieView mDebtsPieChart;
-    PieView mIncomeParentPieChart;
-    PieView mExpenseParentPieChart;
-    PieView mIncomeSubPieChart;
-    PieView mExpenseSubPieChart;
-    QList<PieView*> mPieChartList;
+    ReportPieChart mAssetsPieChart;
+    ReportPieChart mDebtsPieChart;
+    ReportPieChart mIncomeParentPieChart;
+    ReportPieChart mExpenseParentPieChart;
+    ReportPieChart mIncomeSubPieChart;
+    ReportPieChart mExpenseSubPieChart;
+    QList<ReportPieChart*> mPieChartList;
 };
 
 #endif // TRANSACTIONMANAGER_H

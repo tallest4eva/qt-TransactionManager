@@ -87,7 +87,7 @@ private:
     DisplayLabel mDisplayLabel;
     QTimer mDisplayTimer;
     Transaction::FilterType mFilter;
-    QPoint mOrigin;
+    QPoint mMousePosition;
     QRubberBand* mRubberBand;
     bool mDrag;
     bool mDataSet;

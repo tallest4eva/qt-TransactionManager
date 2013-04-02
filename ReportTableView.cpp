@@ -80,37 +80,64 @@ void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilt
     QDate startDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
     QDate endDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
     endDate = endDate.addMonths(1);
-    int rowCount = 0;
-    mModel->setRowCount( rowCount );
+    mModel->setRowCount( 0 );
     mMonthList.clear();
+
+    int rowCount = 0;
+    float totalIncome = 0;
+    float totalExpense = 0;
+    float totalNetIncome = 0;
+    QStandardItem* item = NULL;
+    NumberStandardItem* numberItem = NULL;
     for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
     {
         // Date
         Month* month = TransactionManager::mMonthList[i];
         if( startDate <= month->getDate() && endDate > month->getDate() )
         {
-            QStandardItem* item = new QStandardItem();
+            item = new QStandardItem();
             item->setTextAlignment( Qt::AlignCenter );
             item->setText( month->getDate().toString("MMM yyyy") );
             mModel->setItem( rowCount, (int)HDR_DATE, item );
             float income = month->getIncome( aFilter );
             float expense = month->getExpense( aFilter );
-            NumberStandardItem* numberItem = new NumberStandardItem();
+            float netIncome = income + expense;
+            numberItem = new NumberStandardItem();
             numberItem->setNumber( income );
             mModel->setItem( rowCount, (int)HDR_INCOME, numberItem );
             numberItem = new NumberStandardItem();
             numberItem->setNumber( expense );
             mModel->setItem( rowCount, (int)HDR_EXPENSE, numberItem );
             numberItem = new NumberStandardItem();
-            numberItem->setNumber( income + expense );
+            numberItem->setNumber( netIncome );
             mModel->setItem( rowCount, (int)HDR_NET_INCOME, numberItem );
             numberItem = new NumberStandardItem();
             numberItem->setNumber( month->getNetWorth( aFilter ) );
             mModel->setItem( rowCount, (int)HDR_NET_WORTH, numberItem );
             rowCount++;
             mMonthList.push_back( month );
+
+            // Add to totals
+            totalIncome += income;
+            totalExpense += expense;
+            totalNetIncome += netIncome;
         }
     }
+
+    // Add Totals row
+    item = new QStandardItem();
+    item->setTextAlignment( Qt::AlignCenter );
+    item->setText( "Totals" );
+    mModel->setItem( rowCount, (int)HDR_DATE, item );
+    numberItem = new NumberStandardItem();
+    numberItem->setNumber( totalIncome );
+    mModel->setItem( rowCount, (int)HDR_INCOME, numberItem );
+    numberItem = new NumberStandardItem();
+    numberItem->setNumber( totalExpense );
+    mModel->setItem( rowCount, (int)HDR_EXPENSE, numberItem );
+    numberItem = new NumberStandardItem();
+    numberItem->setNumber( totalNetIncome );
+    mModel->setItem( rowCount, (int)HDR_NET_INCOME, numberItem );
 } // ReportTableView::setDateRange
 
 //----------------------------------------------------------------------------
