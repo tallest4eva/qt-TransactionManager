@@ -181,6 +181,7 @@ Transaction::TransactionType Transaction::getTransactionType() const
     case Category::LOAN_PAYMENT:
     case Category::STOCK_PURCHASE:
     case Category::STOCK_SALE:
+    case Category::FAMILY_LOAN:
         transType = TRANSFER;
         break;
     case Category::INCOME:
@@ -202,7 +203,6 @@ Transaction::TransactionType Transaction::getTransactionType() const
     case Category::UNCATEGORIZED:
     case Category::CASH_AND_ATM:
     case Category::CHECK:
-    case Category::FAMILY_LOAN:
     case Category::PERSONAL_LOAN:
         transType = ( mAmount >= 0 ) ? INCOME : EXPENSE;
         break;
@@ -212,6 +212,16 @@ Transaction::TransactionType Transaction::getTransactionType() const
     }
     return transType;
 } // Transaction::getTransactionType()
+
+//----------------------------------------------------------------------------
+// determineTransactionType
+//----------------------------------------------------------------------------
+Transaction::TransactionType Transaction::determineTransactionType( Category::CategoryIdType aCategory )
+{
+    Transaction transaction;
+    transaction.setCategory( aCategory );
+    return transaction.getTransactionType();
+} // Transaction::determineTransactionType()
 
 //----------------------------------------------------------------------------
 // Get Info

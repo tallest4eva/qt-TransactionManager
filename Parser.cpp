@@ -138,6 +138,13 @@ void Parser::parseFile
                 {
                     TransactionManager::mLastTransactionDate = transaction->getTransactionDate();
                 }
+                // Update values
+                TransactionManager::mCategoriesEnabledList[ (int)transaction->getCategory() ] = true;
+                QList<Category::LabelIdType> labels = transaction->getLabels();
+                for( int i = 0; i < labels.size(); i++ )
+                {
+                    TransactionManager::mLabelsEnabledList[ (int)labels[i] ] = true;
+                }
             }
         }
     }

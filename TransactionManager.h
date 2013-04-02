@@ -53,6 +53,8 @@ public:
     static QList<Month*> mMonthList;
     static QDate mFirstTransactionDate;
     static QDate mLastTransactionDate;
+    static QVector<bool> mCategoriesEnabledList;
+    static QVector<bool> mLabelsEnabledList;
 
 private slots:
     void on_actionExit_triggered();

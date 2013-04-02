@@ -70,6 +70,7 @@ public:
     void  setCurrentBalance( float aCurrentBalance ){ mCurrentBalance = aCurrentBalance; }
     Category::CategoryIdType getCategory() const { return mCategory; }
     void  setCategory( Category::CategoryIdType aCategory ){ mCategory = aCategory; }
+    QList<Category::LabelIdType> getLabels() const { return mLabels; }
     void  setLabels( const QStringList& aLabels );
     bool matchLabel( Category::LabelIdType aLabel );
     bool matchLabels( const QVector<bool> aLabelMask );
@@ -85,6 +86,7 @@ public:
         const QList<Transaction*>& aTransactionList,
         const FilterType& aFilter
         );
+    static TransactionType determineTransactionType( Category::CategoryIdType aCategory );
     static bool transactionSortLessThan( Transaction* t1, Transaction* &t2 ){ return *t1 < *t2; }
 
 private:
@@ -98,7 +100,7 @@ private:
     float mAmount;
     float mCurrentBalance;
     Category::CategoryIdType mCategory;
-    QVector<Category::LabelIdType> mLabels;
+    QList<Category::LabelIdType> mLabels;
 };
 
 #endif // TRANSACTION_H

@@ -14,6 +14,7 @@
 
 #include "ui_transactionmanager.h"
 #include "Account.h"
+#include "Category.h"
 #include "TransactionManager.h"
 #include "Month.h"
 #include "Parser.h"
@@ -31,6 +32,8 @@ QList<Transaction*> TransactionManager::mTransactionList;
 QList<Month*> TransactionManager::mMonthList;
 QDate TransactionManager::mFirstTransactionDate = QDate();
 QDate TransactionManager::mLastTransactionDate = QDate();
+QVector<bool> TransactionManager::mCategoriesEnabledList( Category::CATEGORY_TYPE_CNT, false );
+QVector<bool> TransactionManager::mLabelsEnabledList( Category::LABEL_CNT, false );
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -182,6 +185,8 @@ void TransactionManager::on_actionOpen_triggered()
         mFileContents.clear();
         mFirstTransactionDate.setDate(2000,1,1);
         mLastTransactionDate.setDate(2000,1,1);
+        mCategoriesEnabledList.fill( false );
+        mLabelsEnabledList.fill( false );
 
         Parser::parseFile( in );
         file.close();
@@ -308,7 +313,6 @@ void TransactionManager::on_overviewAccountList_itemDoubleClicked( QListWidgetIt
         mTransactionAccountsCheckBoxList[row]->setCheckState( Qt::Checked );
     }
     on_transactionSelectButton_clicked();
-
 } // TransactionManager::on_overviewAccountList_itemDoubleClicked()
 
 //----------------------------------------------------------------------------
@@ -439,11 +443,11 @@ void TransactionManager::initTransactionsTab()
         ui->transactionAllLabelsCheckBox->setDisabled( false );
         for( int i = 0; i < mTransactionCategoriesCheckBoxList.size(); i++ )
         {
-            mTransactionCategoriesCheckBoxList[i]->setDisabled( false );
+            mTransactionCategoriesCheckBoxList[i]->setDisabled( !mCategoriesEnabledList[i] );
         }
         for( int i = 0; i < mTransactionLabelsCheckBoxList.size(); i++ )
         {
-            mTransactionLabelsCheckBoxList[i]->setDisabled( false );
+            mTransactionLabelsCheckBoxList[i]->setDisabled( !mLabelsEnabledList[i] );
         }
         ui->transactionAllAccountsCheckBox->setCheckState( Qt::Checked );
         ui->transactionStartDateEdit->setDate( mFirstTransactionDate );
@@ -564,11 +568,11 @@ void TransactionManager::initReportsTab()
         ui->reportAllLabelsCheckBox->setDisabled( false );
         for( int i = 0; i < mReportCategoriesCheckBoxList.size(); i++ )
         {
-            mReportCategoriesCheckBoxList[i]->setDisabled( false );
+            mReportCategoriesCheckBoxList[i]->setDisabled( !mCategoriesEnabledList[i] );
         }
         for( int i = 0; i < mReportLabelsCheckBoxList.size(); i++ )
         {
-            mReportLabelsCheckBoxList[i]->setDisabled( false );
+            mReportLabelsCheckBoxList[i]->setDisabled( !mLabelsEnabledList[i] );
         }
         ui->reportAllAccountsCheckBox->setCheckState( Qt::Checked );
         ui->reportStartDateEdit->setDate( mFirstTransactionDate );

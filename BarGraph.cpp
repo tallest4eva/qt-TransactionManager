@@ -180,12 +180,16 @@ void BarGraph::mouseReleaseEvent( QMouseEvent * aEvent )
         mDrag = false;
         if( mDataSet )
         {
+            // Set new report date interval
             int startDateVal = mPlot.invTransform( QwtPlot::xBottom, mOrigin.x() - offset );
             QDate startDate = REFERENCE_DATE.addDays( startDateVal );
             int endDateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
             QDate endDate = REFERENCE_DATE.addDays( endDateVal );
             if( endDate > startDate )
             {
+                startDate.setDate( startDate.year(), startDate.month(), 1 );
+                endDate.setDate( endDate.year(), endDate.month(), 1 );
+                endDate = endDate.addMonths(1).addDays(-1);
                 reportDateSelected( startDate, endDate );
             }
         }
@@ -273,6 +277,7 @@ void BarGraph::setGraphMode( BarChartType aGraphMode )
 //----------------------------------------------------------------------------
 void BarGraph::clear()
 {
+    hideDisplayLabel();
     mFilter = Transaction::FilterType();
     mFilter.mStartDate.setDate( 2000, 1, 1 );
     mFilter.mEndDate.setDate( 2001, 1, 1 );
