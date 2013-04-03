@@ -66,7 +66,16 @@ void TransactionManager::init()
 {
     // Init Parser
     Parser::restore();
-    
+
+    // Obi: Temp disable unused checkboxes
+    ui->transactionOpenAccountsCheckBox->setDisabled( true );
+    ui->reportOpenAccountsCheckBox->setDisabled( true );
+    ui->transactionIncomeCategoriesCheckBox->setDisabled( true );
+    ui->transactionExpenseCategoriesCheckBox->setDisabled( true );
+    ui->reportIncomeCategoriesCheckBox->setDisabled( true );
+    ui->reportExpenseCategoriesCheckBox->setDisabled( true );
+
+    // Init tab/toolbox widgets
     ui->tabWidget->setCurrentIndex(0);
     ui->transactionToolBox->setCurrentIndex(0);
     ui->reportToolBox->setCurrentIndex(0);
@@ -74,40 +83,38 @@ void TransactionManager::init()
     TransactionListModel* model = new TransactionListModel();
     ui->transactionTableView->setModel( model );
     model->setupTableView( ui->transactionTableView );
-    ui->transactionOpenAccountsCheckBox->setDisabled( true );
-    ui->reportOpenAccountsCheckBox->setDisabled( true );
     for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
     {
-        QCheckBox* checkbox = new QCheckBox( Category::getCategoryText( (Category::CategoryIdType)i, true ), ui->transactionCategoriesGroupBox );
+        QString str = Category::getCategoryText( (Category::CategoryIdType)i, true ).replace( "&", "and" );
+        QCheckBox* checkbox = new QCheckBox( str, ui->transactionCategoriesGroupBox );
         ui->transactionCategoriesGroupBox->layout()->addWidget( checkbox );
         mTransactionCategoriesCheckBoxList.push_back( checkbox );
 
-        checkbox = new QCheckBox( Category::getCategoryText( (Category::CategoryIdType)i, true ), ui->reportCategoriesGroupBox );
+        checkbox = new QCheckBox( str, ui->reportCategoriesGroupBox );
         ui->reportCategoriesGroupBox->layout()->addWidget( checkbox );
         mReportCategoriesCheckBoxList.push_back( checkbox );
     }
     for( int i = 0; i < Category::LABEL_CNT; i++ )
     {
-        QCheckBox* checkbox = new QCheckBox( Category::getLabelText((Category::LabelIdType)i), ui->transactionLabelsGroupBox );
+        QString str = Category::getLabelText( (Category::LabelIdType)i );
+        QCheckBox* checkbox = new QCheckBox( str, ui->transactionLabelsGroupBox );
         ui->transactionLabelsGroupBox->layout()->addWidget( checkbox );
         mTransactionLabelsCheckBoxList.push_back( checkbox );
 
-        checkbox = new QCheckBox( Category::getLabelText((Category::LabelIdType)i), ui->reportLabelsGroupBox );
+        checkbox = new QCheckBox( str, ui->reportLabelsGroupBox );
         ui->reportLabelsGroupBox->layout()->addWidget( checkbox );
         mReportLabelsCheckBoxList.push_back( checkbox );
     }
 
-    // Init graph
+    // Init report graphs, table and pie charts
+    ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
+    ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
     mReportNetIncomeGraph.setGraphMode( BarGraph::BAR_NET_INCOME );
     mReportNetWorthGraph.setGraphMode( BarGraph::BAR_NET_WORTH );
     connect( &mReportNetIncomeGraph, SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
     connect( &mReportNetWorthGraph, SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
     connect( &mReportNetIncomeGraph, SIGNAL(reportDateSelected(QDate,QDate)), this, SLOT(handleShowReportByDate(QDate,QDate)) );
     connect( &mReportNetWorthGraph, SIGNAL(reportDateSelected(QDate,QDate)), this, SLOT(handleShowReportByDate(QDate,QDate)) );
-    ui->reportNetIncomeTab->layout()->addWidget( &mReportNetIncomeGraph );
-    ui->reportNetWorthTab->layout()->addWidget( &mReportNetWorthGraph );
-    
-    // Init report
     connect( &mReportTableView, SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
     ui->reportListTab->layout()->addWidget( &mReportTableView );
     ui->reportAssetGroupBox->layout()->addWidget( &mAssetsPieChart );
@@ -116,22 +123,24 @@ void TransactionManager::init()
     ui->reportExpenseParentGroupBox->layout()->addWidget( &mExpenseParentPieChart );
     ui->reportIncomeSubGroupBox->layout()->addWidget( &mIncomeSubPieChart );
     ui->reportExpenseSubGroupBox->layout()->addWidget( &mExpenseSubPieChart );
-
     mPieChartList.push_back( &mAssetsPieChart );
     mPieChartList.push_back( &mDebtsPieChart );
     mPieChartList.push_back( &mIncomeParentPieChart );
     mPieChartList.push_back( &mExpenseParentPieChart );
     mPieChartList.push_back( &mIncomeSubPieChart );
     mPieChartList.push_back( &mExpenseSubPieChart );
-
     mAssetsPieChart.setChartType( ReportPieChart::ASSET_BY_ACCOUNT );
     mDebtsPieChart.setChartType( ReportPieChart::DEBT_BY_ACCOUNT );
     mIncomeParentPieChart.setChartType( ReportPieChart::INCOME_BY_CATEGORY );
-    mIncomeParentPieChart.setGroupCategories( true );
     mExpenseParentPieChart.setChartType( ReportPieChart::EXPENSE_BY_CATEGORY );
-    mExpenseParentPieChart.setGroupCategories( true );
     mIncomeSubPieChart.setChartType( ReportPieChart::INCOME_BY_CATEGORY );
     mExpenseSubPieChart.setChartType( ReportPieChart::EXPENSE_BY_CATEGORY );
+    mIncomeParentPieChart.setGroupCategories( true );
+    mExpenseParentPieChart.setGroupCategories( true );
+    for( int i = 0; i < mPieChartList.size(); i++ )
+    {
+        connect( mPieChartList[i], SIGNAL(transactionFilterSelected(const Transaction::FilterType&)), this, SLOT(handleShowTransactionByFilter(const Transaction::FilterType&)) );
+    }
 } // TransactionManager::init()
 
 //----------------------------------------------------------------------------
@@ -680,7 +689,11 @@ void TransactionManager::handleShowTransactionByFilter( const Transaction::Filte
 {
     // Switch to transaction tab
     ui->tabWidget->setCurrentWidget( ui->transactionsTab );
-    ui->transactionToolBox->setCurrentWidget( ui->transactionDateToolBox );
+    // Display the correct tool box
+    if( aFilter.mShowAccounts ){ ui->transactionToolBox->setCurrentWidget( ui->transactionAccountToolBox ); }
+    else if( aFilter.mShowCategories ){ ui->transactionToolBox->setCurrentWidget( ui->transactionCategoriesToolBox ); }
+    else if( aFilter.mShowLabels ){ ui->transactionToolBox->setCurrentWidget( ui->transactionLabelsToolBox ); }
+    else if( aFilter.mShowDates ){ ui->transactionToolBox->setCurrentWidget( ui->transactionDateToolBox ); }
     on_transactionAllAccountsCheckBox_stateChanged( (int)Qt::Unchecked );
     for( int i = 0; i < aFilter.mAccountList.size(); i++ )
     {

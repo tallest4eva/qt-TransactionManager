@@ -27,14 +27,14 @@ ReportPieChart::ReportPieChart():
     // Set up display label
     mDisplayLabel.setParent( this );
     mDisplayLabel.hide();
-    mDisplayLabel.setGeometry( 0, 0, 170, 90 );
+    mDisplayLabel.setGeometry( 0, 0, 185, 90 );
     mDisplayLabel.setFrameShadow( QFrame::Raised );
     mDisplayLabel.setFrameShape( QFrame::StyledPanel );
     mDisplayLabel.setPalette( QPalette(Qt::black,Qt::white) );
     mDisplayLabel.setAutoFillBackground( true );
     connect( &mDisplayLabel, SIGNAL(clicked()), this, SLOT(handleDisplayClicked()) );
     QFont font;
-    font.setPointSize( 9 );
+    font.setPointSize( 10 );
     mDisplayLabel.setFont( font );
 
     mModel = new QStandardItemModel( 0, 0 );
@@ -69,6 +69,7 @@ void ReportPieChart::clear()
 void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
     hideDisplayLabel();
+    mFilter = aFilter;
     QColor baseColor = BASE_COLOR.toHsv();
     QColor secondaryLabelColor;
     QList<PieDataType> dataList;
@@ -163,10 +164,11 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
             QColor nextColor;
             int newH = (h + step*i)%colorRange;
             nextColor.setHsv( newH, s, v );
+            QString valueStr = "$" + QString::number(dataList[i].mValue, 'f', 2 );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_LABEL), dataList[i].mName );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_LABEL), nextColor, Qt::DecorationRole );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_VALUE), dataList[i].mValue );
-            mModel->setData( mModel->index(i,(int)PieView::COLUMN_SEC_LABEL), "$" + QString::number(dataList[i].mValue, 'f', 2 ) );
+            mModel->setData( mModel->index(i,(int)PieView::COLUMN_SEC_LABEL), valueStr );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_SEC_LABEL), secondaryLabelColor, Qt::DecorationRole );
         }
     }
@@ -213,6 +215,9 @@ void ReportPieChart::handleItemClicked( const QModelIndex& aIndex )
     double percentage = ( mTotalValue > 0 ) ? value*100/mTotalValue : 0;
     QModelIndex labelIndex = model()->index(row, (int)COLUMN_LABEL, rootIndex());
     QString label = mModel->data(labelIndex).toString();
+    QStringList list = label.split( " > ", QString::SkipEmptyParts );
+    if( list.size() == 2 ){ label = list[1]; }
+    mDisplayLabel.setString( label );
 
     QString str;
     switch( mChartType )
@@ -233,7 +238,7 @@ void ReportPieChart::handleItemClicked( const QModelIndex& aIndex )
         break;
     }
     str += "Percentage(%): " + QString::number( percentage, 'f', 2 ) + "%";
-    str += "<center><font color=\"blue\">Dbl click to See Transactions</font></center>";
+    str += "<center><font size=\"-2\" color=\"blue\">Dbl click to See Transactions</font></center>";
     mDisplayLabel.setText( str );
     mDisplayLabel.show();
 } // ReportPieChart::handleItemClicked
@@ -251,9 +256,41 @@ void ReportPieChart::hideDisplayLabel()
 //----------------------------------------------------------------------------
 void ReportPieChart::handleDisplayClicked()
 {
-    //QDate date = mDisplayLabel.getDate();
-    //Transaction::FilterType filter = mFilter;
-    //filter.mStartDate = date;
-    //filter.mEndDate = date.addMonths(1).addDays(-1);
-    //transactionFilterSelected( filter );
+    QString label = mDisplayLabel.getString();
+    Transaction::FilterType filter = mFilter;
+    switch( mChartType )
+    {
+    case ASSET_BY_ACCOUNT:
+    case DEBT_BY_ACCOUNT:
+        {
+            filter.mAccountList.clear();
+            Account* account = Account::getAccount( label );
+            if( account )
+            {
+                filter.mAccountList.push_back( account );
+            }
+            filter.mShowAccounts = true;
+        }
+        break;
+    case INCOME_BY_CATEGORY:
+    case EXPENSE_BY_CATEGORY:
+        {
+            filter.mCategoryList.fill( false );
+            Category::CategoryIdType category = Category::getCategoryId( label );
+            filter.mCategoryList[ (int)category ] = true;
+            if( mGroupCategories )
+            {
+                for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
+                {
+                    if( category == Category::getParentCategoryId( (Category::CategoryIdType)i ) )
+                    {
+                        filter.mCategoryList[i] = true;
+                    }
+                }
+            }
+            filter.mShowCategories = true;
+        }
+        break;
+    }
+    transactionFilterSelected( filter );
 } // ReportPieChart::handleDisplayClicked

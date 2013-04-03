@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = TransactionManager
 TEMPLATE = app
 
+DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += main.cpp\
         Account.cpp\

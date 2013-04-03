@@ -151,6 +151,7 @@ void ReportTableView::handleItemDoubleClicked( const QModelIndex& aIndex )
         Transaction::FilterType filter = mFilter;
         filter.mStartDate = month->getDate();
         filter.mEndDate = month->getDate().addMonths(1).addDays(-1);
+        filter.mShowDates = true;
         transactionFilterSelected( filter );
     }
 } // ReportTableView::handleItemDoubleClicked

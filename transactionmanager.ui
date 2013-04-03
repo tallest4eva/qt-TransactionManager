@@ -1121,7 +1121,7 @@
   </action>
   <action name="actionFileInputConfig">
    <property name="text">
-    <string>File Input Config</string>
+    <string>Input File Config</string>
    </property>
   </action>
  </widget>

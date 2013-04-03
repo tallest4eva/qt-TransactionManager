@@ -45,6 +45,9 @@ public:
     void setGroupCategories( bool aGroupCategories ){ mGroupCategories = aGroupCategories; }
     void clear();
 
+signals:
+    void transactionFilterSelected( const Transaction::FilterType& aFilter );
+
 private slots:
     void handleItemClicked( const QModelIndex& aIndex );
     void hideDisplayLabel();

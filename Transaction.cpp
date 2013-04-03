@@ -88,6 +88,10 @@ void Transaction::setLabels
     {
         mLabels.push_back( Category::getLabelId( aLabels[i] ) );
     }
+    if( mLabels.isEmpty() )
+    {
+        mLabels.push_back( Category::LABEL_NONE );
+    }
 } // Transaction::setLabels
 
 //----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'transactionmanager.ui'
 **
-** Created: Tue Apr 2 09:35:21 2013
+** Created: Wed Apr 3 11:26:45 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -897,7 +897,7 @@ public:
         actionAbout->setText(QApplication::translate("TransactionManager", "About", 0, QApplication::UnicodeUTF8));
         actionDisplayFile->setText(QApplication::translate("TransactionManager", "Display File Contents", 0, QApplication::UnicodeUTF8));
         actionDisplayLog->setText(QApplication::translate("TransactionManager", "Display Log", 0, QApplication::UnicodeUTF8));
-        actionFileInputConfig->setText(QApplication::translate("TransactionManager", "File Input Config", 0, QApplication::UnicodeUTF8));
+        actionFileInputConfig->setText(QApplication::translate("TransactionManager", "Input File Config", 0, QApplication::UnicodeUTF8));
         overviewAccountTitle->setText(QApplication::translate("TransactionManager", "Accounts", 0, QApplication::UnicodeUTF8));
         overviewNumberOfAccountsLabel->setText(QApplication::translate("TransactionManager", "Number of Accounts:", 0, QApplication::UnicodeUTF8));
         overviewNumberOfTransactionsLabel->setText(QApplication::translate("TransactionManager", "Number of Transactions:", 0, QApplication::UnicodeUTF8));

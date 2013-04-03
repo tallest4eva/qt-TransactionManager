@@ -72,14 +72,14 @@ void Account::updateData()
 //----------------------------------------------------------------------------
 //! Checks if name matches this account
 //----------------------------------------------------------------------------
-bool Account::isAccountMatch( const QString& aAccountName ) 
+bool Account::isAccountMatch( const QString& aAccountName, bool aAllowAltNames ) 
 {
     bool found = false;
     if( mName == aAccountName )
     {
         found = true;
     }
-    else
+    else if( aAllowAltNames )
     {
         for( int i = 0; i < mAlternateNames.size(); i++ )
         {
@@ -142,6 +142,23 @@ int Account::getAccountIndex( Account* aAccount )
 } // Account::getAccountIndex
 
 //----------------------------------------------------------------------------
+// getAccount. Allows for alternate names
+//----------------------------------------------------------------------------
+Account* Account::getAccount( const QString& aAccountName, bool aAllowAltNames )
+{
+    Account* account = NULL;
+    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    {
+        if( TransactionManager::mAccountList[i]->isAccountMatch( aAccountName, aAllowAltNames ) )
+        {
+            account = TransactionManager::mAccountList[i];
+            break;
+        }
+    }
+    return account;
+} // Account::getAccount()
+
+//----------------------------------------------------------------------------
 // addToAccount. Allows for alternate names
 //----------------------------------------------------------------------------
 bool Account::addToAccount
@@ -153,7 +170,7 @@ bool Account::addToAccount
     bool found = false;
     for( int i = TransactionManager::mAccountList.size()-1; i >= 0; --i )
     {
-        if( TransactionManager::mAccountList[i]->isAccountMatch( aAccountName ) )
+        if( TransactionManager::mAccountList[i]->isAccountMatch( aAccountName, true ) )
         {
             aTransaction->setAccount( TransactionManager::mAccountList[i] );
             TransactionManager::mAccountList[i]->addTransaction( aTransaction );

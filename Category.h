@@ -191,6 +191,7 @@ public:
 
     enum LabelIdType
     {
+        LABEL_NONE,
         LABEL_REVIEWED,
         LABEL_MANUAL,
         LABEL_SHARED,

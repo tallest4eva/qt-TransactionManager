@@ -42,7 +42,7 @@ public:
     void  setOpenDate( QDate aOpenDate ){ mOpenDate = aOpenDate; }
     QDate getCloseDate() const { return mCloseDate; }
     void  setCloseDate( QDate aCloseDate ){ mCloseDate = aCloseDate; }
-    bool  isAccountMatch( const QString& aAccountName );
+    bool  isAccountMatch( const QString& aAccountName, bool aAllowAltNames = false );
     void  addTransaction( Transaction* aTransaction );
     QList<Transaction*> getTransactionList(){ return mTransactionList; }
     void  updateData();
@@ -52,6 +52,7 @@ public:
     static void updateAccountList();
     static float getTotalAccountBalance();
     static int getAccountIndex( Account* aAccount );
+    static Account* getAccount( const QString& aAccountName, bool aAllowAltNames = false );
     static bool addToAccount( const QString& aAccountName, Transaction* aTransaction );
 
 private:

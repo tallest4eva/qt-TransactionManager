@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Transaction Manager Help Page</title>
+    </head>
+
+    <body>
+    <h3>Transaction Manager Help Page</h3>
+    <br>
+
+    <!-- Table Of Contents -->
+    <hr>
+    <b>Table Of Contents</b><br>
+    <a href="#HowToUse">How To Use</a><br>
+    <a href="#TransactionFileConfig">Transaction File Config</a><br>
+    <br>
+
+    <!-- Transaction Manager description -->
+    <hr>
+    <b>Transaction Manager</b><br>
+    The Transaction Manager is a Qt based application which aggregates, manages and displays
+    financial transactions contained in a data file.<br>
+    It allows users to view the contents of a configurable data file containing account and
+    transaction information.<br>
+    <br>
+    <img width='600' height='350' src='help/transactionManager.png' /img><br>
+    <br>
+
+    <!-- How To use Section-->
+    <hr>
+    <b><a id="HowToUse">How To Use</a></b><br>
+    <br>
+    <b>Open Transaction Data File</b><br>
+    <ul>
+        <li>Click on the 'File' Menu</li>
+        <li>Click on the 'Open' Menu Item</li>
+        <img width='350' height='200' src='help/transactionManager - File - Open.png' /img><br>
+        <li>Select Transaction data file to display transactions</li>
+        <li>The file name of the transaction file being reviewed is displayed in the status bar</li>
+        <img width='350' height='120' src='help/transactionManager - Status Bar.png' /img><br>
+    </ul>
+    <br>
+    <b>Transaction Manager Display</b><br>
+    The Transaction Manager displays transaction data in 3 general tabs:<br>
+    <br>
+
+    <b>The Overview Tab</b><br>
+    <img width='600' height='350' src='help/transactionManager - Overview Tab.png' /img><br>
+    The Overview Tab displays a high level overview of the information<br> 
+    <ul>
+        <li>An accounts list to display all the accounts found</li>
+        <li>The Name, Current Balance, Status, Open and Close Date(if Closed) of each account found</li>
+        <li>The Number of Accounts found</li>
+        <li>The Number of Transactions found</li>
+        <li>The combined current Net Worth of the accounts found</li>
+        <li>The Date of the First and Last transactions</li>
+    </ul>
+
+    <b>The Transactions Tab</b><br>
+    The Transactions Tab displays the transactions in customizable list<br>
+    <img width='600' height='350' src='help/transactionManager - Transactions Tab.png' /img><br>
+    <ul>
+        <li>The Transaction list can sorted by any of the transaction values</li>
+        <li>The Transaction selection tool box can be used to filter the transaction list</li>
+    </ul>
+    <b>The Reports Tab</b><br>
+    The Reports Tab displays the Report charts of data compiled from the transactions file<br>
+    <img width='600' height='350' src='help/transactionManager - Reports Tab.png' /img><br>
+    <br>
+
+    <!-- Input data file Section -->
+    <hr>
+    <b><a id="TransactionFileConfig">Transaction Data File Config</a></b><br>
+    The Transaction Manager takes a text data file as input.<br>
+    <br>
+    <b>Default Input File Format</b><br>
+    The default input data file is a csv (comma-separated-values) file.<br>
+    <br>
+    <b>'Input File Config' Dialog</b><br>
+    The format of the input data file can be configured by the 'Input File Config' Dialog.<br>
+    Click on the 'Tools' Menu<br>
+    Click on the 'Input File Config' Menu Item<br>
+    <img width='400' height='300' src='help/transactionManager - Tools - File Input Config.png' /img><br>
+    This opens the 'Input File Config' Dialog<br>
+    <img width='600' height='350' src='help/transactionManager - File Config Dialog.png' /img><br>
+    Use the dropdown combo boxes to configure:<br>
+    <ul>
+        <li>The File Separator Character: ',' or ';'. Default: ','</li>
+        <li>The Date Format used for Date Fields: Default: 'MM/dd/yy'</li>
+        <li>The Account descriptor column order</li>
+        <li>The Trnsaction descriptor column order</li>
+    </ul>
+    <hr>
+    
+
+    </body>
+</html>

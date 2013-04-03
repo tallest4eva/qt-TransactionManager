@@ -178,12 +178,13 @@ const Category::CategoryType Category::cCategoryList[] =
 
 const char* Category::cLabelList[] =
 {
-    "Reviewed",
-    "Manual",
-    "Shared",
-    "Business",
-    "Family",
-    "Projected"
+    "None",         /* LABEL_NONE       */
+    "Reviewed",     /* LABEL_REVIEWED   */
+    "Manual",       /* LABEL_MANUAL     */
+    "Shared",       /* LABEL_SHARED     */
+    "Business",     /* LABEL_BUSINESS   */
+    "Family",       /* LABEL_FAMILY     */
+    "Projected",    /* LABEL_PROJECTED  */
 };
     
 //----------------------------------------------------------------------------
@@ -248,7 +249,6 @@ QString Category::getCategoryText
         }
         text += cCategoryList[ aCategoryId ].text;
     }
-    text.replace( "&", "and" );
     return text;
 } // Category::getCategoryText
 
@@ -261,14 +261,17 @@ Category::LabelIdType Category::getLabelId
     )
 {
     bool found = false;
-    LabelIdType id = LABEL_CNT;
-    for( int i = 0; i < LABEL_CNT; i++ )
+    LabelIdType id = LABEL_NONE;
+    if( !aLabel.isEmpty() )
     {
-        if( aLabel == QString(cLabelList[ i ]) )
+        for( int i = 0; i < LABEL_CNT; i++ )
         {
-            id = (LabelIdType)i;
-            found = true;
-            break;
+            if( aLabel == QString(cLabelList[ i ]) )
+            {
+                id = (LabelIdType)i;
+                found = true;
+                break;
+            }
         }
     }
     if( !found )

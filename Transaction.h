@@ -34,18 +34,22 @@ public:
     struct FilterType
     {
         bool mAllAccounts;
+        bool mShowAccounts;
         QList<Account*> mAccountList;
         bool mAllCategories;
+        bool mShowCategories;
         QVector<bool> mCategoryList;
         bool mAllLabels;
+        bool mShowLabels;
         QVector<bool> mLabelList;
         bool mAllDates;
+        bool mShowDates;
         QDate mStartDate;
         QDate mEndDate;
-        FilterType(): mAllAccounts(true), 
-                      mAllCategories(true), mCategoryList(Category::CATEGORY_TYPE_CNT,false),
-                      mAllLabels(true), mLabelList(Category::LABEL_CNT,false),
-                      mAllDates(true), mStartDate(2000,1,1), mEndDate(2000,1,1){}
+        FilterType(): mAllAccounts(true), mShowAccounts(false), 
+                      mAllCategories(true), mShowCategories(false), mCategoryList(Category::CATEGORY_TYPE_CNT,false),
+                      mAllLabels(true), mShowLabels(false), mLabelList(Category::LABEL_CNT,false),
+                      mAllDates(true), mShowDates(false), mStartDate(2000,1,1), mEndDate(2000,1,1){}
     };
 
     // Functions

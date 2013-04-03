@@ -27,13 +27,20 @@ class DisplayLabel : public QLabel
 {
     Q_OBJECT
 public:
-    virtual void mouseDoubleClickEvent( QMouseEvent* aEvent ){ QLabel::mouseDoubleClickEvent( aEvent ); clicked(); }
+    DisplayLabel::DisplayLabel();
+    virtual void mouseDoubleClickEvent( QMouseEvent* aEvent );
+    virtual void mousePressEvent( QMouseEvent* aEvent );
     QDate getDate() const { return mDate; }
-    void  setDate( QDate aDate ){ mDate = aDate; }
+    void  setDate( const QDate& aDate ){ mDate = aDate; }
+    QString getString() const { return mString; }
+    void  setString( const QString& aString ){ mString = aString; }
 signals:
     void clicked();
 private:
+    QTimer mPressTimer;
+    QTimer mReleaseTimer;
     QDate mDate;
+    QString mString;
 };
 
 class BarGraph : public QWidget

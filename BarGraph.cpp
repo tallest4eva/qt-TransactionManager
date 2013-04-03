@@ -14,6 +14,7 @@
 
 const QDate BarGraph::REFERENCE_DATE = QDate(1990,1,1);
 static const int DISPLAY_LABEL_TIMOEUT = 5000;              // Display label timeout
+static const int DOUBLE_CLICK_INTERVAL = 300;               // Double click interval
 
 class TimeScaleDraw : public QwtScaleDraw
 {
@@ -25,6 +26,39 @@ public:
     }
 };
 
+//----------------------------------------------------------------------------
+// DisplayLabel
+//----------------------------------------------------------------------------
+DisplayLabel::DisplayLabel()
+{
+    mPressTimer.setSingleShot( true );
+    mReleaseTimer.setSingleShot( true );
+    connect( &mPressTimer, SIGNAL(timeout()), this, SLOT(hide()) );
+} // DisplayLabel::DisplayLabel
+
+//----------------------------------------------------------------------------
+// mouseDoubleClickEvent
+//----------------------------------------------------------------------------
+void DisplayLabel::mouseDoubleClickEvent( QMouseEvent* aEvent )
+{
+    QLabel::mouseDoubleClickEvent( aEvent );
+    mPressTimer.stop();
+    mReleaseTimer.start(DOUBLE_CLICK_INTERVAL);
+    clicked(); 
+} // DisplayLabel::mouseDoubleClickEvent
+
+//----------------------------------------------------------------------------
+// mousePressEvent
+//----------------------------------------------------------------------------
+void DisplayLabel::mousePressEvent( QMouseEvent* aEvent )
+{
+    QLabel::mousePressEvent( aEvent );
+    if( !mReleaseTimer.isActive() ){ mPressTimer.start(DOUBLE_CLICK_INTERVAL); }
+} // DisplayLabel::mousePressEvent
+
+//----------------------------------------------------------------------------
+// Destructor
+//----------------------------------------------------------------------------
 BarGraph::BarGraph(QWidget *parent) :
     QWidget(parent)
   , mGraphMode( BAR_NET_INCOME )
@@ -83,7 +117,7 @@ BarGraph::BarGraph(QWidget *parent) :
     // Set up display label
     mDisplayLabel.setParent( this );
     mDisplayLabel.hide();
-    mDisplayLabel.setGeometry( 0, 0, 160, 90 );
+    mDisplayLabel.setGeometry( 0, 0, 170, 90 );
     mDisplayLabel.setFrameShadow( QFrame::Raised );
     mDisplayLabel.setFrameShape( QFrame::StyledPanel );
     mDisplayLabel.setPalette( QPalette(Qt::black,Qt::white) );
@@ -130,6 +164,7 @@ void BarGraph::handleDisplayClicked()
     Transaction::FilterType filter = mFilter;
     filter.mStartDate = date;
     filter.mEndDate = date.addMonths(1).addDays(-1);
+    filter.mShowDates = true;
     transactionFilterSelected( filter );
 } // BarGraph::handleDisplayClicked
 
