@@ -33,20 +33,21 @@ FileConfigDialog::FileConfigDialog
     {
         mFileSeperator.addItem( QString(Parser::cSeparatorList[i]), i );
     }
-    for( int i = 0; i < 10; i++ )
+    for( int i = 1; i <= 10; i++ )
     {
-        mTransactionDate.addItem( "Column " + QString::number(i), i );
-        mTransactionName.addItem( "Column " + QString::number(i), i );
-        mTransactionDescription.addItem( "Column " + QString::number(i), i );
-        mTransactionType.addItem( "Column " + QString::number(i), i );
-        mTransactionAmount.addItem( "Column " + QString::number(i), i );
-        mTransactionBalance.addItem( "Column " + QString::number(i), i );
-        mTransactionCategory.addItem( "Column " + QString::number(i), i );
-        mTransactionLabels.addItem( "Column " + QString::number(i), i );
-        mAccountName.addItem( "Column " + QString::number(i), i );
-        mAccountStatus.addItem( "Column " + QString::number(i), i );
-        mAccountState.addItem( "Column " + QString::number(i), i );
-        mAccountAltName.addItem( "Column " + QString::number(i), i );
+        QString str = "Column " + QString::number(i);
+        mTransactionDate.addItem( str, i );
+        mTransactionName.addItem( str, i );
+        mTransactionDescription.addItem( str, i );
+        mTransactionType.addItem( str, i );
+        mTransactionAmount.addItem( str, i );
+        mTransactionBalance.addItem( str, i );
+        mTransactionCategory.addItem( str, i );
+        mTransactionLabels.addItem( str, i );
+        mAccountName.addItem( str, i );
+        mAccountStatus.addItem( str, i );
+        mAccountState.addItem( str, i );
+        mAccountAltName.addItem( str, i );
     }
 
     // Setup Group Boxes
@@ -55,12 +56,14 @@ FileConfigDialog::FileConfigDialog
     fLayout->addRow( "Date Format:", &mDateFormat );
     mFileBox.setLayout( fLayout );
     fLayout = new QFormLayout;
+    fLayout->addRow( "Column 1 Keyword:", &mAccountDescriptor );
     fLayout->addRow( "Name:", &mAccountName );
     fLayout->addRow( "Status:", &mAccountStatus );
     fLayout->addRow( "State:", &mAccountState );
     fLayout->addRow( "Alternate Names:", &mAccountAltName );
     mAccountBox.setLayout( fLayout );
     fLayout = new QFormLayout;
+    fLayout->addRow( "Column 1 Keyword:", &mTransactionDescriptor );
     fLayout->addRow( "Date:", &mTransactionDate );
     fLayout->addRow( "Name:", &mTransactionName );
     fLayout->addRow( "Description:", &mTransactionDescription );
@@ -71,7 +74,7 @@ FileConfigDialog::FileConfigDialog
     fLayout->addRow( "Labels:", &mTransactionLabels );
     mTransactionBox.setLayout( fLayout );
 
-    updateComboBoxes();
+    updateData();
     
     // Set up buttons
     mCancelButton.setText( "Cancel" );
@@ -101,12 +104,14 @@ FileConfigDialog::~FileConfigDialog()
 } // FileConfigDialog::~FileConfigDialog
 
 //----------------------------------------------------------------------------
-// update Combo Boxes
+// update Data
 //----------------------------------------------------------------------------
-void FileConfigDialog::updateComboBoxes()
+void FileConfigDialog::updateData()
 {
     mFileSeperator.setCurrentIndex( Parser::sSeparator );
     mDateFormat.setCurrentIndex( Parser::sDateFormat );
+    mAccountDescriptor.setText( Parser::sAccountTag );
+    mTransactionDescriptor.setText( Parser::sTransactionTag );
     mTransactionDate.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_DATE] );
     mTransactionName.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_ACCOUNT_NAME] );
     mTransactionDescription.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_DESCRIPTION] );
@@ -119,7 +124,7 @@ void FileConfigDialog::updateComboBoxes()
     mAccountStatus.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_STATUS] );
     mAccountState.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_STATE] );
     mAccountAltName.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_ALT_NAMES] );
-} // FileConfigDialog::updateComboBoxes
+} // FileConfigDialog::updateData
 
 //----------------------------------------------------------------------------
 // handleCancelButton
@@ -137,7 +142,7 @@ void FileConfigDialog::handleRestoreButton()
 {
     // Restore parser defaults
     Parser::restore();
-    updateComboBoxes();
+    updateData();
 } // FileConfigDialog::handleRestoreButton()
 
 //----------------------------------------------------------------------------
@@ -148,6 +153,10 @@ void FileConfigDialog::handleDoneButton()
     // Save current combo box values
     Parser::sSeparator = (Parser::SeparatorType)mFileSeperator.currentIndex();
     Parser::sDateFormat = (Parser::DateFormatType)mDateFormat.currentIndex();
+    QString text = mAccountDescriptor.toPlainText();
+    if( !text.isEmpty() ){ Parser::sAccountTag = text; }
+    text = mTransactionDescriptor.toPlainText();
+    if( !text.isEmpty() ){ Parser::sTransactionTag = text; }
     Parser::sEntryList[Parser::ENTRY_TRANS_DATE] = mTransactionDate.currentIndex();
     Parser::sEntryList[Parser::ENTRY_TRANS_ACCOUNT_NAME] = mTransactionName.currentIndex();
     Parser::sEntryList[Parser::ENTRY_TRANS_DESCRIPTION] = mTransactionDescription.currentIndex();

@@ -27,7 +27,7 @@ SOURCES += main.cpp\
         ReportPieChart.cpp\
         ReportTableView.cpp\
         Transaction.cpp\
-        TransactionListModel.cpp\
+        TransactionList.cpp\
         TransactionManager.cpp
 
 HEADERS  += Account.h\
@@ -43,7 +43,7 @@ HEADERS  += Account.h\
         ReportPieChart.h\
         ReportTableView.h\
         Transaction.h\
-        TransactionListModel.h\
+        TransactionList.h\
         TransactionManager.h
 
 FORMS    += transactionmanager.ui

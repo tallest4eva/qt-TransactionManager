@@ -85,7 +85,7 @@ void OverviewAccountListItem::setAccount
         mStatusLabel.setText( str );
 
         str = mAccount->getOpenDate().toString("yyyy-MM-dd") + " --> ";
-        str += ( mAccount->getStatus() == Account::STATUS_OPEN ) ? "PRESENT" : mAccount->getCloseDate().toString("yyyy-MM-dd");
+        str += ( mAccount->getStatus() == Account::STATUS_OPEN ) ? "   PRESENT" : mAccount->getCloseDate().toString("yyyy-MM-dd");
         if( mAccount->getStatus() == Account::STATUS_CLOSED )
         {
             str.prepend( "<font color=\"grey\">" );

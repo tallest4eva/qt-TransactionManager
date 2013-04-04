@@ -16,6 +16,7 @@
 #include <QCheckBox>
 
 #include "Transaction.h"
+#include "TransactionList.h"
 #include "BarGraph.h"
 #include "ReportPieChart.h"
 #include "ReportTableView.h"
@@ -123,6 +124,7 @@ private:
     Transaction::FilterType mReportFilter;
     BarGraph mReportNetIncomeGraph;
     BarGraph mReportNetWorthGraph;
+    TransactionList mTransactionTableView;
     ReportTableView mReportTableView;
     ReportPieChart mAssetsPieChart;
     ReportPieChart mDebtsPieChart;

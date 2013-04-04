@@ -40,7 +40,7 @@ Account::~Account()
 //----------------------------------------------------------------------------
 bool Account::operator== ( const Account& aAccount ) const
 {
-    return ( getName() == aAccount.getName() );
+    return( getName() == aAccount.getName() );
 } // Account::operator==()
 
 //----------------------------------------------------------------------------

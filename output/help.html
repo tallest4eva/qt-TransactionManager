@@ -12,30 +12,31 @@
     <!-- Table Of Contents -->
     <hr>
     <b>Table Of Contents</b><br>
+    <a href="#Overview">Transaction Manager Overview</a><br>
     <a href="#HowToUse">How To Use</a><br>
-    <a href="#TransactionFileConfig">Transaction File Config</a><br>
+    <a href="#TransactionDataFile">Input Data File Description</a><br>
     <br>
 
     <!-- Transaction Manager description -->
     <hr>
-    <b>Transaction Manager</b><br>
+    <font size="+2"><b><a id="Overview">Transaction Manager Overview</a></b></font><br>
     The Transaction Manager is a Qt based application which aggregates, manages and displays
     financial transactions contained in a data file.<br>
     It allows users to view the contents of a configurable data file containing account and
     transaction information.<br>
     <br>
-    <img width='600' height='350' src='help/transactionManager.png' /img><br>
+    <img width='500' height='300' src='help/transactionManager.png' /img><br>
     <br>
 
     <!-- How To use Section-->
     <hr>
-    <b><a id="HowToUse">How To Use</a></b><br>
+    <font size="+2"><b><a id="HowToUse">How To Use</a></b></font><br>
     <br>
     <b>Open Transaction Data File</b><br>
     <ul>
         <li>Click on the 'File' Menu</li>
         <li>Click on the 'Open' Menu Item</li>
-        <img width='350' height='200' src='help/transactionManager - File - Open.png' /img><br>
+        <img width='350' height='200' src='help/transactionManager - File Menu - Open.png' /img><br>
         <li>Select Transaction data file to display transactions</li>
         <li>The file name of the transaction file being reviewed is displayed in the status bar</li>
         <img width='350' height='120' src='help/transactionManager - Status Bar.png' /img><br>
@@ -46,11 +47,12 @@
     <br>
 
     <b>The Overview Tab</b><br>
-    <img width='600' height='350' src='help/transactionManager - Overview Tab.png' /img><br>
+    <img width='500' height='300' src='help/transactionManager - Overview Tab.png' /img><br>
     The Overview Tab displays a high level overview of the information<br> 
     <ul>
-        <li>An accounts list to display all the accounts found</li>
-        <li>The Name, Current Balance, Status, Open and Close Date(if Closed) of each account found</li>
+        <li>An Accounts List to display all the accounts found</li>
+        Displays the Name, Current Balance, Status, Open and Close Date(if Closed) of each account found<br>
+		Double-Click on an account item in the Accounts list to display the selected account's transactions in the Transaction Tab.<br>
         <li>The Number of Accounts found</li>
         <li>The Number of Transactions found</li>
         <li>The combined current Net Worth of the accounts found</li>
@@ -58,41 +60,182 @@
     </ul>
 
     <b>The Transactions Tab</b><br>
-    The Transactions Tab displays the transactions in customizable list<br>
-    <img width='600' height='350' src='help/transactionManager - Transactions Tab.png' /img><br>
+    The Transactions Tab displays the transactions in a customizable list<br>
+    <img width='500' height='300' src='help/transactionManager - Transactions Tab.png' /img><br>
     <ul>
         <li>The Transaction list can sorted by any of the transaction values</li>
-        <li>The Transaction selection tool box can be used to filter the transaction list</li>
+        <li>The Transaction selection tool box can be used to filter the transaction list. <a href="#FilterToolBox">Filter Selection Tool Box</a></li>
+        <li>The 'Apply' button updates the transaction list with the current filter</li>
+        <li>The 'Show All' button clears all transaction filters and displays entire transaction list</li>
     </ul>
     <b>The Reports Tab</b><br>
-    The Reports Tab displays the Report charts of data compiled from the transactions file<br>
-    <img width='600' height='350' src='help/transactionManager - Reports Tab.png' /img><br>
+    The Reports Tab contains mutiple tabs containing the Report charts of the data.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab.png' /img><br>
+    <ul>
+        <li>The Report selection tool box can be used to filter the items displayed in the reports. <a href="#FilterToolBox">Filter Selection Tool Box</a></li>
+        <li>The 'Apply' button updates the report tabs with the current filter</li>
+        <li>The 'Show All' button clears all report filters and displays entire reports</li>
+    </ul>
+    <b>The 'Net Income' Reports Tab</b><br>
+    The 'Net Income' Report tab displays a bar chart of the cumulative monthly income (green bars) and expense (red bars) over time.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab - Net Income.png' /img><br>
+    <b>The 'Net Worth' Reports Tab</b><br>
+    The 'Net Worth' Report tab displays a bar chart of the cumulative monthly net worth (green bars) over time.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab - Net Worth.png' /img><br>
+    <ul>
+        <li>Click on a bar on the Bar Chart to display popup information on the Month selected.</li>
+        <img width='320' height='200' src='help/transactionManager - Reports Tab - Bar Chart Popup.png' /img><br>
+        <li>Double-Click on the Popup to display the selected Month's transactions in the Transaction Tab.</li>
+        <li>Click on the Bar Chart to hide the Popup.</li>
+    </ul>
+    <b>The 'Report List' Reports Tab</b><br>
+    The 'Report List' Report tab displays a table of the cumulative monthly income, expense, net income and net worth over time.<br>
+    The last row displays the totals of the cumulative income, expense, net income and net worth.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab - Report List.png' /img><br>
+    <ul>
+        <li>Double-Click on a row to display the selected Month's transactions in the Transaction Tab.</li>
+    </ul>
+    <b>The 'Assets/Debts by Account' Reports Tab</b><br>
+    Displays Pie Charts of the Balances of the Accounts at the last date.<br>
+    Accounts with positive balances are displayed in the 'Assets by Account' Pie Chart.<br>
+	accounts with negative balances are displayed in the 'Debts by Account' Pie Chart.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab - Assets-Debts by Account.png' /img><br>
+    <b>The 'Income/Expense by Parent Category' Reports Tab</b><br>
+    Displays Pie Charts of the cumulative Income and Expense for parent categories over the selected date interval.<br>
+    Income parent categories are displayed in the 'Income by Parent Category' Pie Chart.<br>
+    Expense parent categories are displayed in the 'Expense by Parent Category' Pie Chart.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab - Income-Expense by Parent Category.png' /img><br>
+    <b>The 'Income/Expense by Sub Category' Reports Tab</b><br>
+    Displays Pie Charts of the cumulative Income and Expense for sub categories over the selected date interval.<br>
+    Income sub categories are displayed in the 'Income by Sub Category' Pie Chart.<br>
+    Expense sub categories are displayed in the 'Expense by Sub Category' Pie Chart.<br>
+    <img width='500' height='300' src='help/transactionManager - Reports Tab - Income-Expense by Sub Category.png' /img><br>
+    <ul>
+        <li>Click on an item on the Pie Chart/Key to display popup information about the Account or Category Selected.</li>
+        <img width='320' height='200' src='help/transactionManager - Reports Tab - Account Pie Chart Popup.png' /img>
+        <img width='320' height='200' src='help/transactionManager - Reports Tab - Category Pie Chart Popup.png' /img><br>
+        <li>Double-Click on the popup to display the selected Account or Category's transactions in the Transaction Tab.</li>
+        <li>Click on the Pie Chart to hide the Popup.</li>
+    </ul>
+
+    <br>
+    <b><a id="FilterToolBox">The Filter Selection Tool Box</a></b><br>
     <br>
 
     <!-- Input data file Section -->
     <hr>
-    <b><a id="TransactionFileConfig">Transaction Data File Config</a></b><br>
+    <font size="+2"><b><a id="TransactionDataFile">Input Data File Description</a></b></font><br>
     The Transaction Manager takes a text data file as input.<br>
     <br>
     <b>Default Input File Format</b><br>
     The default input data file is a csv (comma-separated-values) file.<br>
+    The csv file contains lines describing accounts and transactions.<br>
+    All other lines are ignored.<br>
+    Account Descriptor:<br>
+    <font color="green"><code>Account,,Bank - Checking Account-0002,Open,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002</code></font><br>
+    <ul>
+        <li>Must have the 'Account' keyword in the first column</li>
+        <li>The 2nd column is left empty</li>
+        <li>The 3rd column contains the Account Name</li>
+        <li>The 4th column contains the Account Status.</li>
+        <font size="-1"><table border="1">
+          <tr><th>Valid Account Status values</th></tr>
+          <tr><td>Open</td></tr> 
+          <tr><td>Closed</td></tr>
+        </table></font>
+        <li>The 5th column contains the Account State.</li>
+        <font size="-1"><table border="1">
+          <tr><th>Valid Account State values</th></tr>
+          <tr><td>Complete</td></tr> 
+          <tr><td>Incomplete</td></tr>
+        </table></font>
+        <li>The 6th column contains an optional semi-colon separated list of Alternate Account Names</li>
+    </ul>
+    Transaction Descriptor:<br>
+    <font color="green"><code>Transaction,12/10/12,Bank - Credit Card-2000,QuikTrip,CREDITCARD QT 200,debit,-80.00,660.00,Gas & Fuel,Reviewed Manual</code></font><br>
+    <ul>
+        <li>Must have the 'Transaction' keyword in the first column</li>
+        <li>The 2nd column contains the transaction Date. Default date format: 'MM/dd/yy'</li>
+        <li>The 3rd column contains the transaction's Account Name.</li>
+        <li>The 4th column contains the transaction's Description.</li>
+        <li>The 5th column contains the transaction's Original Description.</li>
+        <li>The 6th column contains the transaction's Type.</li>
+        <font size="-1"><table border="1">
+          <tr><th>Valid transaction Type values</th></tr>
+          <tr><td>debit</td></tr> 
+          <tr><td>credit</td></tr>
+        </table></font>
+        <li>The 7th column contains the transaction's Amount.</li>
+        <li>The 8th column contains the transaction account's Current Balance.</li>
+        <li>The 9th column contains the transaction's Category.</li>
+        Valid transaction categories:
+        <font size="-1"><table border="1">
+          <tr><th>Parent Category</th><th>Valid Categories</th></tr>
+          <tr><td>Auto & Transport</td> <td>Auto & Transport | Auto Insurance | Auto Payment | Auto Taxes and Fees | Car Wash/Detail | Gas & Fuel | Parking | Public Transportation | Service & Parts</td></tr>
+          <tr><td>Bills & Utilities</td><td>Bills & Utilities | Home Phone | Internet | Mobile Phone | Phone Card | Television | Utilities</td></tr>
+          <tr><td>Business Services</td><td>Business Services | Advertising | Legal | Office Supplies | Printing | Shipping</td></tr>
+          <tr><td>Education</td>        <td>Education | Books & Supplies | Student Loan | Tuition</td></tr>
+          <tr><td>Entertainment</td>    <td>Entertainment | Amusement | Arts | Movies & DVDs | Music | Newspapers & Magazines | Night Clubs & Bars</td></tr>
+          <tr><td>Fees & Charges</td>   <td>Fees & Charges | ATM Fee | Bank Fee | Finance Charge | Fines | Late Fee | Service Fee | Trade Commissions</td></tr>
+          <tr><td>Financial</td>        <td>Financial | Financial Advisor | Life Insurance | Tax Preparation</td></tr>
+          <tr><td>Food & Dining</td>    <td>Food & Dining | Alcohol & Bars | Coffee Shops | Fast Food | Groceries | Restaurants</td></tr>
+          <tr><td>Gifts & Donations</td><td>Gifts & Donations | Charity | Family Loan | Gift | Personal Loan</td></tr>
+          <tr><td>Health & Fitness</td> <td>Health & Fitness | Dentist | Doctor | Eyecare | Gym | Health Insurance | Pharmacy | Sports</td></tr>
+          <tr><td>Home</td>             <td>Home | Furnishings | Home Improvement | Home Insurance | Home Services | Home Supplies | Lawn & Garden | Mortgage & Rent</td></tr>
+          <tr><td>Income</td>           <td>Income | Bonus | Interest Income | Misc Income | Paycheck | Reimbursement | Rental Income | Returned Purchase | Rewards Income</td></tr>
+          <tr><td>Investments</td>      <td>Investments | Buy | Deposit | Dividend & Cap Gains | Retirement Deposit | Retirement Dividend | Sell | Stock Dividends | Stock Purchase | Stock Sale | Withdrawal</td></tr>
+          <tr><td>Kids</td>             <td>Kids | Allowance | Baby Supplies | Babysitter & Daycare | Child Support | Kids Activities | Toys</td></tr>
+          <tr><td>Loans</td>            <td>Loans | Loan Fees and Charges | Loan Insurance | Loan Interest | Loan Payment | Loan Principal</td></tr>
+          <tr><td>Personal Care</td>    <td>Personal Care | Hair | Laundry | Spa & Massage</td></tr>
+          <tr><td>Pets</td>             <td>Pets | Pet Food & Supplies | Pet Grooming | Veterinary</td></tr>
+          <tr><td>Shopping</td>         <td>Shopping | Books | Clothing | Electronics & Software | General Merchandise | Hobbies | Sporting Goods</td></tr>
+          <tr><td>Taxes</td>            <td>Taxes | Federal Tax | Local Tax | Property Tax | Sales Tax | State Tax | Tax Refund</td></tr>
+          <tr><td>Transfer</td>         <td>Transfer | Credit Card Payment | Family Transfer | Transfer for Cash Spending</td></tr>
+          <tr><td>Travel</td>           <td>Travel | Air Travel | Hotel | Moving Expenses | Rental Car & Taxi | Vacation</td></tr>
+          <tr><td>Uncategorized</td>    <td>Uncategorized | Account Balance | Cash & ATM | Check | Family Expense | Family Income | Misc Expense</td></tr>
+        </table></font>
+        <li>The 10th column contains an optional space-separated list of the transaction's Labels.</li>
+        <font size="-1"><table border="1">
+          <tr><th>Valid transaction labels</th></tr>
+          <tr><td>Reviewed</td></tr> 
+          <tr><td>Manual</td></tr>   
+          <tr><td>Shared</td></tr>   
+          <tr><td>Business</td></tr> 
+          <tr><td>Family</td></tr>   
+          <tr><td>Projected</td></tr>
+        </table></font>
+    </ul>
+    
+    <br>
+    <b>Display Input File Contents</b><br>
+    You can view the contents of the input file being viewed.<br>
+    Press on the 'Help' Menu<br>
+    Press on the 'Display File Contents' Menu Item<br>
+    <img width='320' height='200' src='help/transactionManager - About Menu - Display File Contents.png' /img><br>
+    This opens the 'Display File Contents' Dialog<br>
+    <img width='500' height='300' src='help/transactionManager - Display File Contents Dialog.png' /img><br>
+    Press the 'Done' button to close dialog.<br>
+    
     <br>
     <b>'Input File Config' Dialog</b><br>
     The format of the input data file can be configured by the 'Input File Config' Dialog.<br>
-    Click on the 'Tools' Menu<br>
-    Click on the 'Input File Config' Menu Item<br>
-    <img width='400' height='300' src='help/transactionManager - Tools - File Input Config.png' /img><br>
+    Press on the 'Tools' Menu<br>
+    Press on the 'Input File Config' Menu Item<br>
+    <img width='320' height='200' src='help/transactionManager - Tools Menu - File Input Config.png' /img><br>
     This opens the 'Input File Config' Dialog<br>
-    <img width='600' height='350' src='help/transactionManager - File Config Dialog.png' /img><br>
-    Use the dropdown combo boxes to configure:<br>
+    <img width='500' height='300' src='help/transactionManager - File Config Dialog.png' /img><br>
+    Use the dropdown and text edit boxes to configure:<br>
     <ul>
-        <li>The File Separator Character: ',' or ';'. Default: ','</li>
-        <li>The Date Format used for Date Fields: Default: 'MM/dd/yy'</li>
+        <li>The file separator character. Valid values: ',' and ';'. Default: ','</li>
+        <li>The date format used for date fields. Default: 'MM/dd/yy'</li>
+        <li>The Account line column 1 keyword. Default: 'Account'</li>
         <li>The Account descriptor column order</li>
-        <li>The Trnsaction descriptor column order</li>
+        <li>The Transaction line column 1 keyword. Default: 'Account'</li>
+        <li>The Transaction descriptor column order</li>
     </ul>
+    Press the 'Restore Default' button to restore the default input file configuration.<br>
+    Press the 'Done' button to save the configuration or 'Cancel' to close without saving.<br>
     <hr>
-    
 
     </body>
 </html>

@@ -10,8 +10,30 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QGroupBox>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QPushButton>
+#include <QTextEdit>
+
+class TextEdit : public QTextEdit
+{
+public:
+    TextEdit()
+    {
+        setTabChangesFocus(true);
+        setWordWrapMode(QTextOption::NoWrap);
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        QFontMetrics fm(font());
+        setFixedHeight(fm.height() + 6);
+    }
+    void keyPressEvent( QKeyEvent* aEvent )
+    {
+        if( aEvent->key() == Qt::Key_Return || aEvent->key() == Qt::Key_Enter ){ aEvent->accept(); }
+        else{ QTextEdit::keyPressEvent(aEvent); }
+    }
+};
 
 class FileConfigDialog : public QDialog
 {
@@ -39,12 +61,14 @@ private slots:
 
 private:
     // Functions
-    void updateComboBoxes();
+    void updateData();
     
     // Variables
     QGroupBox mFileBox;
     QGroupBox mAccountBox;
     QGroupBox mTransactionBox;
+    TextEdit mTransactionDescriptor;
+    TextEdit mAccountDescriptor;
     QComboBox mTransactionDate;
     QComboBox mTransactionName;
     QComboBox mTransactionDescription;

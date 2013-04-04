@@ -18,6 +18,7 @@ DisplayDialog::DisplayDialog
 {
     mLabel.setReadOnly( false );
     mLabel.setWordWrapMode( QTextOption::NoWrap );
+    mLabel.setReadOnly( true );
     mButton.setText( "Done" );
     mButton.setMaximumWidth( 150 );
     connect( &mButton, SIGNAL(clicked(bool)), this, SLOT(handleDoneButton()) );

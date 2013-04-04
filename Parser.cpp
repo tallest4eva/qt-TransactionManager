@@ -18,6 +18,10 @@ Parser::DateFormatType Parser::sDateFormat = Parser::cDefaultDateFormat;
 const Parser::SeparatorType Parser::cDefaultSeparator = Parser::SEPARATOR_COMMA;
 Parser::SeparatorType Parser::sSeparator = Parser::cDefaultSeparator;
 QVector<int> Parser::sEntryList;
+const QString Parser::cDefaultAccountTag = "Account";
+const QString Parser::cDefaultTransactionTag = "Transaction";
+QString Parser::sAccountTag;
+QString Parser::sTransactionTag;
 
 const char* Parser::cDateFormatList[] =
 {
@@ -44,20 +48,20 @@ const char Parser::cSeparatorList[] =
 
 const int Parser::cDefaultEntryList[] =
 {
-    0,          /* ENTRY_TRANS_DATE           */
-    1,          /* ENTRY_TRANS_ACCOUNT_NAME   */
-    2,          /* ENTRY_TRANS_DESCRIPTION    */
-	3,          /* ENTRY_TRANS_ORIG_DESC      */
-	4,          /* ENTRY_TRANS_TYPE           */
-	5,          /* ENTRY_TRANS_AMOUNT         */
-	6,          /* ENTRY_TRANS_BALANCE        */
-	7,          /* ENTRY_TRANS_CATEGORY       */
-	8,          /* ENTRY_TRANS_LABELS         */
+    1,          /* ENTRY_TRANS_DATE           */
+    2,          /* ENTRY_TRANS_ACCOUNT_NAME   */
+    3,          /* ENTRY_TRANS_DESCRIPTION    */
+	4,          /* ENTRY_TRANS_ORIG_DESC      */
+	5,          /* ENTRY_TRANS_TYPE           */
+	6,          /* ENTRY_TRANS_AMOUNT         */
+	7,          /* ENTRY_TRANS_BALANCE        */
+	8,          /* ENTRY_TRANS_CATEGORY       */
+	9,          /* ENTRY_TRANS_LABELS         */
 
-	1,          /* ENTRY_ACCOUNT_NAME         */
-	2,          /* ENTRY_ACCOUNT_STATUS       */
-	3,          /* ENTRY_ACCOUNT_STATE        */
-	4,          /* ENTRY_ACCOUNT_ALT_NAMES    */
+	2,          /* ENTRY_ACCOUNT_NAME         */
+	3,          /* ENTRY_ACCOUNT_STATUS       */
+	4,          /* ENTRY_ACCOUNT_STATE        */
+	5,          /* ENTRY_ACCOUNT_ALT_NAMES    */
 };
 
 //----------------------------------------------------------------------------
@@ -72,6 +76,8 @@ void Parser::restore()
     {
         sEntryList.push_back( cDefaultEntryList[i] );
     }
+    sAccountTag = cDefaultAccountTag;
+    sTransactionTag = cDefaultTransactionTag;
 } // Parser::restore()
 
 //----------------------------------------------------------------------------
@@ -92,10 +98,14 @@ void Parser::parseFile
         QString line = aTextStream.readLine();
         TransactionManager::mFileContents.push_back( line );
         QStringList tokens = line.split( cSeparatorList[sSeparator] );
-        if( tokens.size() > 0 && tokens[0] != "" && tokens[0] != "Date" && !tokens[0].contains("_____") )
+        if( tokens.size() > 0 && tokens[0] != "" )
         {
-            if( tokens[0] == "Account" )
+            if( tokens[0] == sAccountTag )
             {
+                // Fill tokens list to prevent memory error
+                int difference = sEntryList[ENTRY_ACCOUNT_ALT_NAMES] - (tokens.size()-1);
+                for( int i = 0; i < difference; i++ ){ tokens.push_back(""); }
+
                 // Add to account list
                 Account* account = new Account();
                 account->setName( tokens[sEntryList[ENTRY_ACCOUNT_NAME]] );
@@ -110,12 +120,20 @@ void Parser::parseFile
                 //logStr = "Adding account:" + QString(account->getInfo());
                 //Logger::logString( logStr );
             }
-            else
+            else if( tokens[0] == sTransactionTag )
             {
+                // Fill tokens list to prevent memory error
+                int difference = sEntryList[ENTRY_TRANS_LABELS] - (tokens.size()-1);
+                for( int i = 0; i < difference; i++ ){ tokens.push_back(""); }
+
                 // Add to transaction list
                 Transaction* transaction = new Transaction();
                 Account::addToAccount( tokens[sEntryList[ENTRY_TRANS_ACCOUNT_NAME]], transaction ); 
-                transaction->setTransactionDate( QDate::fromString( tokens[sEntryList[ENTRY_TRANS_DATE]], cDateFormatList[sDateFormat] ) );
+                QDate date = QDate::fromString( tokens[sEntryList[ENTRY_TRANS_DATE]], cDateFormatList[sDateFormat] );
+                if( date.isValid() )
+                {
+                    transaction->setTransactionDate( date );
+                }
                 Month::addToMonth( transaction->getTransactionDate(), transaction );
                 transaction->setNumber( TransactionManager::mTransactionList.size() );
                 transaction->setDescription( tokens[sEntryList[ENTRY_TRANS_DESCRIPTION]] );

@@ -1,10 +1,10 @@
 //******************************************************************************
 //
-//  HEADER NAME: TransactionListModel.h
+//  HEADER NAME: TransactionList.h
 //******************************************************************************
 
-#ifndef TransactionListModel_H
-#define TransactionListModel_H
+#ifndef TransactionList_H
+#define TransactionList_H
 
 #include <QStandardItemModel>
 #include <QList>
@@ -22,7 +22,7 @@ private:
     float mNumber;
 };
 
-class TransactionListModel : public QStandardItemModel
+class TransactionList : public QTableView
 {
 
 public:
@@ -41,8 +41,8 @@ public:
     };
 
     // Functions
-    explicit TransactionListModel();
-    ~TransactionListModel();
+    explicit TransactionList();
+    ~TransactionList();
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void setupTableView( QTableView* aTableView );
     void resort();
@@ -52,9 +52,10 @@ private:
     // Functions
 
     // Variables
-    static const char* cHeaderList[];
+    QStandardItemModel* mModel;
     QList<Transaction*> mTransactionList;
-    QTableView* mTableView;
+
+    static const char* cHeaderList[];
 };
 
-#endif // TransactionListModel_H
+#endif // TransactionList_H

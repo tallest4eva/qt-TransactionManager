@@ -76,6 +76,10 @@ public:
     static SeparatorType sSeparator;
     static const int cDefaultEntryList[];
     static QVector<int> sEntryList;
+    static const QString cDefaultAccountTag;
+    static const QString cDefaultTransactionTag;
+    static QString sAccountTag;
+    static QString sTransactionTag;
 
     static const char* cDateFormatList[];
     static const char cSeparatorList[];

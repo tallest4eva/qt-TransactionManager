@@ -19,7 +19,6 @@
 #include "Month.h"
 #include "Parser.h"
 #include "OverviewAccountListItem.h"
-#include "TransactionListModel.h"
 #include "Logger.h"
 #include "DisplayDialog.h"
 #include "FileConfigDialog.h"
@@ -80,9 +79,7 @@ void TransactionManager::init()
     ui->transactionToolBox->setCurrentIndex(0);
     ui->reportToolBox->setCurrentIndex(0);
     ui->reportDisplayTabWidget->setCurrentIndex(0);
-    TransactionListModel* model = new TransactionListModel();
-    ui->transactionTableView->setModel( model );
-    model->setupTableView( ui->transactionTableView );
+    ui->transactionListWidget->layout()->addWidget( &mTransactionTableView );
     for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
     {
         QString str = Category::getCategoryText( (Category::CategoryIdType)i, true ).replace( "&", "and" );
@@ -465,9 +462,8 @@ void TransactionManager::initTransactionsTab()
     }
 
     // Init table
-    TransactionListModel* model = (TransactionListModel*)ui->transactionTableView->model();
-    model->clear();
-    ui->transactionTableView->sortByColumn ( (int)TransactionListModel::HDR_NAME, Qt::AscendingOrder );
+    mTransactionTableView.clear();
+    mTransactionTableView.sortByColumn( (int)TransactionList::HDR_NAME, Qt::AscendingOrder );
 
     // Update transaction table
     updateTransactionsTab();
@@ -478,12 +474,11 @@ void TransactionManager::initTransactionsTab()
 //----------------------------------------------------------------------------
 void TransactionManager::updateTransactionsTab()
 {
-    TransactionListModel* model = (TransactionListModel*)ui->transactionTableView->model();
     if( !mFileName.isEmpty() )
     {
         mTransactionFilter = getTransactionFilter( TRANSACTION_TAB );
-        model->setTransactionFilter( mTransactionFilter );
-        model->resort();
+        mTransactionTableView.setTransactionFilter( mTransactionFilter );
+        mTransactionTableView.resort();
 
         // Update tool box text
         QString str = (mTransactionFilter.mAllAccounts) ? "All" : "Some";
@@ -498,7 +493,7 @@ void TransactionManager::updateTransactionsTab()
     else
     {
         mTransactionFilter = Transaction::FilterType();
-        model->clear();
+        mTransactionTableView.clear();
     }
 } // TransactionManager::updateTransactionsTab()
 

@@ -8,7 +8,7 @@
 
 #include "Month.h"
 #include "ReportTableView.h"
-#include "TransactionListModel.h"
+#include "TransactionList.h"
 #include "TransactionManager.h"
 
 //----------------------------------------------------------------------------

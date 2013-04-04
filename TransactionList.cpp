@@ -1,17 +1,17 @@
 //******************************************************************************
 //
-//  HEADER NAME: TransactionListModel.cpp
+//  HEADER NAME: TransactionList.cpp
 //******************************************************************************
 
 #include <QGridLayout>
 #include <QHeaderView>
 
-#include "TransactionListModel.h"
+#include "TransactionList.h"
 #include "TransactionManager.h"
 #include "Account.h"
 
 // Static variables
-const char* TransactionListModel::cHeaderList[] =
+const char* TransactionList::cHeaderList[] =
 {
     "Date",
     "Account",
@@ -47,98 +47,96 @@ void NumberStandardItem::setNumber( float aNumber )
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
-TransactionListModel::TransactionListModel():
-    QStandardItemModel( 0, 0 ),
-    mTableView( NULL )
+TransactionList::TransactionList():
+    mModel( NULL )
 {
+    QFont font1;
+    font1.setPointSize(10);
+    setFont(font1);
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setAlternatingRowColors(true);
+    setSelectionMode(QAbstractItemView::SingleSelection);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+    setGridStyle(Qt::DashLine);
+    setWordWrap(false);
+    horizontalHeader()->setSortIndicatorShown( true );
+    verticalHeader()->setVisible(false);
+
+    mModel = new QStandardItemModel( 0, 0 );
+    setModel( mModel );
     QStringList headers;
     for( int i = 0; i < HDR_CNT; i++ )
     {
         headers.push_back( cHeaderList[i] );
     }
-    setHorizontalHeaderLabels( headers );
-} // TransactionListModel::TransactionListModel
+    mModel->setHorizontalHeaderLabels( headers );
+
+    // Set transaction column widths
+    const int columnWidth = 90;
+    setColumnWidth( (int)HDR_DATE, columnWidth );
+    setColumnWidth( (int)HDR_NAME, columnWidth*2 );
+    setColumnWidth( (int)HDR_DESCRIPTION, columnWidth*3 );
+    setColumnWidth( (int)HDR_AMOUNT, columnWidth );
+    setColumnWidth( (int)HDR_BALANCE, columnWidth );
+    setColumnWidth( (int)HDR_CATEGORY, columnWidth*2 );
+    setSortingEnabled( true );
+    //horizontalHeader()->setStretchLastSection( true );
+} // TransactionList::TransactionList
 
 //----------------------------------------------------------------------------
 // Destructor
 //----------------------------------------------------------------------------
-TransactionListModel::~TransactionListModel()
+TransactionList::~TransactionList()
 {
-} // TransactionListModel::~TransactionListModel
+    delete mModel;
+} // TransactionList::~TransactionList
 
 //----------------------------------------------------------------------------
 // setTransactionFilter
 //----------------------------------------------------------------------------
-void TransactionListModel::setTransactionFilter( const Transaction::FilterType& aFilter )
+void TransactionList::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
     mTransactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
-    setRowCount( mTransactionList.size() );
+    mModel->setRowCount( mTransactionList.size() );
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         QStandardItem* item = new QStandardItem();
         item->setTextAlignment( Qt::AlignCenter );
         item->setText( mTransactionList[i]->getTransactionDate().toString("yyyy-MM-dd") );
-        setItem( i, (int)HDR_DATE, item );
-        setItem( i, (int)HDR_NAME, new QStandardItem( ( mTransactionList[i]->getAccount() ) ? mTransactionList[i]->getAccount()->getName() : "None" ) );
-        setItem( i, (int)HDR_DESCRIPTION, new QStandardItem( mTransactionList[i]->getDescription() ) );
+        mModel->setItem( i, (int)HDR_DATE, item );
+        mModel->setItem( i, (int)HDR_NAME, new QStandardItem( ( mTransactionList[i]->getAccount() ) ? mTransactionList[i]->getAccount()->getName() : "None" ) );
+        mModel->setItem( i, (int)HDR_DESCRIPTION, new QStandardItem( mTransactionList[i]->getDescription() ) );
         NumberStandardItem* numberItem = new NumberStandardItem();
         numberItem->setNumber( mTransactionList[i]->getAmount() );
-        setItem( i, (int)HDR_AMOUNT, numberItem );
+        mModel->setItem( i, (int)HDR_AMOUNT, numberItem );
         numberItem = new NumberStandardItem();
         numberItem->setNumber( mTransactionList[i]->getCurrentBalance() );
-        setItem( i, (int)HDR_BALANCE, numberItem );
-        setItem( i, (int)HDR_CATEGORY, new QStandardItem( Category::getCategoryText( mTransactionList[i]->getCategory() ) ) );
+        mModel->setItem( i, (int)HDR_BALANCE, numberItem );
+        mModel->setItem( i, (int)HDR_CATEGORY, new QStandardItem( Category::getCategoryText( mTransactionList[i]->getCategory() ) ) );
     }
-} // TransactionListModel::setTransactionFilter
+} // TransactionList::setTransactionFilter
 
 //----------------------------------------------------------------------------
 // clear
 //----------------------------------------------------------------------------
-void TransactionListModel::clear()
+void TransactionList::clear()
 {
     mTransactionList.clear();
-    setRowCount( 0 );
-} // TransactionListModel::clear
-
-//----------------------------------------------------------------------------
-// setupTableView
-//----------------------------------------------------------------------------
-void TransactionListModel::setupTableView
-    (
-    QTableView* aTableView
-    )
-{
-    mTableView = aTableView;
-    if( mTableView )
-    {
-        // Set transaction column widths
-        const int columnWidth = 95;
-        mTableView->setColumnWidth( (int)HDR_DATE, columnWidth );
-        mTableView->setColumnWidth( (int)HDR_NAME, columnWidth*2 );
-        mTableView->setColumnWidth( (int)HDR_DESCRIPTION, columnWidth*3 );
-        mTableView->setColumnWidth( (int)HDR_AMOUNT, columnWidth );
-        mTableView->setColumnWidth( (int)HDR_BALANCE, columnWidth );
-        mTableView->setColumnWidth( (int)HDR_CATEGORY, columnWidth*2 );
-        //mTableView->horizontalHeader()->setStretchLastSection( true );
-        mTableView->setSortingEnabled( true );
-    }
-} // TransactionListModel::setupTableView
+    mModel->setRowCount( 0 );
+} // TransactionList::clear
 
 //----------------------------------------------------------------------------
 // resort
 //----------------------------------------------------------------------------
-void TransactionListModel::resort()
+void TransactionList::resort()
 {
-    if( mTableView )
+    // Set transaction column widths
+    QHeaderView* header = horizontalHeader();
+    if( header->isSortIndicatorShown() )
     {
-        // Set transaction column widths
-        QHeaderView* header = mTableView->horizontalHeader();
-        if( header->isSortIndicatorShown() )
-        {
-            Qt::SortOrder order = header->sortIndicatorOrder();
-            int column = header->sortIndicatorSection();
-            mTableView->sortByColumn( column, order );
-        }
+        Qt::SortOrder order = header->sortIndicatorOrder();
+        int column = header->sortIndicatorSection();
+        sortByColumn( column, order );
     }
-} // TransactionListModel::resort
+} // TransactionList::resort
 
