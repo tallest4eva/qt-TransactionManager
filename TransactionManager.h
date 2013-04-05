@@ -33,7 +33,7 @@ class TransactionManager : public QMainWindow
 {
     Q_OBJECT
     
-public:
+private:
     // Types
     enum TabType
     {
@@ -42,7 +42,21 @@ public:
 
         TAB_CNT
     };
+    enum CheckBoxType
+    {
+        ACCOUNTS_CHECKBOX,
+        CATEGORIES_CHECKBOX,
+        LABELS_CHECKBOX
+    };
+    enum SelectType
+    {
+        ALL,
+        OPEN_ACCOUNTS,
+        INCOME_CATEGORIES,
+        EXPENSE_CATEGORIES
+    };
 
+public:
     // Functions
     explicit TransactionManager(QWidget *parent = 0);
     ~TransactionManager();
@@ -83,15 +97,20 @@ private slots:
     void on_reportDateAllTimeButton_clicked();
     void on_reportAllButton_clicked();
 
-    void on_transactionAllAccountsCheckBox_stateChanged( int aCheckState );
-    void on_transactionAllCategoriesCheckBox_stateChanged( int aCheckState );
-    void on_transactionAllLabelsCheckBox_stateChanged( int aCheckState );
-    void on_reportAllAccountsCheckBox_stateChanged( int aCheckState );
-    void on_reportAllCategoriesCheckBox_stateChanged( int aCheckState );
-    void on_reportAllLabelsCheckBox_stateChanged( int aCheckState );
+    void on_transactionAllAccountsCheckBox_clicked( bool aChecked );
+    void on_transactionOpenAccountsCheckBox_clicked( bool aChecked );
+    void on_transactionAllCategoriesCheckBox_clicked( bool aChecked );
+    void on_transactionIncomeCategoriesCheckBox_clicked( bool aChecked );
+    void on_transactionExpenseCategoriesCheckBox_clicked( bool aChecked );
+    void on_transactionAllLabelsCheckBox_clicked( bool aChecked );
+    void on_reportAllAccountsCheckBox_clicked( bool aChecked );
+    void on_reportOpenAccountsCheckBox_clicked( bool aChecked );
+    void on_reportAllCategoriesCheckBox_clicked( bool aChecked );
+    void on_reportIncomeCategoriesCheckBox_clicked( bool aChecked );
+    void on_reportExpenseCategoriesCheckBox_clicked( bool aChecked );
+    void on_reportAllLabelsCheckBox_clicked( bool aChecked );
 
     void handleShowTransactionByFilter( const Transaction::FilterType& aFilter );
-    void handleShowTransactionByDate( QDate aStartDate, QDate aEndDate );
     void handleShowReportByDate( QDate aStartDate, QDate aEndDate );
 
 private:
@@ -104,10 +123,13 @@ private:
     void initReportsTab();
     void updateReportsTab();
     Transaction::FilterType getTransactionFilter( TabType aTabType );
+    void updateAndApplyDates( TabType aTab, QDate aStartDate, QDate aEndDate );
+    void updateCheckBoxes( TabType aTab, CheckBoxType aCheckType, SelectType aSelectType, bool aChecked );
 
     // Variables
     Ui::TransactionManager *ui;
     QString mFileName;
+    QLabel mStatusLabel;
     QList<QCheckBox*> mTransactionAccountsCheckBoxList;
     QList<QCheckBox*> mTransactionCategoriesCheckBoxList;
     QList<QCheckBox*> mTransactionLabelsCheckBoxList;

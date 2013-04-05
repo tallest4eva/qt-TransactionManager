@@ -164,6 +164,7 @@ void BarGraph::handleDisplayClicked()
     Transaction::FilterType filter = mFilter;
     filter.mStartDate = date;
     filter.mEndDate = date.addMonths(1).addDays(-1);
+    filter.mAllDates = false;
     filter.mShowDates = true;
     transactionFilterSelected( filter );
 } // BarGraph::handleDisplayClicked

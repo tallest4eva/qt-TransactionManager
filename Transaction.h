@@ -47,8 +47,8 @@ public:
         QDate mStartDate;
         QDate mEndDate;
         FilterType(): mAllAccounts(true), mShowAccounts(false), 
-                      mAllCategories(true), mShowCategories(false), mCategoryList(Category::CATEGORY_TYPE_CNT,false),
-                      mAllLabels(true), mShowLabels(false), mLabelList(Category::LABEL_CNT,false),
+                      mAllCategories(true), mShowCategories(false), mCategoryList(Category::CATEGORY_TYPE_CNT,true),
+                      mAllLabels(true), mShowLabels(false), mLabelList(Category::LABEL_CNT,true),
                       mAllDates(true), mShowDates(false), mStartDate(2000,1,1), mEndDate(2000,1,1){}
     };
 

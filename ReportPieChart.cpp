@@ -60,7 +60,6 @@ void ReportPieChart::clear()
     hideDisplayLabel();
     mModel->setRowCount( 0 );
     updateViewport();
-    update();
 } // ReportPieChart::clear
 
 //----------------------------------------------------------------------------
@@ -173,7 +172,6 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
         }
     }
     updateViewport();
-    update();
 } // ReportPieChart::setTransactionFilter
 
 //----------------------------------------------------------------------------
@@ -263,6 +261,7 @@ void ReportPieChart::handleDisplayClicked()
     case ASSET_BY_ACCOUNT:
     case DEBT_BY_ACCOUNT:
         {
+            filter.mAllAccounts = false;
             filter.mAccountList.clear();
             Account* account = Account::getAccount( label );
             if( account )
@@ -275,6 +274,7 @@ void ReportPieChart::handleDisplayClicked()
     case INCOME_BY_CATEGORY:
     case EXPENSE_BY_CATEGORY:
         {
+            filter.mAllCategories = false;
             filter.mCategoryList.fill( false );
             Category::CategoryIdType category = Category::getCategoryId( label );
             filter.mCategoryList[ (int)category ] = true;

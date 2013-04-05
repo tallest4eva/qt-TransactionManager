@@ -464,6 +464,7 @@ void PieView::updateViewport()
         }
     }
     updateGeometries();
+    viewport()->update();
 }
 
 void PieView::updateGeometries()

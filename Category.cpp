@@ -208,7 +208,7 @@ Category::CategoryIdType Category::getCategoryId
     }
     if( !found )
     {
-        Logger::logString( "Warning: Could not find category:" + QString(aCategory), Logger::LOG_WARNING );
+        Logger::logString( "Could not find category: " + QString(aCategory), Logger::LOG_WARNING );
     }
     return id;
 } // Category::getCategoryId
@@ -276,7 +276,7 @@ Category::LabelIdType Category::getLabelId
     }
     if( !found )
     {
-        Logger::logString( "Warning: Could not find tag:" + QString(aLabel), Logger::LOG_WARNING );
+        Logger::logString( "Could not find tag: " + QString(aLabel), Logger::LOG_WARNING );
     }
     return id;
 } // Category::getLabelId
