@@ -6,26 +6,27 @@
     </head>
 
     <body>
-    <h3>Transaction Manager Help Page</h3>
-    <br>
+    <font size="+3"><b>Transaction Manager Help Page</b></font><br>
 
     <!-- Table Of Contents -->
-    <hr>
+    <br>
     <b>Table Of Contents</b><br>
-    <a href="#Overview">Transaction Manager Overview</a><br>
-    <a href="#HowToUse">How To Use</a><br>
-    <a href="#TransactionDataFile">Input Data File Description</a><br>
+	<ul>
+    <li><a href="#Overview">Transaction Manager Overview</a></li>
+    <li><a href="#HowToUse">How To Use</a></li>
+    <li><a href="#TransactionDataFile">Input Data File Description</a></li>
+	</ul>
     <br>
 
     <!-- Transaction Manager description -->
     <hr>
     <font size="+2"><b><a id="Overview">Transaction Manager Overview</a></b></font><br>
-    The Transaction Manager is a Qt based application which aggregates, manages and displays
+    The Transaction Manager is an application which aggregates, manages and displays
     financial transactions contained in a data file.<br>
-    It allows users to view the contents of a configurable data file containing account and
+    It allows users to view the contents of a configurable <a href="#TransactionDataFile">input data file</a> containing account and
     transaction information.<br>
     <br>
-    <img width='500' height='300' src='help/transactionManager.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager.png' /img><br>
     <br>
 
     <!-- How To use Section-->
@@ -47,7 +48,7 @@
     <br>
 
     <b>The Overview Tab</b><br>
-    <img width='500' height='300' src='help/transactionManager - Overview Tab.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Overview Tab.png' /img><br>
     The Overview tab displays a high level overview of the information<br> 
     <ul>
         <li>An Accounts list to display all the accounts found</li>
@@ -62,37 +63,40 @@
 
     <b>The Transactions Tab</b><br>
     The Transactions tab displays the transactions in a customizable list<br>
-    <img width='500' height='300' src='help/transactionManager - Transactions Tab.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Transactions Tab.png' /img><br>
     <ul>
-        <li>The Transactions list can sorted by any of the transaction values</li>
-        <li>The Transaction selection tool box can be used to filter the transactions list's contents. <a href="#FilterToolBox">Filter Selection ToolBox</a></li>
+        <li>The Transactions list is, by default, sorted by date from most recent to oldest transaction.</li>
+        <li>The Transactions list can sorted by any of the transaction values by clicking the desired header.</li>
+        <li>The Transaction selection tool box can be used to filter the transactions list's contents. <a href="#FilterToolBox">See Filter Selection Toolbox</a></li>
         <li>The 'Apply' button updates the transaction list with the current filter</li>
         <li>The 'Show All' button clears all transaction filters and displays entire transaction list</li>
     </ul>
     <b>The Reports Tab</b><br>
     The Reports tab contains mutiple tabs containing the Report charts for the selected data.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab.png' /img><br>
     <ul>
-        <li>The Report selection tool box can be used to filter the items displayed in the reports. <a href="#FilterToolBox">Filter Selection ToolBox</a></li>
+        <li>The Report selection tool box can be used to filter the items displayed in the reports. <a href="#FilterToolBox">See Filter Selection Toolbox</a></li>
         <li>The 'Apply' button updates the report tabs with the current filter</li>
         <li>The 'Show All' button clears all report filters and displays entire reports</li>
     </ul>
     <b>The 'Net Income' Reports Tab</b><br>
     The 'Net Income' report tab displays a bar chart of the cumulative monthly income (green bars) and expense (red bars) over time.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab - Net Income.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab - Net Income.png' /img><br>
     <b>The 'Net Worth' Reports Tab</b><br>
     The 'Net Worth' report tab displays a bar chart of the cumulative monthly net worth (green bars) over time.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab - Net Worth.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab - Net Worth.png' /img><br>
     <ul>
-        <li>Click on a bar on the Bar Chart to display popup information on the month selected.</li>
+        <li>Click on a bar on the bar chart to display popup information on the month selected.</li>
         <img width='320' height='200' src='help/transactionManager - Reports Tab - Bar Chart Popup.png' /img><br>
         <li>Double-Click on the popup to display the selected month's transactions in the Transactions tab.</li>
-        <li>Click on the Bar Chart to hide the popup.</li>
+        <li>Click on the bar chart to hide the popup.</li>
+        <li>Click and drag across the bar chart to select a date interval to view.</li>
+        <img width='320' height='200' src='help/transactionManager - Reports Tab - Bar Chart - Date Select.png' /img><br>
     </ul>
     <b>The 'Report List' Reports Tab</b><br>
     The 'Report List' report tab displays a table of the cumulative monthly income, expense, net income and net worth over time.<br>
     The last row displays the totals of the cumulative income, expense, net income and net worth.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab - Report List.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab - Report List.png' /img><br>
     <ul>
         <li>Double-Click on a row to display the selected month's transactions in the Transactions tab.</li>
     </ul>
@@ -100,17 +104,17 @@
     Displays pie charts of the Balances of the Accounts at the last date.<br>
     Accounts with positive balances are displayed in the 'Assets by Account' pie chart.<br>
 	Accounts with negative balances are displayed in the 'Debts by Account' pie chart.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab - Assets-Debts by Account.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab - Assets-Debts by Account.png' /img><br>
     <b>The 'Income/Expense by Parent Category' Reports Tab</b><br>
     Displays pie charts of the cumulative Income and Expense for parent categories over the selected date interval.<br>
     Income parent categories are displayed in the 'Income by Parent Category' pie chart.<br>
     Expense parent categories are displayed in the 'Expense by Parent Category' pie chart.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab - Income-Expense by Parent Category.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab - Income-Expense by Parent Category.png' /img><br>
     <b>The 'Income/Expense by Sub Category' Reports Tab</b><br>
     Displays pie charts of the cumulative Income and Expense for sub categories over the selected date interval.<br>
     Income sub categories are displayed in the 'Income by Sub Category' pie chart.<br>
     Expense sub categories are displayed in the 'Expense by Sub Category' pie chart.<br>
-    <img width='500' height='300' src='help/transactionManager - Reports Tab - Income-Expense by Sub Category.png' /img><br>
+    <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab - Income-Expense by Sub Category.png' /img><br>
     <ul>
         <li>Click on an item on the pie chart/key to display popup information about the Account or Category Selected.</li>
         <img width='320' height='200' src='help/transactionManager - Reports Tab - Account Pie Chart Popup.png' /img>
@@ -124,17 +128,17 @@
     The Filter Selection Toolbox allows users to create customized filters to apply to the Transactions and Reports tabs.<br>
     The Filter Selection Toolbox is enabled when the user opens an input data file.<br>
     <ul>
-        <li>The 'Show All' button clears all selection filters.</li>
+        <li>The 'Show All' button clears all selection filters and displays all data available.</li>
         <li>The 'Accounts' toolbox is used to select the accounts to be viewed.</li>
         The 'Accounts' toolbox contains a checkbox for each account found.<br>
-        The 'Accounts' toolbox title updates to 'All' if no account is being filtered and "Some" if one or more accounts are being filtered.<br>
+        The 'Accounts' toolbox title updates to 'All' if all the accounts are selected, and "Some" if any account is being filtered out.<br>
         Check/Uncheck the 'All Accounts' checkbox to check/uncheck every account.<br>
         Check/Uncheck the 'Open Accounts' checkbox to check/uncheck every open account.<br>
         <img width='180' height='250' src='help/transactionManager - Selection Toolbox - Accounts.png' /img><br>
         <br>
         <li>The 'Categories' toolbox is used to select the categories to be viewed.</li>
         The 'Categories' toolbox contains a checkbox for each category supported.<br>
-        The 'Accounts' toolbox title updates to 'All' if no account is being filtered and "Some" if one or more accounts are being filtered.<br>
+        The 'Categories' toolbox title updates to 'All' if all the categories are selected, and "Some" if any category is being filtered out.<br>
         Unused categories checkboxes are always disabled.<br>
         Check/Uncheck the 'All Categories' checkbox to check/uncheck every category.<br>
         Check/Uncheck the 'Income Categories' checkbox to check/uncheck every income category.<br>
@@ -143,35 +147,41 @@
         <br>
         <li>The 'Labels' toolbox is used to select the labels to be viewed.</li>
         The 'Labels' toolbox contains a checkbox for each label supported.<br>
-        The 'Labels' toolbox title updates to 'All' if no label is being filtered and "Some" if one or more labels are being filtered.<br>
+        The 'Labels' toolbox title updates to 'All' if all the labels are selected, and "Some" if any label is being filtered.<br>
         Unused labels checkboxes are always disabled.<br>
         Check/Uncheck the 'All Labels' checkbox to check/uncheck every label.<br>
         <img width='180' height='250' src='help/transactionManager - Selection Toolbox - Labels.png' /img><br>
         <br>
-        <li>The 'Date Interval' toolbox is used to select the date interval to be viewed</li>
-        The 'Date Interval' toolbox contains a checkbox for each label supported.<br>
-        The 'Date Interval' toolbox title updates to 'All' if no account is being filtered and "Some" if one or more accounts is being filtered.<br>
+        <li>The 'Date Interval' toolbox is used to select the date interval for the filter.</li>
+        The 'Date Interval' toolbox contains a 'Start Date' and an 'End Date' edit box which can be used to modify the date interval viewed.<br>
+        The 'This Year' button updates the start date to the beginning of the current year and applies the filter.<br>
+        The 'Last 1 Year' button updates the start date to 1 year ago and applies the filter.<br>
+        The 'Last 5 Years' button updates the start date to 5 years in the past and applies the filter.<br>
+        The 'Last 10 Years' button updates the start date to 10 years in the past and applies the filter.<br>
+        The 'All Time' button updates the filter to the maximum date interval and applies the filter.<br>
+        The 'Date Interval' toolbox title updates to 'All' if the maximum date interval is selected, and 'Some' if the date interval selected is less than the maximum date interval.<br>
         <img width='180' height='250' src='help/transactionManager - Selection Toolbox - Dates.png' /img><br>
         <br>
-        <li>The 'Apply' button updates the report tabs with the current filter</li>
+        <li>The 'Apply' button applies the selected filter to the Transactions or Reports tabs.</li>
     </ul>
     <br>
 
     <!-- Input data file Section -->
     <hr>
     <font size="+2"><b><a id="TransactionDataFile">Input Data File Description</a></b></font><br>
-    The Transaction Manager takes a text data file as input.<br>
+    The Transaction Manager takes a configurable text data file as input.<br>
     <br>
     <b>Default Input File Format</b><br>
     The default input data file is a csv (comma-separated-values) file.<br>
     The csv file contains lines describing accounts and transactions.<br>
     All other lines are ignored.<br>
+    <br>
     Account Descriptor:<br>
     <font color="green"><code>Account,,Bank - Checking Account-0002,Open,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002</code></font><br>
     <ul>
-        <li>Must have the 'Account' keyword in the first column</li>
-        <li>The 2nd column is left empty</li>
-        <li>The 3rd column contains the Account Name</li>
+        <li>The 1st column must have the 'Account' keyword.</li>
+        <li>The 2nd column is left empty.</li>
+        <li>The 3rd column contains the Account Name.</li>
         <li>The 4th column contains the Account Status.</li>
         <font size="-1"><table border="1">
           <tr><th>Valid Account Status values</th></tr>
@@ -184,12 +194,15 @@
           <tr><td>Complete</td></tr> 
           <tr><td>Incomplete</td></tr>
         </table></font>
-        <li>The 6th column contains an optional semi-colon separated list of Alternate Account Names</li>
+        <li>The 6th column contains a semi-colon separated list of Alternate Account Names. (Optional)</li>
     </ul>
     Transaction Descriptor:<br>
     <font color="green"><code>Transaction,12/10/12,Bank - Credit Card-2000,QuikTrip,CREDITCARD QT 200,debit,-80.00,660.00,Gas & Fuel,Reviewed Manual</code></font><br>
+    Transactions with unmatched account labels are defaulted with account name: 'None' and show up red in the Transactions tab.<br>
+    Transactions with unmatched category labels are defaulted with category: 'Uncategorized' and show up red in the Transactions tab.<br>
+    <img width='350' height='200' hspace='30' src='help/transactionManager - Transactions Tab - Unmatched Transaction.png' /img><br>
     <ul>
-        <li>Must have the 'Transaction' keyword in the first column</li>
+        <li>The 1st column must have the 'Transaction' keyword.</li>
         <li>The 2nd column contains the transaction Date. Default date format: 'MM/dd/yy'</li>
         <li>The 3rd column contains the transaction's Account Name.</li>
         <li>The 4th column contains the transaction's Description.</li>
@@ -229,7 +242,7 @@
           <tr><td>Travel</td>           <td>Travel | Air Travel | Hotel | Moving Expenses | Rental Car & Taxi | Vacation</td></tr>
           <tr><td>Uncategorized</td>    <td>Uncategorized | Account Balance | Cash & ATM | Check | Family Expense | Family Income | Misc Expense</td></tr>
         </table></font>
-        <li>The 10th column contains an optional space-separated list of the transaction's Labels.</li>
+        <li>The 10th column contains a space-separated list of the transaction's Labels. (Optional)</li>
         <font size="-1"><table border="1">
           <tr><th>Valid transaction labels</th></tr>
           <tr><td>Reviewed</td></tr> 
@@ -244,32 +257,36 @@
     <br>
     <b>Display Input File Contents</b><br>
     You can view the contents of the input file being viewed.<br>
-    Press on the 'Help' Menu<br>
-    Press on the 'Display File Contents' Menu Item<br>
-    <img width='320' height='200' src='help/transactionManager - About Menu - Display File Contents.png' /img><br>
-    This opens the 'Display File Contents' Dialog<br>
-    <img width='500' height='300' src='help/transactionManager - Display File Contents Dialog.png' /img><br>
-    Press the 'Done' button to close dialog.<br>
+	<ul>
+    	<li>Press on the 'Tools' Menu</li>
+    	<li>Press on the 'Display File Contents' Menu Item</li>
+	    <img width='320' height='180' src='help/transactionManager - Tools Menu - Display File Contents.png' /img><br>
+    	<li>This opens the 'Display File Contents' Dialog</li>
+	    <img width='480' height='280' src='help/transactionManager - Display File Contents Dialog.png' /img><br>
+    	<li>Press the 'Done' button to close dialog.</li>
+	</ul>
     
     <br>
     <b>'Input File Config' Dialog</b><br>
     The format of the input data file can be configured by the 'Input File Config' Dialog.<br>
-    Press on the 'Tools' Menu<br>
-    Press on the 'Input File Config' Menu Item<br>
-    <img width='320' height='200' src='help/transactionManager - Tools Menu - File Input Config.png' /img><br>
-    This opens the 'Input File Config' Dialog<br>
-    <img width='500' height='300' src='help/transactionManager - File Config Dialog.png' /img><br>
-    Use the dropdown and text edit boxes to configure:<br>
-    <ul>
-        <li>The file separator character. Valid values: ',' and ';'. Default: ','</li>
-        <li>The date format used for date fields. Default: 'MM/dd/yy'</li>
-        <li>The Account line column 1 keyword. Default: 'Account'</li>
-        <li>The Account descriptor column order</li>
-        <li>The Transaction line column 1 keyword. Default: 'Account'</li>
-        <li>The Transaction descriptor column order</li>
-    </ul>
-    Press the 'Restore Default' button to restore the default input file configuration.<br>
-    Press the 'Done' button to save the configuration or 'Cancel' to close without saving.<br>
+	<ul>
+	    <li>Press on the 'Tools' Menu</li>
+	    <li>Press on the 'Configure Input File' Menu Item</li>
+	    <img width='320' height='180' src='help/transactionManager - Tools Menu - File Input Config.png' /img><br>
+	    <li>This opens the 'Input File Config' Dialog</li>
+	    <img width='480' height='280' src='help/transactionManager - File Config Dialog.png' /img><br>
+	    <li>Use the dropdown and text edit boxes to configure:</li>
+	    <ul>
+	        <li>The file separator character. Valid values: ',' and ';'. Default: ','</li>
+	        <li>The date format used for date fields. Default: 'MM/dd/yy'</li>
+	        <li>The Account line column 1 keyword. Default: 'Account'</li>
+	        <li>The Account descriptor column order</li>
+	        <li>The Transaction line column 1 keyword. Default: 'Account'</li>
+	        <li>The Transaction descriptor column order</li>
+	    </ul>
+	    <li>Press the 'Restore Default' button to restore the default input file configuration.</li>
+	    <li>Press the 'Done' button to save the configuration or 'Cancel' to close without saving.</li>
+	</ul>
     <br>
     <hr>
 

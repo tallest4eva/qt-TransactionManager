@@ -96,23 +96,28 @@ TransactionList::~TransactionList()
 //----------------------------------------------------------------------------
 void TransactionList::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    mTransactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, aFilter );
+    mTransactionList = Transaction::filterTransactions( TransactionManager::sTransactionList, aFilter );
     mModel->setRowCount( mTransactionList.size() );
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
+        Transaction* transaction = mTransactionList[i];
         QStandardItem* item = new QStandardItem();
         item->setTextAlignment( Qt::AlignCenter );
-        item->setText( mTransactionList[i]->getTransactionDate().toString("yyyy-MM-dd") );
+        item->setText( transaction->getTransactionDate().toString("yyyy-MM-dd") );
         mModel->setItem( i, (int)HDR_DATE, item );
-        mModel->setItem( i, (int)HDR_NAME, new QStandardItem( ( mTransactionList[i]->getAccount() ) ? mTransactionList[i]->getAccount()->getName() : "None" ) );
-        mModel->setItem( i, (int)HDR_DESCRIPTION, new QStandardItem( mTransactionList[i]->getDescription() ) );
+        item = new QStandardItem( transaction->getAccount()->getName() );
+        if( !transaction->getAccount()->isValid() ){ item->setForeground( Qt::red ); }
+        mModel->setItem( i, (int)HDR_NAME, item );
+        mModel->setItem( i, (int)HDR_DESCRIPTION, new QStandardItem( transaction->getDescription() ) );
         NumberStandardItem* numberItem = new NumberStandardItem();
-        numberItem->setNumber( mTransactionList[i]->getAmount() );
+        numberItem->setNumber( transaction->getAmount() );
         mModel->setItem( i, (int)HDR_AMOUNT, numberItem );
         numberItem = new NumberStandardItem();
-        numberItem->setNumber( mTransactionList[i]->getCurrentBalance() );
+        numberItem->setNumber( transaction->getCurrentBalance() );
         mModel->setItem( i, (int)HDR_BALANCE, numberItem );
-        mModel->setItem( i, (int)HDR_CATEGORY, new QStandardItem( Category::getCategoryText( mTransactionList[i]->getCategory() ) ) );
+        item = new QStandardItem( Category::getCategoryText( transaction->getCategory() ) );
+        if( transaction->getCategory() == Category::UNCATEGORIZED ){ item->setForeground( Qt::red ); }
+        mModel->setItem( i, (int)HDR_CATEGORY, item );
     }
 } // TransactionList::setTransactionFilter
 
@@ -123,6 +128,7 @@ void TransactionList::clear()
 {
     mTransactionList.clear();
     mModel->setRowCount( 0 );
+    sortByColumn( (int)HDR_DATE, Qt::DescendingOrder );
 } // TransactionList::clear
 
 //----------------------------------------------------------------------------

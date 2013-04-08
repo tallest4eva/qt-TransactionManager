@@ -295,12 +295,12 @@ void PieView::paintEvent(QPaintEvent *event)
                 double angle = 360*value/mTotalValue;
                 QModelIndex colorIndex = model()->index(row, (int)COLUMN_LABEL, rootIndex());
                 QColor color = QColor(model()->data(colorIndex, Qt::DecorationRole).toString());
-                //if (currentIndex() == index)
-                //    painter.setBrush(QBrush(color, Qt::Dense4Pattern));
+                if (currentIndex() == index)
+                    painter.setBrush(QBrush(color, Qt::Dense4Pattern));
                 //else if (selections->isSelected(index))
                 //    painter.setBrush(QBrush(color, Qt::Dense3Pattern));
-                //else
-                painter.setBrush(QBrush(color));
+                else
+                    painter.setBrush(QBrush(color));
                 painter.drawPie(0, 0, mPieSize, mPieSize, int(startAngle*16), int(angle*16));
                 startAngle += angle;
             }
@@ -319,9 +319,10 @@ void PieView::paintEvent(QPaintEvent *event)
                 QStyleOptionViewItem option = viewOptions();
                 option.rect = visualRect(labelIndex);
                 //if (selections->isSelected(labelIndex))
-                    //option.state |= QStyle::State_Selected;
-                //if (currentIndex() == labelIndex)
-                    //option.state |= QStyle::State_HasFocus;
+                //    option.state |= QStyle::State_Selected;
+                //else
+                if (currentIndex() == labelIndex)
+                    option.state |= QStyle::State_HasFocus;
                 itemDelegate()->paint(&painter, option, labelIndex);
 
                 // Draw key value

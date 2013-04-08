@@ -70,14 +70,14 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
     hideDisplayLabel();
     mFilter = aFilter;
     QColor baseColor = BASE_COLOR.toHsv();
-    QColor secondaryLabelColor;
     QList<PieDataType> dataList;
+    bool positiveValue = true;
     switch( mChartType )
     {
     case ASSET_BY_ACCOUNT:
     case DEBT_BY_ACCOUNT:
         {
-            secondaryLabelColor = ( mChartType == ASSET_BY_ACCOUNT ) ? QColor(Qt::green) : QColor(Qt::red);
+            positiveValue = ( mChartType == ASSET_BY_ACCOUNT );
             Month* month = Month::getMonth( aFilter.mEndDate );
             if( month )
             {
@@ -113,9 +113,9 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
     case INCOME_BY_CATEGORY:
     case EXPENSE_BY_CATEGORY:
         {
-            secondaryLabelColor = ( mChartType == INCOME_BY_CATEGORY ) ? QColor(Qt::green) : QColor(Qt::red);
+            positiveValue = ( mChartType == INCOME_BY_CATEGORY );
             Transaction::FilterType filter = aFilter;
-            QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::mTransactionList, filter );
+            QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::sTransactionList, filter );
             QVector<float> categoryList( (int)Category::CATEGORY_TYPE_CNT, 0 );
             for( int i = 0; i < transactionList.size(); i++ )
             {
@@ -153,6 +153,7 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
     if( dataList.size() > 0 )
     {
         qSort( dataList.begin(), dataList.end(), qGreater<PieDataType>() );
+        QColor secondaryLabelColor = ( positiveValue ) ? QColor(Qt::green) : QColor(Qt::red);
         const int colorRange = COLOR_RANGE;
         int step = qMin( MAX_COLOR_STEP, (colorRange / dataList.size()) );
         int h = baseColor.hue();
@@ -163,7 +164,8 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
             QColor nextColor;
             int newH = (h + step*i)%colorRange;
             nextColor.setHsv( newH, s, v );
-            QString valueStr = "$" + QString::number(dataList[i].mValue, 'f', 2 );
+            QString valueStr = ( positiveValue ) ? "$" : "-$";
+            valueStr += QString::number(dataList[i].mValue, 'f', 2 );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_LABEL), dataList[i].mName );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_LABEL), nextColor, Qt::DecorationRole );
             mModel->setData( mModel->index(i,(int)PieView::COLUMN_VALUE), dataList[i].mValue );
@@ -182,11 +184,11 @@ void ReportPieChart::mouseReleaseEvent( QMouseEvent* aEvent )
     mMousePosition = aEvent->pos();
     if( !mDisplayLabel.isHidden() )
     {
+        // Hide display label and clear index
         hideDisplayLabel();
     }
     else
     {
-        hideDisplayLabel();
         PieView::mouseReleaseEvent( aEvent );
     }
 } // ReportPieChart::mouseReleaseEvent
@@ -208,7 +210,7 @@ void ReportPieChart::handleItemClicked( const QModelIndex& aIndex )
     mDisplayLabel.move( labelRectX, labelRectY );
 
     int row = aIndex.row();
-    QModelIndex valueIndex = model()->index(row, (int)COLUMN_VALUE, rootIndex());
+    QModelIndex valueIndex = mModel->index(row, (int)COLUMN_VALUE, rootIndex());
     double value = mModel->data(valueIndex).toDouble();
     double percentage = ( mTotalValue > 0 ) ? value*100/mTotalValue : 0;
     QModelIndex labelIndex = model()->index(row, (int)COLUMN_LABEL, rootIndex());
@@ -247,6 +249,7 @@ void ReportPieChart::handleItemClicked( const QModelIndex& aIndex )
 void ReportPieChart::hideDisplayLabel()
 {
     mDisplayLabel.hide();
+    setCurrentIndex( mModel->index(-1,-1,rootIndex()) );
 } // ReportPieChart::hideDisplayLabel
 
 //----------------------------------------------------------------------------

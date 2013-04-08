@@ -1094,13 +1094,13 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="separator"/>
-    <addaction name="actionDisplayFile"/>
     <addaction name="actionDisplayLog"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionDisplayFile"/>
     <addaction name="actionFileInputConfig"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1159,7 +1159,7 @@
   </action>
   <action name="actionFileInputConfig">
    <property name="text">
-    <string>Input File Config</string>
+    <string>Configure Input File</string>
    </property>
   </action>
  </widget>

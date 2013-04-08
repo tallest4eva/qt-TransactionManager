@@ -176,6 +176,7 @@ Transaction::TransactionType Transaction::getTransactionType() const
     TransactionType transType = INVALID;
     switch( mCategory )
     {
+    // Transfer categories
     case Category::TRANSFER:
     case Category::CREDIT_CARD_PAYMENT:
     case Category::FAMILY_TRANSFER:
@@ -186,8 +187,10 @@ Transaction::TransactionType Transaction::getTransactionType() const
     case Category::STOCK_PURCHASE:
     case Category::STOCK_SALE:
     case Category::FAMILY_LOAN:
+    case Category::PERSONAL_LOAN:
         transType = TRANSFER;
         break;
+    // Income categories
     case Category::INCOME:
     case Category::BONUS:
     case Category::INTEREST_INCOME:
@@ -205,11 +208,11 @@ Transaction::TransactionType Transaction::getTransactionType() const
         transType = INCOME;
         break;
     case Category::UNCATEGORIZED:
-    case Category::CASH_AND_ATM:
-    case Category::CHECK:
-    case Category::PERSONAL_LOAN:
         transType = ( mAmount >= 0 ) ? INCOME : EXPENSE;
         break;
+    // Expense categories
+    case Category::CHECK:
+    case Category::CASH_AND_ATM:
     default:
         transType = EXPENSE;
         break;

@@ -27,6 +27,7 @@ public:
     // Functions
     explicit Account();
     virtual ~Account();
+    bool  isValid() const { return mValid; }
     QString getName() const { return mName; }
     void  setName( const QString& aAccountName ){ mName = aAccountName; }
     void  setAlternateNames( const QStringList& aAlternateNames ){ mAlternateNames = aAlternateNames; }
@@ -56,6 +57,7 @@ public:
     static bool addToAccount( const QString& aAccountName, Transaction* aTransaction );
 
 private:
+    bool mValid;
     QString mName;
     int mNumber;
     QStringList mAlternateNames;

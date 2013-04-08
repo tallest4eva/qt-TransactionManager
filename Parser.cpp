@@ -91,12 +91,11 @@ void Parser::parseFile
     // Parse
     QString logStr;
     aTextStream.seek(0);
-    TransactionManager::mFirstTransactionDate = QDate::currentDate();
-    TransactionManager::mLastTransactionDate.setDate(1900,1,1);
+    TransactionManager::sFirstTransactionDate = QDate::currentDate();
     while( !aTextStream.atEnd() )
     {
         QString line = aTextStream.readLine();
-        TransactionManager::mFileContents.push_back( line );
+        TransactionManager::sFileContents.push_back( line );
         QStringList tokens = line.split( cSeparatorList[sSeparator] );
         if( tokens.size() > 0 && tokens[0] != "" )
         {
@@ -116,7 +115,7 @@ void Parser::parseFile
                 }
                 account->setStatus( ( tokens[sEntryList[ENTRY_ACCOUNT_STATUS]] == "Open" ) ? Account::STATUS_OPEN : Account::STATUS_CLOSED );
                 account->setAccountComplete( ( tokens[sEntryList[ENTRY_ACCOUNT_STATE]] == "Complete" ) ? true : false );
-                TransactionManager::mAccountList.push_back( account );
+                TransactionManager::sAccountList.push_back( account );
                 //logStr = "Adding account:" + QString(account->getInfo());
                 //Logger::logString( logStr );
             }
@@ -135,7 +134,7 @@ void Parser::parseFile
                     transaction->setTransactionDate( date );
                 }
                 Month::addToMonth( transaction->getTransactionDate(), transaction );
-                transaction->setNumber( TransactionManager::mTransactionList.size() );
+                transaction->setNumber( TransactionManager::sTransactionList.size() );
                 transaction->setDescription( tokens[sEntryList[ENTRY_TRANS_DESCRIPTION]] );
                 transaction->setOriginalDescription( tokens[sEntryList[ENTRY_TRANS_ORIG_DESC]] );
                 transaction->setType( ( tokens[sEntryList[ENTRY_TRANS_TYPE]] == "debit" ) ? Transaction::TRANSACTION_DEBIT : Transaction::TRANSACTION_CREDIT );
@@ -143,25 +142,25 @@ void Parser::parseFile
                 transaction->setCurrentBalance( tokens[sEntryList[ENTRY_TRANS_BALANCE]].toFloat() );
                 transaction->setCategory( Category::getCategoryId( tokens[sEntryList[ENTRY_TRANS_CATEGORY]] ) );
                 transaction->setLabels( tokens[sEntryList[ENTRY_TRANS_LABELS]].split(' ',QString::SkipEmptyParts) );
-                TransactionManager::mTransactionList.push_back( transaction );
+                TransactionManager::sTransactionList.push_back( transaction );
                 //logStr = "Adding to account:" + QString(transaction->getAccount()->getName()) + QString(transaction->getInfo());
                 //Logger::logString( logStr );
 
                 // Update transaction dates
-                if( transaction->getTransactionDate() < TransactionManager::mFirstTransactionDate )
+                if( transaction->getTransactionDate() < TransactionManager::sFirstTransactionDate )
                 {
-                    TransactionManager::mFirstTransactionDate = transaction->getTransactionDate();
+                    TransactionManager::sFirstTransactionDate = transaction->getTransactionDate();
                 }
-                if( transaction->getTransactionDate() > TransactionManager::mLastTransactionDate )
+                if( transaction->getTransactionDate() > TransactionManager::sLastTransactionDate )
                 {
-                    TransactionManager::mLastTransactionDate = transaction->getTransactionDate();
+                    TransactionManager::sLastTransactionDate = transaction->getTransactionDate();
                 }
                 // Update values
-                TransactionManager::mCategoriesEnabledList[ (int)transaction->getCategory() ] = true;
+                TransactionManager::sCategoriesEnabledList[ (int)transaction->getCategory() ] = true;
                 QList<Category::LabelIdType> labels = transaction->getLabels();
                 for( int i = 0; i < labels.size(); i++ )
                 {
-                    TransactionManager::mLabelsEnabledList[ (int)labels[i] ] = true;
+                    TransactionManager::sLabelsEnabledList[ (int)labels[i] ] = true;
                 }
             }
         }

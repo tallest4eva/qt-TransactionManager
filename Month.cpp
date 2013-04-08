@@ -150,7 +150,7 @@ float Month::getNetWorth( Account* aAccount, bool* aExist ) const
 void Month::updateData( Month* aPreviousMonth )
 {
     mNetWorthList.clear();
-    mNetWorthList.fill( NetWorthType(), TransactionManager::mAccountList.size() );
+    mNetWorthList.fill( NetWorthType(), TransactionManager::sAccountList.size() );
     if( aPreviousMonth )
     {
         for( int i = 0; i < mNetWorthList.size(); i++ )
@@ -198,29 +198,29 @@ void Month::updateData( Month* aPreviousMonth )
 //----------------------------------------------------------------------------
 void Month::updateMonthList()
 {
-    if( TransactionManager::mMonthList.size() > 0 )
+    if( TransactionManager::sMonthList.size() > 0 )
     {
         // Sort month list
-        qSort( TransactionManager::mMonthList.begin(), TransactionManager::mMonthList.end(), monthSortLessThan );
+        qSort( TransactionManager::sMonthList.begin(), TransactionManager::sMonthList.end(), monthSortLessThan );
 
         // Insert missing months
-        QDate date = TransactionManager::mMonthList[0]->getDate();
-        for( QList<Month*>::iterator i = TransactionManager::mMonthList.begin(); i != TransactionManager::mMonthList.end(); i++ )
+        QDate date = TransactionManager::sMonthList[0]->getDate();
+        for( QList<Month*>::iterator i = TransactionManager::sMonthList.begin(); i != TransactionManager::sMonthList.end(); i++ )
         {
             Month* month = *i;
             if( date < month->getDate() )
             {
                 Month* newMonth = new Month();
                 newMonth->setDate( date );
-                i = TransactionManager::mMonthList.insert( i, newMonth );
+                i = TransactionManager::sMonthList.insert( i, newMonth );
             }
             date = date.addMonths(1);
         }
 
         // Update month info
-        for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+        for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
         {
-            TransactionManager::mMonthList[i]->updateData( (i > 0) ? TransactionManager::mMonthList[i-1]: NULL );
+            TransactionManager::sMonthList[i]->updateData( (i > 0) ? TransactionManager::sMonthList[i-1]: NULL );
         }
     }
 } // Month::updateMonthList
@@ -231,12 +231,12 @@ void Month::updateMonthList()
 Month* Month::getMonth( const QDate& aDate )
 {
     Month* month = NULL;
-    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+    for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
     {
-        QDate curDate = TransactionManager::mMonthList[i]->getDate();
+        QDate curDate = TransactionManager::sMonthList[i]->getDate();
         if( aDate.year() == curDate.year() && aDate.month() == curDate.month() )
         {
-            month = TransactionManager::mMonthList[i];
+            month = TransactionManager::sMonthList[i];
             break;
         }
     }
@@ -252,9 +252,9 @@ bool Month::addToMonth
     )
 {
     bool found = false;
-    for( int i = TransactionManager::mMonthList.size()-1; i >= 0; --i )
+    for( int i = TransactionManager::sMonthList.size()-1; i >= 0; --i )
     {
-        Month* month = TransactionManager::mMonthList[i];
+        Month* month = TransactionManager::sMonthList[i];
         if( aDate.year() == month->getDate().year() && aDate.month() == month->getDate().month() )
         {
             month->addTransaction( aTransaction );
@@ -267,7 +267,7 @@ bool Month::addToMonth
         Month* month = new Month();
         month->setDate( QDate(aDate.year(), aDate.month(), 1) );
         month->addTransaction( aTransaction );
-        TransactionManager::mMonthList.push_back( month );
+        TransactionManager::sMonthList.push_back( month );
         found = true;
     }
     return found;

@@ -92,7 +92,6 @@ private:
     QwtPlotHistogram* mPositiveHistogram;
     QwtPlotHistogram* mNegativeHistogram;
     DisplayLabel mDisplayLabel;
-    QTimer mDisplayTimer;
     Transaction::FilterType mFilter;
     QPoint mMousePosition;
     QRubberBand* mRubberBand;

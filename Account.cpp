@@ -18,6 +18,7 @@ static bool accountSortLessThan( Account* arg1, Account* &arg2 )
 // Constructor
 //----------------------------------------------------------------------------
 Account::Account() :
+    mValid( false ),
     mName( "None" ),
     mNumber( -1 ),
     mBalance( 0 ),
@@ -56,6 +57,7 @@ void Account::addTransaction( Transaction* aTransaction )
 //----------------------------------------------------------------------------
 void Account::updateData()
 {
+    mValid = true;
     qSort( mTransactionList.begin(), mTransactionList.end(), Transaction::transactionSortLessThan );
     if( mTransactionList.size() > 0 )
     {
@@ -120,11 +122,11 @@ QString Account::getInfo()
 //----------------------------------------------------------------------------
 void Account::updateAccountList()
 {
-    qSort( TransactionManager::mAccountList.begin(), TransactionManager::mAccountList.end(), accountSortLessThan );
-    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    qSort( TransactionManager::sAccountList.begin(), TransactionManager::sAccountList.end(), accountSortLessThan );
+    for( int i = 0; i < TransactionManager::sAccountList.size(); i++ )
     {
-        TransactionManager::mAccountList[i]->updateData();
-        TransactionManager::mAccountList[i]->setNumber( i );
+        TransactionManager::sAccountList[i]->updateData();
+        TransactionManager::sAccountList[i]->setNumber( i );
     }
 } // Account::updateAccountList
 
@@ -147,11 +149,11 @@ int Account::getAccountIndex( Account* aAccount )
 Account* Account::getAccount( const QString& aAccountName, bool aAllowAltNames )
 {
     Account* account = NULL;
-    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    for( int i = 0; i < TransactionManager::sAccountList.size(); i++ )
     {
-        if( TransactionManager::mAccountList[i]->isAccountMatch( aAccountName, aAllowAltNames ) )
+        if( TransactionManager::sAccountList[i]->isAccountMatch( aAccountName, aAllowAltNames ) )
         {
-            account = TransactionManager::mAccountList[i];
+            account = TransactionManager::sAccountList[i];
             break;
         }
     }
@@ -168,12 +170,12 @@ bool Account::addToAccount
     )
 {
     bool found = false;
-    for( int i = TransactionManager::mAccountList.size()-1; i >= 0; --i )
+    for( int i = TransactionManager::sAccountList.size()-1; i >= 0; --i )
     {
-        if( TransactionManager::mAccountList[i]->isAccountMatch( aAccountName, true ) )
+        if( TransactionManager::sAccountList[i]->isAccountMatch( aAccountName, true ) )
         {
-            aTransaction->setAccount( TransactionManager::mAccountList[i] );
-            TransactionManager::mAccountList[i]->addTransaction( aTransaction );
+            aTransaction->setAccount( TransactionManager::sAccountList[i] );
+            TransactionManager::sAccountList[i]->addTransaction( aTransaction );
             found = true;
             break;
         }
@@ -187,9 +189,9 @@ bool Account::addToAccount
 float Account::getTotalAccountBalance()
 {
     float balance = 0;
-    for( int i = 0; i < TransactionManager::mAccountList.size(); i++ )
+    for( int i = 0; i < TransactionManager::sAccountList.size(); i++ )
     {
-        balance += TransactionManager::mAccountList[i]->getBalance();
+        balance += TransactionManager::sAccountList[i]->getBalance();
     }
     return balance;
 } // Account::getTotalAccountBalance()

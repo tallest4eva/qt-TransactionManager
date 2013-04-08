@@ -126,8 +126,6 @@ BarGraph::BarGraph(QWidget *parent) :
     QFont font;
     font.setPointSize( 10 );
     mDisplayLabel.setFont( font );
-    mDisplayTimer.setSingleShot( true );
-    connect( &mDisplayTimer, SIGNAL(timeout()), this, SLOT(hideDisplayLabel()) );
     mRubberBand = new QRubberBand( QRubberBand::Rectangle, this );
     
     clear();
@@ -138,7 +136,6 @@ BarGraph::BarGraph(QWidget *parent) :
 //----------------------------------------------------------------------------
 BarGraph::~BarGraph()
 {
-    mDisplayTimer.stop();
     delete mRubberBand;
     delete mGrid;
     delete mIncomeCurve;
@@ -151,7 +148,6 @@ BarGraph::~BarGraph()
 //----------------------------------------------------------------------------
 void BarGraph::hideDisplayLabel()
 {
-    mDisplayTimer.stop();
     mDisplayLabel.hide();
 } // BarGraph::hideDisplayLabel
 
@@ -256,9 +252,9 @@ void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
         if( mFilter.mStartDate <= date && mFilter.mEndDate >= date )
         {
             mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
-            for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+            for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
             {
-                Month* month = TransactionManager::mMonthList[i];
+                Month* month = TransactionManager::sMonthList[i];
                 if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
                 {
                     QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
@@ -314,8 +310,8 @@ void BarGraph::clear()
 {
     hideDisplayLabel();
     mFilter = Transaction::FilterType();
-    mFilter.mStartDate.setDate( 2000, 1, 1 );
-    mFilter.mEndDate.setDate( 2001, 1, 1 );
+    mFilter.mStartDate = TransactionManager::cDefaultStartDate;
+    mFilter.mEndDate = TransactionManager::cDefaultEndDate;
     mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mFilter.mStartDate), REFERENCE_DATE.daysTo(mFilter.mEndDate), 30.416 );
     mPlot.setAxisScale( QwtPlot::yLeft, -1000, 1000 );
     mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
@@ -365,10 +361,10 @@ void BarGraph::setTransactionFilter( const Transaction::FilterType& aFilter )
     float maxValue = 0;
     float minValue = 0;
     const int BAR_BUFFER = 3;
-    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+    for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
     {
         // Date
-        Month* month = TransactionManager::mMonthList[i];
+        Month* month = TransactionManager::sMonthList[i];
         if( mFilter.mStartDate <= month->getDate() && mFilter.mEndDate >= month->getDate() )
         {
             float startDay = REFERENCE_DATE.daysTo(month->getDate()) + BAR_BUFFER;

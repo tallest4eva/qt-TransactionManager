@@ -89,10 +89,10 @@ void ReportTableView::setTransactionFilter( const Transaction::FilterType& aFilt
     float totalNetIncome = 0;
     QStandardItem* item = NULL;
     NumberStandardItem* numberItem = NULL;
-    for( int i = 0; i < TransactionManager::mMonthList.size(); i++ )
+    for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
     {
         // Date
-        Month* month = TransactionManager::mMonthList[i];
+        Month* month = TransactionManager::sMonthList[i];
         if( startDate <= month->getDate() && endDate > month->getDate() )
         {
             item = new QStandardItem();

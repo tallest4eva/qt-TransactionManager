@@ -24,14 +24,18 @@
 #include "OverviewAccountListItem.h"
 
 // Static variables
-QStringList TransactionManager::mFileContents;
-QList<Account*> TransactionManager::mAccountList;
-QList<Transaction*> TransactionManager::mTransactionList;
-QList<Month*> TransactionManager::mMonthList;
-QDate TransactionManager::mFirstTransactionDate = QDate();
-QDate TransactionManager::mLastTransactionDate = QDate();
-QVector<bool> TransactionManager::mCategoriesEnabledList( Category::CATEGORY_TYPE_CNT, false );
-QVector<bool> TransactionManager::mLabelsEnabledList( Category::LABEL_CNT, false );
+const QDate TransactionManager::cDefaultStartDate = QDate(2000,1,1);
+const QDate TransactionManager::cDefaultEndDate = QDate(2001,1,1);
+
+QStringList TransactionManager::sFileContents;
+QList<Account*> TransactionManager::sAccountList;
+QList<Transaction*> TransactionManager::sTransactionList;
+QList<Month*> TransactionManager::sMonthList;
+QDate TransactionManager::sFirstTransactionDate = TransactionManager::cDefaultStartDate;
+QDate TransactionManager::sLastTransactionDate = TransactionManager::cDefaultEndDate;
+QVector<bool> TransactionManager::sCategoriesEnabledList( Category::CATEGORY_TYPE_CNT, false );
+QVector<bool> TransactionManager::sLabelsEnabledList( Category::LABEL_CNT, false );
+
 static const QString sToolboxAccountsStr = "Accounts";
 static const QString sToolboxCategoriesStr = "Categories";
 static const QString sToolboxLabelsStr = "Labels";
@@ -59,6 +63,7 @@ TransactionManager::TransactionManager
 //----------------------------------------------------------------------------
 TransactionManager::~TransactionManager()
 {
+    deInit();
     delete ui;
 } // TransactionManager::~TransactionManager
 
@@ -137,7 +142,55 @@ void TransactionManager::init()
 } // TransactionManager::init()
 
 //----------------------------------------------------------------------------
-// Constructor
+// deInit
+//----------------------------------------------------------------------------
+void TransactionManager::deInit()
+{
+    clearData();
+    for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
+    {
+        delete mTransactionCategoriesCheckBoxList[i];
+        delete mReportCategoriesCheckBoxList[i];
+    }
+    for( int i = 0; i < Category::LABEL_CNT; i++ )
+    {
+        delete mTransactionLabelsCheckBoxList[i];
+        delete mReportLabelsCheckBoxList[i];
+    }
+} // TransactionManager::deInit()
+
+//----------------------------------------------------------------------------
+// clearData
+//----------------------------------------------------------------------------
+void TransactionManager::clearData()
+{
+    // Clear account data
+    mFileName.clear();
+    for( int i = 0; i < sAccountList.size(); i++ )
+    {
+        delete sAccountList[i];
+    }
+    for( int i = 0; i < sTransactionList.size(); i++ )
+    {
+        delete sTransactionList[i];
+    }
+    for( int i = 0; i < sMonthList.size(); i++ )
+    {
+        delete sMonthList[i];
+    }
+    sAccountList.clear();
+    sTransactionList.clear();
+    sMonthList.clear();
+    sFileContents.clear();
+    sFirstTransactionDate = cDefaultStartDate;
+    sLastTransactionDate = cDefaultEndDate;
+    sCategoriesEnabledList.fill( false );
+    sLabelsEnabledList.fill( false );
+    Logger::clearLog();
+} // TransactionManager::clearData()
+
+//----------------------------------------------------------------------------
+// Handle action
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionExit_triggered()
 {
@@ -146,12 +199,11 @@ void TransactionManager::on_actionExit_triggered()
 } // TransactionManager::on_actionExit_triggered()
 
 //----------------------------------------------------------------------------
-// Constructor
+// Handle action
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName( this, tr("Open File"), QString(), tr("Csv Files (*.csv);;All Files (*.*)") );
-
     if( !fileName.isEmpty() )
     {
         QFile file(fileName);
@@ -161,21 +213,12 @@ void TransactionManager::on_actionOpen_triggered()
             return;
         }
 
-        // Close previous file
-        on_actionClose_triggered();
+        // Clear data
+        clearData();
 
         // Parse file contents
         mFileName = fileName;
         QTextStream in( &file );
-        mAccountList.clear();
-        mTransactionList.clear();
-        mMonthList.clear();
-        mFileContents.clear();
-        mFirstTransactionDate.setDate(2000,1,1);
-        mLastTransactionDate.setDate(2000,1,1);
-        mCategoriesEnabledList.fill( false );
-        mLabelsEnabledList.fill( false );
-
         Parser::parseFile( in );
         file.close();
 
@@ -185,36 +228,14 @@ void TransactionManager::on_actionOpen_triggered()
 } // TransactionManager::on_actionOpen_triggered()
 
 //----------------------------------------------------------------------------
-// Constructor
+// Handle action
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionClose_triggered()
 {
     if( !mFileName.isEmpty() )
     {
-        mFileName.clear();
-
-        // Clear account data
-        for( int i = 0; i < mAccountList.size(); i++ )
-        {
-            delete mAccountList[i];
-        }
-        for( int i = 0; i < mTransactionList.size(); i++ )
-        {
-            delete mTransactionList[i];
-        }
-        for( int i = 0; i < mMonthList.size(); i++ )
-        {
-            delete mMonthList[i];
-        }
-        mAccountList.clear();
-        mTransactionList.clear();
-        mMonthList.clear();
-        mFileContents.clear();
-        mFirstTransactionDate.setDate(2000,1,1);
-        mLastTransactionDate.setDate(2000,1,1);
-        Logger::clearLog();
-
-        // Update ui contents
+        // Clear data and update ui contents
+        clearData();
         updateUI();
     }
 } // TransactionManager::on_actionClose_triggered()
@@ -225,7 +246,6 @@ void TransactionManager::on_actionClose_triggered()
 void TransactionManager::on_actionSave_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName( this, tr("Save File"), QString(), tr("Csv Files (*.csv);;All Files (*.*)") );
-
     if( !fileName.isEmpty() )
     {
         QFile file(fileName);
@@ -235,7 +255,7 @@ void TransactionManager::on_actionSave_triggered()
         }
         else
         {
-            QTextStream stream( &file );
+            //QTextStream stream( &file );
             //stream << ui->textEdit->toPlainText();
             //stream.flush();
             file.close();
@@ -270,7 +290,7 @@ void TransactionManager::on_actionDisplayFile_triggered()
 {
     DisplayDialog dialog;
     dialog.setWindowTitle( "Display File Contents" );
-    dialog.setDisplay( mFileContents );
+    dialog.setDisplay( sFileContents );
     dialog.exec();
 } // TransactionManager::on_actionDisplayFile_triggered()
 
@@ -292,14 +312,14 @@ void TransactionManager::on_overviewAccountList_itemDoubleClicked( QListWidgetIt
 {
     // Show Transactions with selected account
     int row = ui->overviewAccountList->row( aItem );
-    if( row >= 0 && row < mAccountList.size() )
+    if( row >= 0 && row < sAccountList.size() )
     {
         Transaction::FilterType filter = Transaction::FilterType();
         filter.mAllAccounts = false;
         filter.mShowAccounts = true;
-        filter.mAccountList.push_back( mAccountList[row] );
-        filter.mStartDate = mFirstTransactionDate;
-        filter.mEndDate = mLastTransactionDate;
+        filter.mAccountList.push_back( sAccountList[row] );
+        filter.mStartDate = sFirstTransactionDate;
+        filter.mEndDate = sLastTransactionDate;
         handleShowTransactionByFilter( filter );
     }
 } // TransactionManager::on_overviewAccountList_itemDoubleClicked()
@@ -310,6 +330,9 @@ void TransactionManager::on_overviewAccountList_itemDoubleClicked( QListWidgetIt
 void TransactionManager::updateUI()
 {
     // Update ui elements, menu and status
+    ui->actionClose->setEnabled( false );
+    ui->actionDisplayFile->setEnabled( false );
+    ui->statusBar->removeWidget( &mStatusLabel );
     if( !mFileName.isEmpty() )
     {
         ui->actionClose->setEnabled( true );
@@ -317,12 +340,6 @@ void TransactionManager::updateUI()
         mStatusLabel.setText( "File Opened: " + mFileName );
         mStatusLabel.show();
         ui->statusBar->addPermanentWidget( &mStatusLabel );
-    }
-    else
-    {
-        ui->actionClose->setEnabled( false );
-        ui->actionDisplayFile->setEnabled( false );
-        ui->statusBar->removeWidget( &mStatusLabel );
     }
     
     updateOverviewTab();
@@ -339,8 +356,8 @@ void TransactionManager::updateOverviewTab()
     // Update overview values
     if( !mFileName.isEmpty() )
     {
-        ui->overviewNumberOfAccountValue->setNum( mAccountList.size() );
-        ui->overviewNumberOfTransactionsValue->setNum( mTransactionList.size() );
+        ui->overviewNumberOfAccountValue->setNum( sAccountList.size() );
+        ui->overviewNumberOfTransactionsValue->setNum( sTransactionList.size() );
         QString str = "$" + QString::number( Account::getTotalAccountBalance(), 'f', 2 );
         if( Account::getTotalAccountBalance() != 0 )
         {
@@ -348,8 +365,8 @@ void TransactionManager::updateOverviewTab()
             str.append( "</font>" );
         }
         ui->overviewNetWorthValue->setText( str );
-        ui->overviewFirstDateValue->setText( mFirstTransactionDate.toString("yyyy-MM-dd") );
-        ui->overviewLastDateValue->setText( mLastTransactionDate.toString("yyyy-MM-dd") );
+        ui->overviewFirstDateValue->setText( sFirstTransactionDate.toString("yyyy-MM-dd") );
+        ui->overviewLastDateValue->setText( sLastTransactionDate.toString("yyyy-MM-dd") );
     }
     else
     {
@@ -362,11 +379,11 @@ void TransactionManager::updateOverviewTab()
 
     // Update overview account list
     ui->overviewAccountList->clear();
-    for( int i = 0; i < mAccountList.size(); i++ )
+    for( int i = 0; i < sAccountList.size(); i++ )
     {
         QListWidgetItem* listItem = new QListWidgetItem();
         OverviewAccountListItem* item = new OverviewAccountListItem();
-        item->setAccount( mAccountList[i] );
+        item->setAccount( sAccountList[i] );
         listItem->setSizeHint( QSize(0,70) );
         ui->overviewAccountList->addItem( listItem );
         ui->overviewAccountList->setItemWidget( listItem, item );
@@ -406,13 +423,11 @@ void TransactionManager::initTransactionsTab()
     ui->transactionIncomeCategoriesCheckBox->setDisabled( true );
     ui->transactionExpenseCategoriesCheckBox->setDisabled( true );
     ui->transactionAllLabelsCheckBox->setDisabled( true );
-    ui->transactionStartDateEdit->clear();
-    ui->transactionStartDateEdit->clearMinimumDate();
-    ui->transactionStartDateEdit->clearMaximumDate();
+    ui->transactionStartDateEdit->setDateRange( sFirstTransactionDate, sLastTransactionDate );
+    ui->transactionStartDateEdit->setDate( sFirstTransactionDate );
     ui->transactionStartDateEdit->setDisabled( true );
-    ui->transactionEndDateEdit->clear();
-    ui->transactionEndDateEdit->clearMinimumDate();
-    ui->transactionEndDateEdit->clearMaximumDate();
+    ui->transactionEndDateEdit->setDateRange( sFirstTransactionDate, sLastTransactionDate );
+    ui->transactionEndDateEdit->setDate( sLastTransactionDate );
     ui->transactionEndDateEdit->setDisabled( true );
     ui->transactionDateThisYearButton->setEnabled( false );
     ui->transactionDate1YearButton->setEnabled( false );
@@ -431,35 +446,29 @@ void TransactionManager::initTransactionsTab()
         ui->transactionIncomeCategoriesCheckBox->setDisabled( false );
         ui->transactionExpenseCategoriesCheckBox->setDisabled( false );
         ui->transactionAllLabelsCheckBox->setDisabled( false );
-        for( int i = 0; i < mAccountList.size(); i++ )
+        for( int i = 0; i < sAccountList.size(); i++ )
         {
-            QCheckBox* checkbox = new QCheckBox( mAccountList[i]->getName(), ui->transactionAccountGroupBox );
+            QCheckBox* checkbox = new QCheckBox( sAccountList[i]->getName(), ui->transactionAccountGroupBox );
             checkbox->setChecked( true );
             ui->transactionAccountGroupBox->layout()->addWidget( checkbox );
             mTransactionAccountsCheckBoxList.push_back( checkbox );
         }
         for( int i = 0; i < mTransactionCategoriesCheckBoxList.size(); i++ )
         {
-            mTransactionCategoriesCheckBoxList[i]->setDisabled( !mCategoriesEnabledList[i] );
+            mTransactionCategoriesCheckBoxList[i]->setDisabled( !sCategoriesEnabledList[i] );
         }
         for( int i = 0; i < mTransactionLabelsCheckBoxList.size(); i++ )
         {
-            mTransactionLabelsCheckBoxList[i]->setDisabled( !mLabelsEnabledList[i] );
+            mTransactionLabelsCheckBoxList[i]->setDisabled( !sLabelsEnabledList[i] );
         }
-        ui->transactionStartDateEdit->setDate( mFirstTransactionDate );
-        ui->transactionStartDateEdit->setMinimumDate( mFirstTransactionDate );
-        ui->transactionStartDateEdit->setMaximumDate( mLastTransactionDate );
         ui->transactionStartDateEdit->setDisabled( false );
-        ui->transactionEndDateEdit->setDate( mLastTransactionDate );
-        ui->transactionEndDateEdit->setMinimumDate( mFirstTransactionDate );
-        ui->transactionEndDateEdit->setMaximumDate( mLastTransactionDate );
         ui->transactionEndDateEdit->setDisabled( false );
         QDate currentDate = QDate::currentDate();
         QDate thisYearDate( currentDate.year(), 1, 1 );
-        ui->transactionDateThisYearButton->setEnabled( mFirstTransactionDate < thisYearDate );
-        ui->transactionDate1YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-1) );
-        ui->transactionDate5YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-5) );
-        ui->transactionDate10YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-10) );
+        ui->transactionDateThisYearButton->setEnabled( sLastTransactionDate >= thisYearDate );
+        ui->transactionDate1YearButton->setEnabled( sFirstTransactionDate < currentDate.addYears(-1) );
+        ui->transactionDate5YearButton->setEnabled( sFirstTransactionDate < currentDate.addYears(-5) );
+        ui->transactionDate10YearButton->setEnabled( sFirstTransactionDate < currentDate.addYears(-10) );
         ui->transactionDateAllTimeButton->setEnabled( true );
         ui->transactionSelectButton->setEnabled( true );
         ui->transactionAllButton->setEnabled( true );
@@ -467,7 +476,6 @@ void TransactionManager::initTransactionsTab()
 
     // Init table
     mTransactionTableView.clear();
-    mTransactionTableView.sortByColumn( (int)TransactionList::HDR_NAME, Qt::AscendingOrder );
 
     // Update transaction table
     updateTransactionsTab();
@@ -534,14 +542,12 @@ void TransactionManager::initReportsTab()
     ui->reportIncomeCategoriesCheckBox->setDisabled( true );
     ui->reportExpenseCategoriesCheckBox->setDisabled( true );
     ui->reportAllLabelsCheckBox->setDisabled( true );
-    ui->reportStartDateEdit->clear();
-    ui->reportStartDateEdit->clearMinimumDate();
-    ui->reportStartDateEdit->clearMaximumDate();
     ui->reportStartDateEdit->setDisabled( true );
-    ui->reportEndDateEdit->clear();
-    ui->reportEndDateEdit->clearMinimumDate();
-    ui->reportEndDateEdit->clearMaximumDate();
+    ui->reportStartDateEdit->setDateRange( sFirstTransactionDate, sLastTransactionDate );
+    ui->reportStartDateEdit->setDate( sFirstTransactionDate );
     ui->reportEndDateEdit->setDisabled( true );
+    ui->reportEndDateEdit->setDateRange( sFirstTransactionDate, sLastTransactionDate );
+    ui->reportEndDateEdit->setDate( sLastTransactionDate );
     ui->reportDateThisYearButton->setEnabled( false );
     ui->reportDate1YearButton->setEnabled( false );
     ui->reportDate5YearButton->setEnabled( false );
@@ -560,35 +566,29 @@ void TransactionManager::initReportsTab()
         ui->reportIncomeCategoriesCheckBox->setDisabled( false );
         ui->reportExpenseCategoriesCheckBox->setDisabled( false );
         ui->reportAllLabelsCheckBox->setDisabled( false );
-        for( int i = 0; i < mAccountList.size(); i++ )
+        for( int i = 0; i < sAccountList.size(); i++ )
         {
-            QCheckBox* checkbox = new QCheckBox( mAccountList[i]->getName(), ui->reportAccountGroupBox );
+            QCheckBox* checkbox = new QCheckBox( sAccountList[i]->getName(), ui->reportAccountGroupBox );
             checkbox->setChecked( true );
             ui->reportAccountGroupBox->layout()->addWidget( checkbox );
             mReportAccountsCheckBoxList.push_back( checkbox );
         }
         for( int i = 0; i < mReportCategoriesCheckBoxList.size(); i++ )
         {
-            mReportCategoriesCheckBoxList[i]->setDisabled( !mCategoriesEnabledList[i] );
+            mReportCategoriesCheckBoxList[i]->setDisabled( !sCategoriesEnabledList[i] );
         }
         for( int i = 0; i < mReportLabelsCheckBoxList.size(); i++ )
         {
-            mReportLabelsCheckBoxList[i]->setDisabled( !mLabelsEnabledList[i] );
+            mReportLabelsCheckBoxList[i]->setDisabled( !sLabelsEnabledList[i] );
         }
-        ui->reportStartDateEdit->setDate( mFirstTransactionDate );
-        ui->reportStartDateEdit->setMinimumDate( mFirstTransactionDate );
-        ui->reportStartDateEdit->setMaximumDate( mLastTransactionDate );
         ui->reportStartDateEdit->setDisabled( false );
-        ui->reportEndDateEdit->setDate( mLastTransactionDate );
-        ui->reportEndDateEdit->setMinimumDate( mFirstTransactionDate );
-        ui->reportEndDateEdit->setMaximumDate( mLastTransactionDate );
         ui->reportEndDateEdit->setDisabled( false );
         QDate currentDate = QDate::currentDate();
         QDate thisYearDate( currentDate.year(), 1, 1 );
-        ui->reportDateThisYearButton->setEnabled( mFirstTransactionDate < thisYearDate );
-        ui->reportDate1YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-1) );
-        ui->reportDate5YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-5) );
-        ui->reportDate10YearButton->setEnabled( mFirstTransactionDate < currentDate.addYears(-10) );
+        ui->reportDateThisYearButton->setEnabled( sLastTransactionDate >= thisYearDate );
+        ui->reportDate1YearButton->setEnabled( sFirstTransactionDate < currentDate.addYears(-1) );
+        ui->reportDate5YearButton->setEnabled( sFirstTransactionDate < currentDate.addYears(-5) );
+        ui->reportDate10YearButton->setEnabled( sFirstTransactionDate < currentDate.addYears(-10) );
         ui->reportDateAllTimeButton->setEnabled( true );
         ui->reportSelectButton->setEnabled( true );
         ui->reportAllButton->setEnabled( true );
@@ -648,7 +648,7 @@ Transaction::FilterType TransactionManager::getTransactionFilter( TabType aTabTy
     case REPORT_TAB:
         for( int i = 0; i < mReportAccountsCheckBoxList.size(); i++ )
         {
-            ( mReportAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllAccounts = false : filter.mAccountList.push_back( mAccountList[i] );
+            ( mReportAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllAccounts = false : filter.mAccountList.push_back( sAccountList[i] );
         }
         for( int i = 0; i < mReportCategoriesCheckBoxList.size(); i++ )
         {
@@ -665,7 +665,7 @@ Transaction::FilterType TransactionManager::getTransactionFilter( TabType aTabTy
     default:
         for( int i = 0; i < mTransactionAccountsCheckBoxList.size(); i++ )
         {
-            ( mTransactionAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllAccounts = false : filter.mAccountList.push_back( mAccountList[i] );
+            ( mTransactionAccountsCheckBoxList[i]->checkState() == Qt::Unchecked ) ? filter.mAllAccounts = false : filter.mAccountList.push_back( sAccountList[i] );
         }
         for( int i = 0; i < mTransactionCategoriesCheckBoxList.size(); i++ )
         {
@@ -680,7 +680,7 @@ Transaction::FilterType TransactionManager::getTransactionFilter( TabType aTabTy
         break;
     }
     // If not all dates are set
-    if( mFirstTransactionDate < filter.mStartDate || mLastTransactionDate > filter.mEndDate )
+    if( sFirstTransactionDate < filter.mStartDate || sLastTransactionDate > filter.mEndDate )
     {
         filter.mAllDates = false;
     }
@@ -726,8 +726,8 @@ void TransactionManager::handleShowTransactionByFilter( const Transaction::Filte
     {
         mTransactionLabelsCheckBoxList[i]->setChecked( aFilter.mLabelList[i] );
     }
-    ui->transactionStartDateEdit->setDate( ( aFilter.mAllDates ) ? mFirstTransactionDate : aFilter.mStartDate );
-    ui->transactionEndDateEdit->setDate( ( aFilter.mAllDates ) ? mLastTransactionDate : aFilter.mEndDate );
+    ui->transactionStartDateEdit->setDate( ( aFilter.mAllDates ) ? sFirstTransactionDate : aFilter.mStartDate );
+    ui->transactionEndDateEdit->setDate( ( aFilter.mAllDates ) ? sLastTransactionDate : aFilter.mEndDate );
     on_transactionSelectButton_clicked();
 } // TransactionManager::handleShowTransactionByFilter
 
@@ -752,13 +752,13 @@ void TransactionManager::updateAndApplyDates( TabType aTab, QDate aStartDate, QD
     switch( aTab )
     {
     case TRANSACTION_TAB:
-        ui->transactionStartDateEdit->setDate( ( mFirstTransactionDate > aStartDate ) ? mFirstTransactionDate : aStartDate );
-        ui->transactionEndDateEdit->setDate( ( mLastTransactionDate < aEndDate ) ? mLastTransactionDate : aEndDate );
+        ui->transactionStartDateEdit->setDate( ( sFirstTransactionDate > aStartDate ) ? sFirstTransactionDate : aStartDate );
+        ui->transactionEndDateEdit->setDate( ( sLastTransactionDate < aEndDate ) ? sLastTransactionDate : aEndDate );
         on_transactionSelectButton_clicked();
         break;
     case REPORT_TAB:
-        ui->reportStartDateEdit->setDate( ( mFirstTransactionDate > aStartDate ) ? mFirstTransactionDate : aStartDate );
-        ui->reportEndDateEdit->setDate( ( mLastTransactionDate < aEndDate ) ? mLastTransactionDate : aEndDate );
+        ui->reportStartDateEdit->setDate( ( sFirstTransactionDate > aStartDate ) ? sFirstTransactionDate : aStartDate );
+        ui->reportEndDateEdit->setDate( ( sLastTransactionDate < aEndDate ) ? sLastTransactionDate : aEndDate );
         on_reportSelectButton_clicked();
     default:
         break;
@@ -820,7 +820,7 @@ void TransactionManager::updateCheckBoxes( TabType aTab, CheckBoxType aCheckType
             }
             else if( aSelectType == OPEN_ACCOUNTS )
             {
-                accountsCheckBoxList[i]->setChecked( ( mAccountList[i]->getStatus() == Account::STATUS_OPEN ) ? aChecked : false );
+                accountsCheckBoxList[i]->setChecked( ( sAccountList[i]->getStatus() == Account::STATUS_OPEN ) ? aChecked : false );
             }
         }
         break;
@@ -862,7 +862,7 @@ void TransactionManager::on_transactionDateThisYearButton_clicked() { updateAndA
 void TransactionManager::on_transactionDate1YearButton_clicked()    { updateAndApplyDates( TRANSACTION_TAB, QDate::currentDate().addYears(-1), QDate::currentDate() ); }
 void TransactionManager::on_transactionDate5YearButton_clicked()    { updateAndApplyDates( TRANSACTION_TAB, QDate::currentDate().addYears(-5), QDate::currentDate() ); }
 void TransactionManager::on_transactionDate10YearButton_clicked()   { updateAndApplyDates( TRANSACTION_TAB, QDate::currentDate().addYears(-10), QDate::currentDate() ); }
-void TransactionManager::on_transactionDateAllTimeButton_clicked()  { updateAndApplyDates( TRANSACTION_TAB, mFirstTransactionDate, mLastTransactionDate ); }
+void TransactionManager::on_transactionDateAllTimeButton_clicked()  { updateAndApplyDates( TRANSACTION_TAB, sFirstTransactionDate, sLastTransactionDate ); }
 
 //----------------------------------------------------------------------------
 // Button clicked
@@ -872,8 +872,8 @@ void TransactionManager::on_transactionAllButton_clicked()
     updateCheckBoxes( TRANSACTION_TAB, ACCOUNTS_CHECKBOX, ALL, true );
     updateCheckBoxes( TRANSACTION_TAB, CATEGORIES_CHECKBOX, ALL, true );
     updateCheckBoxes( TRANSACTION_TAB, LABELS_CHECKBOX, ALL, true );
-    ui->transactionStartDateEdit->setDate( mFirstTransactionDate );
-    ui->transactionEndDateEdit->setDate( mLastTransactionDate );
+    ui->transactionStartDateEdit->setDate( sFirstTransactionDate );
+    ui->transactionEndDateEdit->setDate( sLastTransactionDate );
     on_transactionSelectButton_clicked();
 }
 //----------------------------------------------------------------------------
@@ -891,7 +891,7 @@ void TransactionManager::on_reportDateThisYearButton_clicked()  { updateAndApply
 void TransactionManager::on_reportDate1YearButton_clicked()     { updateAndApplyDates( REPORT_TAB, QDate::currentDate().addYears(-1), QDate::currentDate() ); }
 void TransactionManager::on_reportDate5YearButton_clicked()     { updateAndApplyDates( REPORT_TAB, QDate::currentDate().addYears(-5), QDate::currentDate() ); }
 void TransactionManager::on_reportDate10YearButton_clicked()    { updateAndApplyDates( REPORT_TAB, QDate::currentDate().addYears(-10), QDate::currentDate() ); }
-void TransactionManager::on_reportDateAllTimeButton_clicked()   { updateAndApplyDates( REPORT_TAB, mFirstTransactionDate, mLastTransactionDate ); }
+void TransactionManager::on_reportDateAllTimeButton_clicked()   { updateAndApplyDates( REPORT_TAB, sFirstTransactionDate, sLastTransactionDate ); }
 
 //----------------------------------------------------------------------------
 // Button clicked
@@ -901,8 +901,8 @@ void TransactionManager::on_reportAllButton_clicked()
     updateCheckBoxes( REPORT_TAB, ACCOUNTS_CHECKBOX, ALL, true );
     updateCheckBoxes( REPORT_TAB, CATEGORIES_CHECKBOX, ALL, true );
     updateCheckBoxes( REPORT_TAB, LABELS_CHECKBOX, ALL, true );
-    ui->reportStartDateEdit->setDate( mFirstTransactionDate );
-    ui->reportEndDateEdit->setDate( mLastTransactionDate );
+    ui->reportStartDateEdit->setDate( sFirstTransactionDate );
+    ui->reportEndDateEdit->setDate( sLastTransactionDate );
     on_reportSelectButton_clicked();
 }
 //----------------------------------------------------------------------------

@@ -62,14 +62,17 @@ public:
     ~TransactionManager();
 
     // Variables
-    static QStringList mFileContents;
-    static QList<Account*> mAccountList;
-    static QList<Transaction*> mTransactionList;
-    static QList<Month*> mMonthList;
-    static QDate mFirstTransactionDate;
-    static QDate mLastTransactionDate;
-    static QVector<bool> mCategoriesEnabledList;
-    static QVector<bool> mLabelsEnabledList;
+    static QStringList sFileContents;
+    static QList<Account*> sAccountList;
+    static QList<Transaction*> sTransactionList;
+    static QList<Month*> sMonthList;
+    static QDate sFirstTransactionDate;
+    static QDate sLastTransactionDate;
+    static QVector<bool> sCategoriesEnabledList;
+    static QVector<bool> sLabelsEnabledList;
+
+    static const QDate cDefaultStartDate;
+    static const QDate cDefaultEndDate;
 
 private slots:
     void on_actionExit_triggered();
@@ -116,7 +119,9 @@ private slots:
 private:
     // Functions
     void init();
+    void deInit();
     void updateUI();
+    void clearData();
     void updateOverviewTab();
     void initTransactionsTab();
     void updateTransactionsTab();
