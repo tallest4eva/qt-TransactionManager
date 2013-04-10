@@ -68,6 +68,21 @@ void Account::updateData()
         {
             mCloseDate = last->getTransactionDate();
         }
+
+        // Update transaction current balances if account state is complete
+        if( mComplete )
+        {
+            if( !mTransactionList[0]->isBalanceSet() ){ mTransactionList[0]->setCurrentBalance( mTransactionList[0]->getAmount() ); }
+            for( int i = 1; i < mTransactionList.size(); i++ )
+            {
+                Transaction* transaction = mTransactionList[i];
+                if( !transaction->isBalanceSet() )
+                {
+                    float prevBalance = mTransactionList[i-1]->getCurrentBalance();
+                    transaction->setCurrentBalance( prevBalance + transaction->getAmount() );
+                }
+            }
+        }
      }
 } // Account::updateData()
 

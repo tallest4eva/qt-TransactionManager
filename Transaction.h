@@ -71,7 +71,8 @@ public:
     float getAmount() const { return mAmount; }
     void  setAmount( float aAmount ){ mAmount = aAmount; }
     float getCurrentBalance() const { return mCurrentBalance; }
-    void  setCurrentBalance( float aCurrentBalance ){ mCurrentBalance = aCurrentBalance; }
+    void  setCurrentBalance( float aCurrentBalance ){ mBalanceSet = true; mCurrentBalance = aCurrentBalance; }
+    bool  isBalanceSet() const { return mBalanceSet; }
     Category::CategoryIdType getCategory() const { return mCategory; }
     void  setCategory( Category::CategoryIdType aCategory ){ mCategory = aCategory; }
     QList<Category::LabelIdType> getLabels() const { return mLabels; }
@@ -103,6 +104,7 @@ private:
     Type mType;
     float mAmount;
     float mCurrentBalance;
+    bool mBalanceSet;
     Category::CategoryIdType mCategory;
     QList<Category::LabelIdType> mLabels;
 };

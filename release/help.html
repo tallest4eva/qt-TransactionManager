@@ -90,7 +90,7 @@
         <img width='320' height='200' src='help/transactionManager - Reports Tab - Bar Chart Popup.png' /img><br>
         <li>Double-Click on the popup to display the selected month's transactions in the Transactions tab.</li>
         <li>Click on the bar chart to hide the popup.</li>
-        <li>Click and drag across the bar chart to select a date interval to view.</li>
+        <li>Click and drag across the bar chart to select a date interval to view in the Reports tab.</li>
         <img width='320' height='200' src='help/transactionManager - Reports Tab - Bar Chart - Date Select.png' /img><br>
     </ul>
     <b>The 'Report List' Reports Tab</b><br>
@@ -182,31 +182,35 @@
         <li>The 1st column must have the 'Account' keyword.</li>
         <li>The 2nd column is left empty.</li>
         <li>The 3rd column contains the Account Name.</li>
-        <li>The 4th column contains the Account Status.</li>
+        <li>The 4th column contains the Account Status stating whether the account is opened or close.</li>
         <font size="-1"><table border="1">
           <tr><th>Valid Account Status values</th></tr>
           <tr><td>Open</td></tr> 
           <tr><td>Closed</td></tr>
         </table></font>
-        <li>The 5th column contains the Account State.</li>
+        <li>The 5th column contains the Account State stating whether the account has all its transactions present in the data file.</li>
         <font size="-1"><table border="1">
           <tr><th>Valid Account State values</th></tr>
           <tr><td>Complete</td></tr> 
           <tr><td>Incomplete</td></tr>
         </table></font>
+        <font color="red"><em>NOTE: If an account is marked as complete, transactions without current balances are calculated automatically.</em></font><br>
         <li>The 6th column contains a semi-colon separated list of Alternate Account Names. (Optional)</li>
     </ul>
     Transaction Descriptor:<br>
     <font color="green"><code>Transaction,12/10/12,Bank - Credit Card-2000,QuikTrip,CREDITCARD QT 200,debit,-80.00,660.00,Gas & Fuel,Reviewed Manual</code></font><br>
-    Transactions with unmatched account labels are defaulted with account name: 'None' and show up red in the Transactions tab.<br>
-    Transactions with unmatched category labels are defaulted with category: 'Uncategorized' and show up red in the Transactions tab.<br>
+    <font color="red"><em>NOTE: Transactions with unmatched account labels are defaulted with a red 'None' account name in the Transactions tab.<br>
+    Transactions with unmatched category labels are defaulted with a red 'Uncategorized' category in the Transactions tab.</em></font><br>
     <img width='350' height='200' hspace='30' src='help/transactionManager - Transactions Tab - Unmatched Transaction.png' /img><br>
+    <font color="red"><em>NOTE: If the current balance is NOT provided for a transaction in an Incomplete account,
+    its current balance shows up as a red 'Unknown' in the Transaction tab.</em></font><br>
+    <img width='350' height='200' hspace='30' src='help/transactionManager - Transactions Tab - Unknown Balance.png' /img><br>
     <ul>
         <li>The 1st column must have the 'Transaction' keyword.</li>
         <li>The 2nd column contains the transaction Date. Default date format: 'MM/dd/yy'</li>
         <li>The 3rd column contains the transaction's Account Name.</li>
         <li>The 4th column contains the transaction's Description.</li>
-        <li>The 5th column contains the transaction's Original Description.</li>
+        <li>The 5th column contains the transaction's Original Description. (Optional)</li>
         <li>The 6th column contains the transaction's Type.</li>
         <font size="-1"><table border="1">
           <tr><th>Valid transaction Type values</th></tr>
@@ -214,7 +218,7 @@
           <tr><td>credit</td></tr>
         </table></font>
         <li>The 7th column contains the transaction's Amount.</li>
-        <li>The 8th column contains the transaction account's Current Balance.</li>
+        <li>The 8th column contains the transaction account's Current Balance. (Optional if the account state is Complete)</li>
         <li>The 9th column contains the transaction's Category.</li>
         Valid transaction categories:
         <font size="-1"><table border="1">

@@ -113,7 +113,16 @@ void TransactionList::setTransactionFilter( const Transaction::FilterType& aFilt
         numberItem->setNumber( transaction->getAmount() );
         mModel->setItem( i, (int)HDR_AMOUNT, numberItem );
         numberItem = new NumberStandardItem();
-        numberItem->setNumber( transaction->getCurrentBalance() );
+        if( transaction->isBalanceSet() )
+        {
+            numberItem->setNumber( transaction->getCurrentBalance() );
+        }
+        else
+        {
+            numberItem->setText( "Unknown" );
+            numberItem->setForeground( Qt::red );
+            numberItem->setTextAlignment( Qt::AlignRight | Qt::AlignVCenter );
+        }
         mModel->setItem( i, (int)HDR_BALANCE, numberItem );
         item = new QStandardItem( Category::getCategoryText( transaction->getCategory() ) );
         if( transaction->getCategory() == Category::UNCATEGORIZED ){ item->setForeground( Qt::red ); }

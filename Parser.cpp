@@ -139,7 +139,10 @@ void Parser::parseFile
                 transaction->setOriginalDescription( tokens[sEntryList[ENTRY_TRANS_ORIG_DESC]] );
                 transaction->setType( ( tokens[sEntryList[ENTRY_TRANS_TYPE]] == "debit" ) ? Transaction::TRANSACTION_DEBIT : Transaction::TRANSACTION_CREDIT );
                 transaction->setAmount( tokens[sEntryList[ENTRY_TRANS_AMOUNT]].toFloat() );
-                transaction->setCurrentBalance( tokens[sEntryList[ENTRY_TRANS_BALANCE]].toFloat() );
+                if( !tokens[sEntryList[ENTRY_TRANS_BALANCE]].isEmpty() )
+                {
+                    transaction->setCurrentBalance( tokens[sEntryList[ENTRY_TRANS_BALANCE]].toFloat() );
+                }
                 transaction->setCategory( Category::getCategoryId( tokens[sEntryList[ENTRY_TRANS_CATEGORY]] ) );
                 transaction->setLabels( tokens[sEntryList[ENTRY_TRANS_LABELS]].split(' ',QString::SkipEmptyParts) );
                 TransactionManager::sTransactionList.push_back( transaction );

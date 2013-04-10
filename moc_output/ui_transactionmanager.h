@@ -881,8 +881,8 @@ public:
         menuFile->addAction(actionExit);
         menuHelp->addAction(actionAbout);
         menuHelp->addSeparator();
-        menuHelp->addAction(actionDisplayFile);
         menuHelp->addAction(actionDisplayLog);
+        menuTools->addAction(actionDisplayFile);
         menuTools->addAction(actionFileInputConfig);
 
         retranslateUi(TransactionManager);
@@ -907,7 +907,7 @@ public:
         actionAbout->setText(QApplication::translate("TransactionManager", "About", 0, QApplication::UnicodeUTF8));
         actionDisplayFile->setText(QApplication::translate("TransactionManager", "Display File Contents", 0, QApplication::UnicodeUTF8));
         actionDisplayLog->setText(QApplication::translate("TransactionManager", "Display Log", 0, QApplication::UnicodeUTF8));
-        actionFileInputConfig->setText(QApplication::translate("TransactionManager", "Input File Config", 0, QApplication::UnicodeUTF8));
+        actionFileInputConfig->setText(QApplication::translate("TransactionManager", "Configure Input File", 0, QApplication::UnicodeUTF8));
         overviewAccountTitle->setText(QApplication::translate("TransactionManager", "Accounts", 0, QApplication::UnicodeUTF8));
         overviewNumberOfAccountsLabel->setText(QApplication::translate("TransactionManager", "Number of Accounts:", 0, QApplication::UnicodeUTF8));
         overviewNumberOfTransactionsLabel->setText(QApplication::translate("TransactionManager", "Number of Transactions:", 0, QApplication::UnicodeUTF8));

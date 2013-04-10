@@ -17,7 +17,8 @@ Transaction::Transaction():
     mNumber( 0 ),
     mType( TRANSACTION_INVALID ),
     mAmount( 0.0f ),
-    mCurrentBalance( 0.0f )
+    mCurrentBalance( 0.0f ),
+    mBalanceSet( false )
 {
 } // Transaction::Transaction
 
