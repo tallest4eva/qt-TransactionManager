@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: TransactionManager.cpp
+//  FILE NAME: TransactionManager.cpp
 //******************************************************************************
 
 #include <QDebug>
@@ -278,7 +280,7 @@ void TransactionManager::on_actionFileInputConfig_triggered()
 void TransactionManager::on_actionAbout_triggered()
 {
     QMessageBox msgBox;
-    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 1.0");
+    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 1.02");
     msgBox.setIcon( QMessageBox::Information );
     msgBox.exec();
 } // TransactionManager::on_actionDisplayLog_triggered()

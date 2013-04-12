@@ -63,4 +63,4 @@ Transaction,06/05/12,Bank - Credit Card-2000,AppleBees,CREDITCARD APPLEBEES,debi
 Transaction,06/01/12,Bank - Credit Card-2000,Account Opened,Account Opened,credit,0.00,0.00,Account Balance,Manual
 
 Testing Invalid transaction
-Transaction,01/10/12,Bank - Invalid Account,Invalid Account and Category,test,credit,500.00,500.00,Invalid Category,Reviewed
+Transaction,01/10/12,Bank - Invalid Account,Invalid Account and Category,test,credit,500.00,,Invalid Category,Reviewed

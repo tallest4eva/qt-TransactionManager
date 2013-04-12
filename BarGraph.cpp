@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: BarGraph.cpp
+//  FILE NAME: BarGraph.cpp
 //******************************************************************************
 
 #include <QtGui>

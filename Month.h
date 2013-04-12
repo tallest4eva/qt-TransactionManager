@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: Month.h
+//  FILE NAME: Month.h
 //******************************************************************************
 
 #ifndef Month_H

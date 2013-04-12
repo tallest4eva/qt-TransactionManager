@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: DisplayDialog.cpp
+//  FILE NAME: DisplayDialog.cpp
 //******************************************************************************
 
 #include <QGridLayout>

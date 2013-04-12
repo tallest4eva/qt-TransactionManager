@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: OverviewAccountListItem.h
+//  FILE NAME: OverviewAccountListItem.h
 //******************************************************************************
 
 #ifndef OverviewAccountListItem_H

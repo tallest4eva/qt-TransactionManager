@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: TransactionManager.h
+//  FILE NAME: TransactionManager.h
 //******************************************************************************
 
 #ifndef TRANSACTIONMANAGER_H

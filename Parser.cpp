@@ -1,6 +1,8 @@
 //******************************************************************************
+// Author: Obi Modum (tallest4eva)
+// Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  HEADER NAME: Parser.cpp
+//  FILE NAME: Parser.cpp
 //******************************************************************************
 
 #include <QString>
@@ -91,7 +93,7 @@ void Parser::parseFile
     // Parse
     QString logStr;
     aTextStream.seek(0);
-    TransactionManager::sFirstTransactionDate = QDate::currentDate();
+    QDate firstDate = QDate::currentDate();
     while( !aTextStream.atEnd() )
     {
         QString line = aTextStream.readLine();
@@ -150,9 +152,9 @@ void Parser::parseFile
                 //Logger::logString( logStr );
 
                 // Update transaction dates
-                if( transaction->getTransactionDate() < TransactionManager::sFirstTransactionDate )
+                if( transaction->getTransactionDate() < firstDate )
                 {
-                    TransactionManager::sFirstTransactionDate = transaction->getTransactionDate();
+                    firstDate = transaction->getTransactionDate();
                 }
                 if( transaction->getTransactionDate() > TransactionManager::sLastTransactionDate )
                 {
@@ -169,7 +171,11 @@ void Parser::parseFile
         }
     }
     
-    // update lists
+    // update dates and lists
+    if( firstDate < QDate::currentDate() )
+    {
+        TransactionManager::sFirstTransactionDate = firstDate;
+    }
     Account::updateAccountList();
     Month::updateMonthList();
 } // Parser::parseFile
