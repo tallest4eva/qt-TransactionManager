@@ -69,6 +69,7 @@ const Category::CategoryType Category::cCategoryList[] =
     { FOOD_AND_DINING,      "Fast Food" },
     { FOOD_AND_DINING,      "Groceries" },
     { FOOD_AND_DINING,      "Restaurants" },
+    { FOOD_AND_DINING,      "Snacks & Drinks" },
     
     { GIFTS_AND_DONATIONS,  "Gifts & Donations" },
     { GIFTS_AND_DONATIONS,  "Charity" },

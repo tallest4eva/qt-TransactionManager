@@ -74,6 +74,7 @@ public:
         FAST_FOOD,
         GROCERIES,
         RESTAURANTS,
+        SNACKS_AND_DRINKS,
         
         GIFTS_AND_DONATIONS,
         CHARITY,
