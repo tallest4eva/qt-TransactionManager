@@ -94,11 +94,31 @@ void Parser::parseFile
     QString logStr;
     aTextStream.seek(0);
     QDate firstDate = QDate::currentDate();
+    QChar separator = cSeparatorList[sSeparator];
     while( !aTextStream.atEnd() )
     {
         QString line = aTextStream.readLine();
         TransactionManager::sFileContents.push_back( line );
-        QStringList tokens = line.split( cSeparatorList[sSeparator] );
+        
+        // Handle double quotes
+        if( line.contains("\"") )
+        {
+            QString newLine;
+            QStringList tokens = line.split( "\"", QString::SkipEmptyParts );
+            QRegExp startEx( separator+"*", Qt::CaseSensitive, QRegExp::Wildcard );
+            QRegExp endEx( "*"+separator, Qt::CaseSensitive, QRegExp::Wildcard );
+            for( int i = 0; i < tokens.length(); i++ )
+            {
+                QString token = tokens[i];
+                if( token != QString(separator) && !startEx.exactMatch(token) && !endEx.exactMatch(token) )
+                {
+                    token.remove(separator);
+                }
+                newLine += token;
+            }
+            line = newLine;
+        }
+        QStringList tokens = line.split( separator );
         if( tokens.size() > 0 && tokens[0] != "" )
         {
             if( tokens[0] == sAccountTag )

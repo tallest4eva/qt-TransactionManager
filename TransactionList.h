@@ -37,7 +37,7 @@ public:
         HDR_AMOUNT,
         HDR_BALANCE,
         HDR_CATEGORY,
-//        HDR_LABELS
+        HDR_LABELS,
 
         HDR_CNT
     };

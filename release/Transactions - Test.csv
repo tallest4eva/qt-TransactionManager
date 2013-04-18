@@ -2,12 +2,13 @@ Account Descriptor,,Account Name,Status,State,Alternate Account Names
 Transaction Descriptor,Date,Account Name,Description,Original Description,Transaction Type,Amount,Balance,Category,Labels
 
 Account,,Bank - Checking Account-0002,Closed,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002
-Transaction,06/20/12,Bank - Checking Account-0002,Account Closed,Account Closed,credit,0.00,0.00,Account Balance,Manual
-Transaction,06/19/12,Bank - Checking Account-0002,Transfer to Bank - Savings Account-2000,Requested transfer to XXXXXX2000,debit,-3000.00,,Transfer,Reviewed
-Transaction,06/15/12,Bank - Checking Account-0002,Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
-Transaction,05/15/12,Bank - Checking Account-0002,Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
-Transaction,04/15/12,Bank - Checking Account-0002,Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
-Transaction,03/15/12,Bank - Checking Account-0002,Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
+"Transaction",06/20/12,Bank - Checking Account-0002,Account Closed,Account Closed,credit,0.00,0.00,Account Balance,Manual
+Transaction,"06/19/12",Bank - Checking Account-0002,Transfer to Bank - Savings Account-2000,Requested transfer to XXXXXX2000,debit,-3000.00,,Transfer,Reviewed
+Transaction,06/15/12,"Bank - Checking Account-0002",Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
+Transaction,05/15/12,Bank - Checking Account-0002,"Employment, Paycheck",DIRECT DEP,credit,500.00,,Paycheck,Reviewed
+Transaction,04/15/12,Bank - Checking Account-0002,Employment Paycheck,"DIRECT, DEP",credit,500.00,,Paycheck,Reviewed
+Transaction,03/20/12,Bank - Checking Account-0002,BMW Motors,"BMW Motors, New York, NY",debit,"-1,000.00",,Auto Payment,Reviewed
+Transaction,03/15/12,Bank - Checking Account-0002,Employment Paycheck,DIRECT DEP,credit,"1,500.00",,Paycheck,Reviewed
 Transaction,02/15/12,Bank - Checking Account-0001,Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
 Transaction,01/15/12,Bank - Checking Account-0001,Employment Paycheck,DIRECT DEP,credit,500.00,,Paycheck,Reviewed
 Transaction,01/01/12,Bank - Checking Account-0001,Account Opened,Account Opened,credit,0.00,0.00,Account Balance,Manual

@@ -259,20 +259,19 @@ void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
                 Month* month = TransactionManager::sMonthList[i];
                 if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
                 {
-                    QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
-                    str += "Income: <font color=\"green\">$" + QString::number( month->getIncome( mFilter ), 'f', 2 ) + "</font><br>";
-                    str += "Expense: <font color=\"red\">$" + QString::number( month->getExpense( mFilter ), 'f', 2 ) + "</font><br>";
-                    str += "Net Worth: ";
+                    float income = month->getIncome( mFilter );
+                    float expense = month->getExpense( mFilter );
                     float netWorth = month->getNetWorth( mFilter );
-                    if( netWorth != 0 )
-                    {
-                        str += ( netWorth > 0 ) ? "<font color=\"green\">" : "<font color=\"red\">";
-                    }
-                    str += "$" + QString::number( netWorth, 'f', 2 );
-                    if( netWorth != 0 )
-                    {
-                        str += "</font>";
-                    }
+                    QString colorStr = "black";
+                    QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
+                    if( income != 0 ){ colorStr = ( income > 0 ) ? "green" : "red"; }
+                    str += "Income: <font color=\"" + colorStr + "\">$" + QString::number( income, 'f', 2 ) + "</font><br>";
+                    colorStr = "black";
+                    if( expense != 0 ){ colorStr = ( expense > 0 ) ? "green" : "red"; }
+                    str += "Expense: <font color=\"" + colorStr + "\">$" + QString::number( expense, 'f', 2 ) + "</font><br>";
+                    colorStr = "black";
+                    if( netWorth != 0 ){ colorStr = ( netWorth > 0 ) ? "green" : "red"; }
+                    str += "Net Worth: <font color=\"" + colorStr + "\">$" + QString::number( netWorth, 'f', 2 ) + "</font>";
                     str += "<center><font size=\"-2\" color=\"blue\">Dbl click to See Transactions</font></center>";
                     mDisplayLabel.setText( str );
                     mDisplayLabel.show();

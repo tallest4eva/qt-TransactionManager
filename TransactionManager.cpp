@@ -280,7 +280,7 @@ void TransactionManager::on_actionFileInputConfig_triggered()
 void TransactionManager::on_actionAbout_triggered()
 {
     QMessageBox msgBox;
-    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 1.02");
+    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 1.03");
     msgBox.setIcon( QMessageBox::Information );
     msgBox.exec();
 } // TransactionManager::on_actionDisplayLog_triggered()

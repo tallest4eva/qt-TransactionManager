@@ -78,7 +78,8 @@ public:
     Category::CategoryIdType getCategory() const { return mCategory; }
     void  setCategory( Category::CategoryIdType aCategory ){ mCategory = aCategory; }
     QList<Category::LabelIdType> getLabels() const { return mLabels; }
-    void  setLabels( const QStringList& aLabels );
+    QStringList getLabelStrings() const { return mLabelStrings; }
+    void setLabels( const QStringList& aLabels );
     bool matchLabel( Category::LabelIdType aLabel );
     bool matchLabels( const QVector<bool> aLabelMask );
     bool matchTransaction( const FilterType& aFilter );
@@ -109,6 +110,7 @@ private:
     bool mBalanceSet;
     Category::CategoryIdType mCategory;
     QList<Category::LabelIdType> mLabels;
+    QStringList mLabelStrings;
 };
 
 #endif // TRANSACTION_H

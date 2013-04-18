@@ -87,14 +87,18 @@ void Transaction::setLabels
     )
 {
     mLabels.clear();
+    mLabelStrings.clear();
     for( int i = 0; i < aLabels.size(); i++ )
     {
         mLabels.push_back( Category::getLabelId( aLabels[i] ) );
+        mLabelStrings.push_back( aLabels[i] );
     }
     if( mLabels.isEmpty() )
     {
         mLabels.push_back( Category::LABEL_NONE );
+        mLabelStrings.push_back( Category::getLabelText( Category::LABEL_NONE ) );
     }
+    mLabelStrings.sort();
 } // Transaction::setLabels
 
 //----------------------------------------------------------------------------
@@ -210,12 +214,12 @@ Transaction::TransactionType Transaction::getTransactionType() const
     case Category::RETIREMENT_DIVIDENDS:
         transType = INCOME;
         break;
+    case Category::CASH_AND_ATM:
     case Category::UNCATEGORIZED:
-        transType = ( mAmount >= 0 ) ? INCOME : EXPENSE;
+        transType = ( mAmount > 0 ) ? INCOME : EXPENSE;
         break;
     // Expense categories
     case Category::CHECK:
-    case Category::CASH_AND_ATM:
     default:
         transType = EXPENSE;
         break;
