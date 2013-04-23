@@ -39,52 +39,94 @@ public:
     };
     enum DateFormatType
     {
-        DATE_FORMAT_MMddyy_SLASH,
-        DATE_FORMAT_MMddyy_HYPHEN,
-        DATE_FORMAT_MMddyyyy_SLASH,
-        DATE_FORMAT_MMddyyyy_HYPHEN,
+        DATE_FORMAT_Mdyy_SLASH,
+        DATE_FORMAT_Mdyy_HYPHEN,
         DATE_FORMAT_Mdyyyy_SLASH,
         DATE_FORMAT_Mdyyyy_HYPHEN,
-        DATE_FORMAT_yyMMdd_SLASH,
-        DATE_FORMAT_yyMMdd_HYPHEN,
-        DATE_FORMAT_yyyyMMdd_SLASH,
-        DATE_FORMAT_yyyyMMdd_HYPHEN,
-        DATE_FORMAT_ddMMyy_SLASH,
-        DATE_FORMAT_ddMMyy_HYPHEN,
-        DATE_FORMAT_ddMMyyyy_SLASH,
-        DATE_FORMAT_ddMMyyyy_HYPHEN,
+        DATE_FORMAT_yyMd_SLASH,
+        DATE_FORMAT_yyMd_HYPHEN,
+        DATE_FORMAT_yyyyMd_SLASH,
+        DATE_FORMAT_yyyyMd_HYPHEN,
+        DATE_FORMAT_dMyy_SLASH,
+        DATE_FORMAT_dMyy_HYPHEN,
+        DATE_FORMAT_dMyyyy_SLASH,
+        DATE_FORMAT_dMyyyy_HYPHEN,
 
-        DATE_FORMAT_CNT
+        DATE_FORMAT_CNT,
+        DATE_FORMAT_CUSTOM = DATE_FORMAT_CNT
     };
     enum SeparatorType
     {
         SEPARATOR_COMMA,
-        SEPARATOR_SEMI_COLON,
+        //SEPARATOR_SEMI_COLON,
 
         SEPARATOR_CNT
     };
+    struct ConfigType
+    {
+        QString mName;
+        DateFormatType mDateFormat;
+        QString mDateFormatStr;
+        SeparatorType mSeparator;
+        bool mAccountRequireTag;
+        QString mAccountTag;
+        bool mTransactionUseTag;
+        QString mTransactionTag;
+        QVector<int> mEntryList;
+        ConfigType(): mDateFormat(cDefaultDateFormat), mSeparator(cDefaultSeparator),
+                      mAccountRequireTag(true), mAccountTag(cDefaultAccountTag),
+                      mTransactionUseTag(true), mTransactionTag(cDefaultTransactionTag),
+                      mEntryList( ENTRY_CNT, INVALID_COLUMN ){}
+        QString getEntry( const QStringList& aTokenList, int aEntry )
+        {
+            QString token;
+            if( aEntry < ENTRY_CNT && mEntryList[aEntry] != INVALID_COLUMN && mEntryList[aEntry] < aTokenList.size() )
+            {
+                token = aTokenList[ mEntryList[aEntry] ];
+            }
+            return token;
+        }
+    };
+    enum ConfigEntryType
+    {
+        CONFIG_ENTRY_NAME,
+        CONFIG_ENTRY_DATE,
+	    CONFIG_ENTRY_ACCOUNT_USE_KW,
+	    CONFIG_ENTRY_ACCOUNT_KW,
+	    CONFIG_ENTRY_TRANS_USE_KW,
+	    CONFIG_ENTRY_TRANS_KW,
+        CONFIG_ENTRY_ACCOUNT_COLUMNS,
+        CONFIG_ENTRY_TRANS_COLUMNS,
+
+        CONFIG_ENTRY_CNT
+    };
     
     // Functions
-    static void restore();
-    static void parseFile
-        (
-        QTextStream& aTextStream
-        );
+    static void init();
+    static void applyConfig( int aConfigIdx );
+    static void parseFile( QTextStream& aTextStream );
+    static bool parseConfigFile( const QString& aLine, ConfigType& aInConfig );
         
     // Variables
-    static const DateFormatType cDefaultDateFormat;
-    static DateFormatType sDateFormat;
-    static const SeparatorType cDefaultSeparator;
-    static SeparatorType sSeparator;
-    static const int cDefaultEntryList[];
-    static QVector<int> sEntryList;
-    static const QString cDefaultAccountTag;
-    static const QString cDefaultTransactionTag;
-    static QString sAccountTag;
-    static QString sTransactionTag;
+    static const int MAX_COLUMNS = 12;
+    static const int INVALID_COLUMN = 0xffff;
+    static const int DEFAULT_CONFIG_IDX = 0;
+    static const int CUSTOM_CONFIG_IDX = 1;
 
     static const char* cDateFormatList[];
     static const char cSeparatorList[];
+
+    static const DateFormatType cDefaultDateFormat;
+    static const SeparatorType cDefaultSeparator;
+    static const bool cDefaultAccountRequireTag;
+    static const QString cDefaultAccountTag;
+    static const bool cDefaultTransactionUseTag;
+    static const QString cDefaultTransactionTag;
+    static const int cDefaultEntryList[];
+
+    static ConfigType sConfig;
+    static int sPresetSelected;
+    static QList<ConfigType> sPresetConfigList;
 
 private:
     // Variables

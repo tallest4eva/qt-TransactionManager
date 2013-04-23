@@ -136,7 +136,8 @@ private:
     // Variables
     Ui::TransactionManager *ui;
     QString mFileName;
-    QLabel mStatusLabel;
+    QLabel mStatusFileLabel;
+    QLabel mStatusConfigLabel;
     QList<QCheckBox*> mTransactionAccountsCheckBoxList;
     QList<QCheckBox*> mTransactionCategoriesCheckBoxList;
     QList<QCheckBox*> mTransactionLabelsCheckBoxList;

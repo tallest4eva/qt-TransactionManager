@@ -56,7 +56,7 @@ public:
     static float getTotalAccountBalance();
     static int getAccountIndex( Account* aAccount );
     static Account* getAccount( const QString& aAccountName, bool aAllowAltNames = false );
-    static bool addToAccount( const QString& aAccountName, Transaction* aTransaction );
+    static bool addToAccount( const QString& aAccountName, Transaction* aTransaction, bool aCreateNewAccount );
 
 private:
     bool mValid;

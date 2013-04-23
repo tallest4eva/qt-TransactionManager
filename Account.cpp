@@ -5,8 +5,6 @@
 //  FILE NAME: Account.cpp
 //******************************************************************************
 
-#include <QDebug>
-
 #include "Account.h"
 #include "Transaction.h"
 #include "TransactionManager.h"
@@ -59,31 +57,51 @@ void Account::addTransaction( Transaction* aTransaction )
 //----------------------------------------------------------------------------
 void Account::updateData()
 {
+    if( mName.isEmpty() ){ mName = "Unknown"; }
     mValid = true;
     qSort( mTransactionList.begin(), mTransactionList.end(), Transaction::transactionSortLessThan );
     if( mTransactionList.size() > 0 )
     {
+        for( int i = 0; i < mTransactionList.size(); i++ )
+        {
+            Transaction* transaction = mTransactionList[i];
+
+            // Update transaction amounts
+            Transaction::Type type = transaction->getType();
+            switch( type )
+            {
+            case Transaction::TRANSACTION_DEBIT:
+                if( transaction->getAmount() > 0 )
+                {
+                    transaction->setAmount( -transaction->getAmount() );
+                }
+                break;
+            case Transaction::TRANSACTION_CREDIT:
+                if( transaction->getAmount() < 0 )
+                {
+                    transaction->setAmount( -transaction->getAmount() );
+                }
+                break;
+            case Transaction::TRANSACTION_INVALID:
+                transaction->setType( (transaction->getAmount() < 0) ? Transaction::TRANSACTION_DEBIT : Transaction::TRANSACTION_CREDIT );
+                break;
+            }
+
+            // Update transaction current balances if account state is complete
+            if( mComplete && !transaction->isBalanceSet() )
+            {
+                float prevBalance = ( i > 0 ) ? mTransactionList[i-1]->getCurrentBalance() : 0;
+                transaction->setCurrentBalance( prevBalance + transaction->getAmount() );
+            }
+        }
+
+        // Update account balance and dates
         mOpenDate = mTransactionList[0]->getTransactionDate();
-        Transaction *last = mTransactionList[mTransactionList.size()-1];
+        Transaction* last = mTransactionList[mTransactionList.size()-1];
         mBalance = last->getCurrentBalance();
         if( mStatus == STATUS_CLOSED && last->getDescription() == "Account Closed" )
         {
             mCloseDate = last->getTransactionDate();
-        }
-
-        // Update transaction current balances if account state is complete
-        if( mComplete )
-        {
-            if( !mTransactionList[0]->isBalanceSet() ){ mTransactionList[0]->setCurrentBalance( mTransactionList[0]->getAmount() ); }
-            for( int i = 1; i < mTransactionList.size(); i++ )
-            {
-                Transaction* transaction = mTransactionList[i];
-                if( !transaction->isBalanceSet() )
-                {
-                    float prevBalance = mTransactionList[i-1]->getCurrentBalance();
-                    transaction->setCurrentBalance( prevBalance + transaction->getAmount() );
-                }
-            }
         }
      }
 } // Account::updateData()
@@ -183,7 +201,8 @@ Account* Account::getAccount( const QString& aAccountName, bool aAllowAltNames )
 bool Account::addToAccount
     (
     const QString& aAccountName,
-    Transaction* aTransaction
+    Transaction* aTransaction,
+    bool aCreateNewAccount
     )
 {
     bool found = false;
@@ -196,6 +215,21 @@ bool Account::addToAccount
             found = true;
             break;
         }
+    }
+    if( !found && aCreateNewAccount )
+    {
+        // Create new account
+        Account* account = new Account();
+        account->setName( aAccountName );
+        account->setStatus( STATUS_OPEN );
+
+        // Set as complete to allow auto net worth calculations
+        account->setAccountComplete( true );
+        aTransaction->setAccount( account );
+        account->addTransaction( aTransaction );
+        TransactionManager::sAccountList.push_back( account );
+        //Logger::logString( "Adding account:" + QString(account->getInfo()) );
+        found = true;
     }
     return found;
 } // Account::addToAccount

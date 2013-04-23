@@ -7,9 +7,9 @@
 
 #include <QGridLayout>
 #include <QFormLayout>
+#include <QVBoxLayout>
 
 #include "FileConfigDialog.h"
-#include "Parser.h"
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -21,11 +21,26 @@ FileConfigDialog::FileConfigDialog
     QDialog(parent)
 {
     setWindowTitle( "File Config Menu" );
+    setModal( true );
 
+    mSelected = Parser::sPresetSelected;
+    mConfig = Parser::sPresetConfigList[mSelected];
+    mConfigBox.setTitle( "Config Presets" );
     mFileBox.setTitle( "File Descriptors" );
-    mAccountBox.setTitle( "Account Descriptors" );
-    mTransactionBox.setTitle( "Transaction Descriptors" );
-    
+    mAccountBox.setTitle( "Account Descriptor Line" );
+    mTransactionBox.setTitle( "Transaction Descriptor Line" );
+    mAccountDescriptor.setPlaceholderText("<Enter valid Account keyword>");
+    mTransactionDescriptor.setPlaceholderText("<Enter valid Transaction keyword>");
+
+    mConfigBox.setLayout( new QVBoxLayout );
+    for( int i = 0; i < Parser::sPresetConfigList.size(); i++ )
+    {
+        QRadioButton* button = new QRadioButton( Parser::sPresetConfigList[i].mName, &mConfigBox );
+        connect( button, SIGNAL(clicked()), this, SLOT(handlePresetSelected()) );
+        mConfigBox.layout()->addWidget( button );
+        mRadioButtonList.push_back( button );
+    }
+
     // Setup Combo boxes
     for( int i = 0; i < Parser::DATE_FORMAT_CNT; i++ )
     {
@@ -35,21 +50,23 @@ FileConfigDialog::FileConfigDialog
     {
         mFileSeperator.addItem( QString(Parser::cSeparatorList[i]), i );
     }
-    for( int i = 1; i <= 10; i++ )
+    // Add column combobox items
+    for( int i = -1; i < Parser::MAX_COLUMNS; i++ )
     {
-        QString str = "Column " + QString::number(i);
-        mTransactionDate.addItem( str, i );
-        mTransactionName.addItem( str, i );
-        mTransactionDescription.addItem( str, i );
-        mTransactionType.addItem( str, i );
-        mTransactionAmount.addItem( str, i );
-        mTransactionBalance.addItem( str, i );
-        mTransactionCategory.addItem( str, i );
-        mTransactionLabels.addItem( str, i );
-        mAccountName.addItem( str, i );
-        mAccountStatus.addItem( str, i );
-        mAccountState.addItem( str, i );
-        mAccountAltName.addItem( str, i );
+        int data = ( i == -1 ) ? Parser::INVALID_COLUMN : i;
+        QString str = ( i == -1 ) ? QString("Not Available") : (QString("Column ") + QString::number(i+1));
+        mAccountName.addItem( str, data );
+        mAccountStatus.addItem( str, data );
+        mAccountState.addItem( str, data );
+        mAccountAltName.addItem( str, data );
+        mTransactionDate.addItem( str, data );
+        mTransactionName.addItem( str, data );
+        mTransactionDescription.addItem( str, data );
+        mTransactionType.addItem( str, data );
+        mTransactionAmount.addItem( str, data );
+        mTransactionBalance.addItem( str, data );
+        mTransactionCategory.addItem( str, data );
+        mTransactionLabels.addItem( str, data );
     }
 
     // Setup Group Boxes
@@ -58,6 +75,7 @@ FileConfigDialog::FileConfigDialog
     fLayout->addRow( "Date Format:", &mDateFormat );
     mFileBox.setLayout( fLayout );
     fLayout = new QFormLayout;
+    fLayout->addRow( "Require Account Descriptors:", &mAccountCheckBox );
     fLayout->addRow( "Column 1 Keyword:", &mAccountDescriptor );
     fLayout->addRow( "Name:", &mAccountName );
     fLayout->addRow( "Status:", &mAccountStatus );
@@ -65,9 +83,10 @@ FileConfigDialog::FileConfigDialog
     fLayout->addRow( "Alternate Names:", &mAccountAltName );
     mAccountBox.setLayout( fLayout );
     fLayout = new QFormLayout;
+    fLayout->addRow( "Use Transaction Keyword:", &mTransactionCheckBox );
     fLayout->addRow( "Column 1 Keyword:", &mTransactionDescriptor );
     fLayout->addRow( "Date:", &mTransactionDate );
-    fLayout->addRow( "Name:", &mTransactionName );
+    fLayout->addRow( "Account Name:", &mTransactionName );
     fLayout->addRow( "Description:", &mTransactionDescription );
     fLayout->addRow( "Transaction Type:", &mTransactionType );
     fLayout->addRow( "Amount:", &mTransactionAmount );
@@ -78,23 +97,22 @@ FileConfigDialog::FileConfigDialog
 
     updateData();
     
-    // Set up buttons
+    // Set up buttons / checkboxes
     mCancelButton.setText( "Cancel" );
     mDoneButton.setText( "Done" );
-    mRestoreButton.setText( "Restore Default" );
     connect( &mCancelButton, SIGNAL(clicked()), this, SLOT(handleCancelButton()) );
     connect( &mDoneButton, SIGNAL(clicked()), this, SLOT(handleDoneButton()) );
-    connect( &mRestoreButton, SIGNAL(clicked()), this, SLOT(handleRestoreButton()) );
+    connect( &mTransactionCheckBox, SIGNAL(clicked(bool)), this, SLOT(handleTransactionClicked(bool)) );
 
     QGridLayout *layout = new QGridLayout;
-    layout->addWidget( &mFileBox,        0, 0, 4, 2 );
-    layout->addWidget( &mAccountBox,     4, 0, 5, 2 );
-    layout->addWidget( &mTransactionBox, 0, 2, 9, 2 );
-    layout->addWidget( &mCancelButton,   10, 1 );
-    layout->addWidget( &mRestoreButton,  10, 2 );
+    layout->addWidget( &mConfigBox,      0, 0, 5, 2 );
+    layout->addWidget( &mFileBox,        5, 0, 4, 2 );
+    layout->addWidget( &mAccountBox,     0, 2, 4, 2 );
+    layout->addWidget( &mTransactionBox, 4, 2, 5, 2 );
+    layout->addWidget( &mCancelButton,   10, 2 );
     layout->addWidget( &mDoneButton,     10, 3 );
     setLayout( layout );
-    resize( 700, 500 );
+    resize( 700, 550 );
     show();
 } // FileConfigDialog::FileConfigDialog
 
@@ -103,6 +121,11 @@ FileConfigDialog::FileConfigDialog
 //----------------------------------------------------------------------------
 FileConfigDialog::~FileConfigDialog()
 {
+    for( int i = 0; i < mRadioButtonList.size(); i++ )
+    {
+        delete mRadioButtonList[i];
+    }
+    mRadioButtonList.clear();
 } // FileConfigDialog::~FileConfigDialog
 
 //----------------------------------------------------------------------------
@@ -110,23 +133,63 @@ FileConfigDialog::~FileConfigDialog()
 //----------------------------------------------------------------------------
 void FileConfigDialog::updateData()
 {
-    mFileSeperator.setCurrentIndex( Parser::sSeparator );
-    mDateFormat.setCurrentIndex( Parser::sDateFormat );
-    mAccountDescriptor.setText( Parser::sAccountTag );
-    mTransactionDescriptor.setText( Parser::sTransactionTag );
-    mTransactionDate.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_DATE] );
-    mTransactionName.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_ACCOUNT_NAME] );
-    mTransactionDescription.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_DESCRIPTION] );
-    mTransactionType.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_TYPE] );
-    mTransactionAmount.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_AMOUNT] );
-    mTransactionBalance.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_BALANCE] );
-    mTransactionCategory.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_CATEGORY] );
-    mTransactionLabels.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_TRANS_LABELS] );
-    mAccountName.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_NAME] );
-    mAccountStatus.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_STATUS] );
-    mAccountState.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_STATE] );
-    mAccountAltName.setCurrentIndex( Parser::sEntryList[Parser::ENTRY_ACCOUNT_ALT_NAMES] );
+    if( mSelected < mRadioButtonList.size() )
+    {
+        mRadioButtonList[mSelected]->setChecked( true );
+    }
+    mFileSeperator.setCurrentIndex( mFileSeperator.findData(mConfig.mSeparator) );
+    mDateFormat.setCurrentIndex( mDateFormat.findData(mConfig.mDateFormat) );
+
+    mAccountCheckBox.setChecked( mConfig.mAccountRequireTag );
+    mAccountDescriptor.setText( mConfig.mAccountTag );
+    mAccountName.setCurrentIndex( mAccountName.findData(mConfig.mEntryList[Parser::ENTRY_ACCOUNT_NAME]) );
+    mAccountStatus.setCurrentIndex( mAccountStatus.findData(mConfig.mEntryList[Parser::ENTRY_ACCOUNT_STATUS]) );
+    mAccountState.setCurrentIndex( mAccountState.findData(mConfig.mEntryList[Parser::ENTRY_ACCOUNT_STATE]) );
+    mAccountAltName.setCurrentIndex( mAccountAltName.findData(mConfig.mEntryList[Parser::ENTRY_ACCOUNT_ALT_NAMES]) );
+
+    mTransactionCheckBox.setChecked( mConfig.mTransactionUseTag );
+    mTransactionDescriptor.setText( mConfig.mTransactionTag );
+    mTransactionDescriptor.setEnabled( mConfig.mTransactionUseTag );
+    mTransactionDate.setCurrentIndex( mTransactionDate.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_DATE]) );
+    mTransactionName.setCurrentIndex( mTransactionName.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_ACCOUNT_NAME]) );
+    mTransactionDescription.setCurrentIndex( mTransactionDescription.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_DESCRIPTION]) );
+    mTransactionType.setCurrentIndex( mTransactionType.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_TYPE]) );
+    mTransactionAmount.setCurrentIndex( mTransactionAmount.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_AMOUNT]) );
+    mTransactionBalance.setCurrentIndex( mTransactionBalance.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_BALANCE]) );
+    mTransactionCategory.setCurrentIndex( mTransactionCategory.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_CATEGORY]) );
+    mTransactionLabels.setCurrentIndex( mTransactionLabels.findData(mConfig.mEntryList[Parser::ENTRY_TRANS_LABELS]) );
+
+    bool disable = ( mSelected != Parser::CUSTOM_CONFIG_IDX );
+    mFileBox.setDisabled( disable );
+    mAccountBox.setDisabled( disable );
+    mTransactionBox.setDisabled( disable );
 } // FileConfigDialog::updateData
+
+//----------------------------------------------------------------------------
+// handlePresetSelected
+//----------------------------------------------------------------------------
+void FileConfigDialog::handlePresetSelected()
+{
+    for( int i = 0; i < mRadioButtonList.size(); i++ )
+    {
+        if( mRadioButtonList[i]->isChecked() )
+        {
+            mSelected = i;
+            mConfig = Parser::sPresetConfigList[mSelected];
+            break;
+        }
+    }
+    // Update config widgets
+    updateData();
+} // FileConfigDialog::handlePresetSelected
+
+//----------------------------------------------------------------------------
+// handleTransactionClicked
+//----------------------------------------------------------------------------
+void FileConfigDialog::handleTransactionClicked( bool aChecked )
+{
+    mTransactionDescriptor.setEnabled( aChecked );
+} // FileConfigDialog::handleTransactionClicked
 
 //----------------------------------------------------------------------------
 // handleCancelButton
@@ -138,39 +201,39 @@ void FileConfigDialog::handleCancelButton()
 } // FileConfigDialog::handleCancelButton()
 
 //----------------------------------------------------------------------------
-// handleRestoreButton
-//----------------------------------------------------------------------------
-void FileConfigDialog::handleRestoreButton()
-{
-    // Restore parser defaults
-    Parser::restore();
-    updateData();
-} // FileConfigDialog::handleRestoreButton()
-
-//----------------------------------------------------------------------------
 // handleDoneButton
 //----------------------------------------------------------------------------
 void FileConfigDialog::handleDoneButton()
 {
-    // Save current combo box values
-    Parser::sSeparator = (Parser::SeparatorType)mFileSeperator.currentIndex();
-    Parser::sDateFormat = (Parser::DateFormatType)mDateFormat.currentIndex();
-    QString text = mAccountDescriptor.toPlainText();
-    if( !text.isEmpty() ){ Parser::sAccountTag = text; }
-    text = mTransactionDescriptor.toPlainText();
-    if( !text.isEmpty() ){ Parser::sTransactionTag = text; }
-    Parser::sEntryList[Parser::ENTRY_TRANS_DATE] = mTransactionDate.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_ACCOUNT_NAME] = mTransactionName.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_DESCRIPTION] = mTransactionDescription.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_TYPE] = mTransactionType.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_AMOUNT] = mTransactionAmount.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_BALANCE] = mTransactionBalance.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_CATEGORY] = mTransactionCategory.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_TRANS_LABELS] = mTransactionLabels.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_ACCOUNT_NAME] = mAccountName.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_ACCOUNT_STATUS] = mAccountStatus.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_ACCOUNT_STATE] = mAccountState.currentIndex();
-    Parser::sEntryList[Parser::ENTRY_ACCOUNT_ALT_NAMES] = mAccountAltName.currentIndex();
+    if( mSelected == Parser::CUSTOM_CONFIG_IDX )
+    {
+        // Update customconfig with combo box values
+        mConfig.mSeparator = (Parser::SeparatorType)mFileSeperator.itemData( mFileSeperator.currentIndex() ).toInt();
+        mConfig.mDateFormat = (Parser::DateFormatType)mDateFormat.itemData( mDateFormat.currentIndex() ).toInt();
+
+        mConfig.mAccountRequireTag = mAccountCheckBox.isChecked();
+        if( !mAccountDescriptor.text().isEmpty() ){ mConfig.mAccountTag = mAccountDescriptor.text(); }
+        mConfig.mEntryList[Parser::ENTRY_ACCOUNT_NAME] = mAccountName.itemData( mAccountName.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_ACCOUNT_STATUS] = mAccountStatus.itemData( mAccountStatus.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_ACCOUNT_STATE] = mAccountState.itemData( mAccountState.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_ACCOUNT_ALT_NAMES] = mAccountAltName.itemData( mAccountAltName.currentIndex() ).toInt();
+
+        mConfig.mTransactionUseTag = mTransactionCheckBox.isChecked();
+        if( mConfig.mTransactionUseTag && !mTransactionDescriptor.text().isEmpty() ){ mConfig.mTransactionTag = mTransactionDescriptor.text(); }
+        mConfig.mEntryList[Parser::ENTRY_TRANS_DATE] = mTransactionDate.itemData( mTransactionDate.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_ACCOUNT_NAME] = mTransactionName.itemData( mTransactionName.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_DESCRIPTION] = mTransactionDescription.itemData( mTransactionDescription.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_TYPE] = mTransactionType.itemData( mTransactionType.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_AMOUNT] = mTransactionAmount.itemData( mTransactionAmount.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_BALANCE] = mTransactionBalance.itemData( mTransactionBalance.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_CATEGORY] = mTransactionCategory.itemData( mTransactionCategory.currentIndex() ).toInt();
+        mConfig.mEntryList[Parser::ENTRY_TRANS_LABELS] = mTransactionLabels.itemData( mTransactionLabels.currentIndex() ).toInt();
+
+        Parser::sPresetConfigList[ Parser::CUSTOM_CONFIG_IDX ] = mConfig;
+    }
+
+    // Apply selected config
+    Parser::applyConfig( mSelected );
 
     // Close dialog
     done( 0 );

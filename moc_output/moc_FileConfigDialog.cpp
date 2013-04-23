@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'FileConfigDialog.h'
 **
-** Created: Mon Mar 11 15:41:11 2013
+** Created: Mon Apr 22 09:24:16 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_FileConfigDialog[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,15 +32,17 @@ static const uint qt_meta_data_FileConfigDialog[] = {
 
  // slots: signature, parameters, type, tag, flags
       18,   17,   17,   17, 0x08,
-      39,   17,   17,   17, 0x08,
-      61,   17,   17,   17, 0x08,
+      50,   41,   17,   17, 0x08,
+      81,   17,   17,   17, 0x08,
+     102,   17,   17,   17, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_FileConfigDialog[] = {
-    "FileConfigDialog\0\0handleCancelButton()\0"
-    "handleRestoreButton()\0handleDoneButton()\0"
+    "FileConfigDialog\0\0handlePresetSelected()\0"
+    "aChecked\0handleTransactionClicked(bool)\0"
+    "handleCancelButton()\0handleDoneButton()\0"
 };
 
 void FileConfigDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -49,13 +51,13 @@ void FileConfigDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         Q_ASSERT(staticMetaObject.cast(_o));
         FileConfigDialog *_t = static_cast<FileConfigDialog *>(_o);
         switch (_id) {
-        case 0: _t->handleCancelButton(); break;
-        case 1: _t->handleRestoreButton(); break;
-        case 2: _t->handleDoneButton(); break;
+        case 0: _t->handlePresetSelected(); break;
+        case 1: _t->handleTransactionClicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 2: _t->handleCancelButton(); break;
+        case 3: _t->handleDoneButton(); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObjectExtraData FileConfigDialog::staticMetaObjectExtraData = {
@@ -90,9 +92,9 @@ int FileConfigDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }

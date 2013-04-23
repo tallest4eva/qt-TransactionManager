@@ -34,6 +34,7 @@
         <li>TransactionManager.exe --- Application executable</li>
         <li>help.html --- For help documentation.</li>
         <li>Transactions - Test.csv --- Test input data file</li>
+        <li>config.cfg --- Saved Config file (with predefined loaded configs)</li>
         <li>Qt dlls</li>
 		<ul>
 			<li>QtCore4.dll --- For Qt core functions</li>
@@ -52,11 +53,11 @@
     <ul>
         <li>Click on the 'File' menu</li>
         <li>Click on the 'Open' menu item</li>
-        <img width='350' height='200' src='help/transactionManager - File Menu - Open.png' /img><br>
+        <img width='350' height='165' src='help/transactionManager - File Menu - Open.png' /img><br>
         <li>Select transaction data file to display transactions</li>
-        <font color="red"><em>NOTE: The transaction data file is never modified by this application.</em></font><br>
-        <li>The file name of the transaction file being reviewed is displayed in the status bar</li>
-        <img width='350' height='120' src='help/transactionManager - Status Bar.png' /img><br>
+        <em>NOTE: The transaction data file is never modified by this application.</em><br>
+        <li>The file name of the transaction file being reviewed is displayed in the bottom-left corner of the status bar</li>
+        <img width='350' height='120' src='help/transactionManager - Status Bar - Input File Label.png' /img><br>
     </ul>
     <br>
     <b>Transaction Manager Display</b><br>
@@ -192,36 +193,37 @@
     The default input data file is a csv (comma-separated-values) file.<br>
     The csv file contains lines describing accounts and transactions.<br>
     All other lines are ignored.<br>
-    <font color="red"><em>NOTE: As per csv guildelines, Fields containing a comma should be quoted.</font><br>
+    <em>NOTE: As per csv guildelines, Fields containing a comma should be quoted.</em><br>
     <br>
-    Account Descriptor:<br>
-    <font color="green"><code>Account,,Bank - Checking Account-0002,Open,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002</code></font><br>
+    Account Descriptor Line (Optional):<br>
+    <font color="green" size="+1"><b><code>Account,,Bank - Checking Account-0002,Open,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002</code></b></font><br>
     <ul>
         <li>The 1st column must have the 'Account' keyword.</li>
         <li>The 2nd column is left empty.</li>
         <li>The 3rd column contains the Account Name.</li>
-        <li>The 4th column contains the Account Status stating whether the account is opened or close.</li>
+        <li>The 4th column contains the Account Status stating whether the account is opened or close. (Optional)</li>
+        <em>NOTE: If the Account Status is omitted, it defaults to the Open Status.</em><br>
         <font size="-1"><table border="1">
           <tr><th>Valid Account Status values</th></tr>
           <tr><td>Open</td></tr> 
           <tr><td>Closed</td></tr>
         </table></font>
-        <li>The 5th column contains the Account State stating whether the account has all its transactions present in the data file.</li>
+        <li>The 5th column contains the Account State stating whether the account has all its transactions present in the data file. (Optional)</li>
+        <em>NOTE: If the Account State is omitted, it defaults to the Complete State.</em><br>
         <font size="-1"><table border="1">
           <tr><th>Valid Account State values</th></tr>
           <tr><td>Complete</td></tr> 
           <tr><td>Incomplete</td></tr>
         </table></font>
-        <font color="red"><em>NOTE: If an account is marked as complete, transactions without current balances are calculated automatically.</em></font><br>
+        <em>NOTE: If an account is marked as complete, transactions without current balances are calculated automatically.</em><br>
         <li>The 6th column contains a semi-colon separated list of Alternate Account Names. (Optional)</li>
     </ul>
-    Transaction Descriptor:<br>
-    <font color="green"><code>Transaction,12/10/12,Bank - Credit Card-2000,QuikTrip,CREDITCARD QT 200,debit,-80.00,660.00,Gas & Fuel,Reviewed Manual</code></font><br>
-    <font color="red"><em>NOTE: Transactions with unmatched account labels are defaulted with a red 'None' account name in the Transactions tab.<br>
-    Transactions with unmatched category labels are defaulted with a red 'Uncategorized' category in the Transactions tab.</em></font><br>
+    Transaction Descriptor Line:<br>
+    <font color="green" size="+1"><b><code>Transaction,12/10/12,Bank - Credit Card-2000,QuikTrip,CREDITCARD QT 200,debit,-80.00,660.00,Gas & Fuel,Reviewed Manual</code></b></font><br>
+    <em>NOTE: Transactions with unmatched category labels are defaulted with a red 'Uncategorized' category in the Transactions tab.</em><br>
     <img width='350' height='200' hspace='30' src='help/transactionManager - Transactions Tab - Unmatched Transaction.png' /img><br>
-    <font color="red"><em>NOTE: If the current balance is NOT provided for a transaction in an Incomplete account,
-    its current balance shows up as a red 'Unknown' in the Transaction tab.</em></font><br>
+    <em>NOTE: If the current balance is NOT provided for a transaction in an Incomplete account,
+    its current balance shows up as a red 'Unknown' in the Transaction tab.</em><br>
     <img width='350' height='200' hspace='30' src='help/transactionManager - Transactions Tab - Unknown Balance.png' /img><br>
     <ul>
         <li>The 1st column must have the 'Transaction' keyword.</li>
@@ -229,14 +231,17 @@
         <li>The 3rd column contains the transaction's Account Name.</li>
         <li>The 4th column contains the transaction's Description.</li>
         <li>The 5th column contains the transaction's Original Description. (Optional)</li>
-        <li>The 6th column contains the transaction's Type.</li>
+        <li>The 6th column contains the transaction's Type. (Optional)</li>
+        <em>NOTE: If the transaction's Type is omitted, it is determined by the transaction's Amount<br>
+        Positive and Negative amounts are determined as 'credit' and 'debit' respectively.</em><br>
         <font size="-1"><table border="1">
           <tr><th>Valid transaction Type values</th></tr>
           <tr><td>debit</td></tr> 
           <tr><td>credit</td></tr>
         </table></font>
         <li>The 7th column contains the transaction's Amount.</li>
-        <li>The 8th column contains the transaction account's Current Balance. (Optional if the account state is Complete)</li>
+        <li>The 8th column contains the transaction account's Current Balance. (Optional)</li>
+        <em>NOTE: If the transaction account's state is Complete and the Current Balance is omitted, it is automatically calculated.</em><br>
         <li>The 9th column contains the transaction's Category.</li>
         Valid transaction categories:
         <font size="-1"><table border="1">
@@ -296,18 +301,54 @@
 	    <li>Press on the 'Configure Input File' Menu Item</li>
 	    <img width='320' height='180' src='help/transactionManager - Tools Menu - File Input Config.png' /img><br>
 	    <li>This opens the 'Input File Config' Dialog</li>
-	    <img width='480' height='280' src='help/transactionManager - File Config Dialog.png' /img><br>
-	    <li>Use the dropdown and text edit boxes to configure:</li>
-	    <ul>
-	        <li>The file separator character. Valid values: ',' and ';'. Default: ','</li>
-	        <li>The date format used for date fields. Default: 'MM/dd/yy'</li>
-	        <li>The Account line column 1 keyword. Default: 'Account'</li>
-	        <li>The Account descriptor column order</li>
-	        <li>The Transaction line column 1 keyword. Default: 'Account'</li>
-	        <li>The Transaction descriptor column order</li>
-	    </ul>
-	    <li>Press the 'Restore Default' button to restore the default input file configuration.</li>
-	    <li>Press the 'Done' button to save the configuration or 'Cancel' to close without saving.</li>
+        This allows the user to select the current preset configuration.<br>
+        The current preset config is always displayed in the bottom-right corner of the status bar.<br>
+        <img width='320' height='100' src='help/transactionManager - Status Bar - Config Label.png' /img><br>
+   		<li><b>Config Presets</b></li>
+        <ul>
+            <li><b>Default Config</b></li>
+			The default configuration is not configurable.</br>
+	    	<img width='480' height='280' src='help/transactionManager - File Config Dialog.png' /img><br>
+            <br>
+            <li><b>Custom Config</b></li>
+            This allows the user to configure custom configs for the input data file.<br>
+            <img width='480' height='280' src='help/transactionManager - File Config Dialog - Custom Config.png' /img><br>
+            <li>Use the checkbox, dropdown and text edit boxes to configure:</li>
+            <ul>
+                <li>File Separator: Sets the file separator character. Valid value: ','</li>
+                <li>Date Format: Sets the date format used for date fields. Default: 'M/d/yy'</li>
+                <li>Require Account Descriptors: Sets whether Account Descriptor Lines are required.</li>
+                <em>NOTE: If checked, transactions with unmatched account names are defaulted with a red 'None' account name in the Transactions tab.<br>
+                If unchecked, transactions with unmatched account names create new accounts.</em><br>
+                <img width='350' height='200' src='help/transactionManager - Transactions Tab - Unmatched Transaction.png' /img><br>
+                <li>The Account line column 1 keyword. Default: 'Account'</li>
+                <li>The Account descriptor column order</li>
+                <li>Use Transaction Keyword: Sets whether Transaction Descriptor Keywords are used.</li>
+                <em>NOTE: Unchecking this disables the Transaction keyowrd line edit box.</em><br>
+                <li>The Transaction line column 1 keyword. Default: 'Account'</li>
+                <li>The Transaction descriptor column order</li>
+            </ul>
+            <li>Press the 'Cancel' button to close the dialog without saving the configuration.</li>
+            <li>Press the 'Done' button to save the selected configuration.</li>
+            <br>
+            <li><b>Loaded Configs <font color="red">(Advanced Users)</font></b></li>
+            This allows the user to load saved configurations from a config file: <font color="red">config.cfg.</font><br>
+            Loaded configs are displayed if a config file is located in the applications directory.<br>
+            <img width='480' height='280' src='help/transactionManager - File Config Dialog - Loaded Config.png' /img><br>
+            The config file is a simple csv (comma-separated-values) file.<br>
+            Config descriptor Line:<br>
+            <font color="green" size="+1"><b><code>Mint Config,M/d/yyyy,false,,false,,,0;6;1;2;4;3;;5;7;</code></b></font><br>
+            <ul>
+                <li>The 1st column contains the Config Name.</li>
+                <li>The 2nd column contains the Date Format. e.g 'M/d/yyyy'</li>
+                <li>The 3rd column contains the Require Account Descriptor Lines value. Valid values: true or false</li>
+                <li>The 4th column contains the Account Keyword.</li>
+                <li>The 5th column contains the Use Transaction Keyword value. Valid values: true or false</li>
+                <li>The 6th column contains the Transaction Keyword.</li>
+                <li>The 7th column contains a semi-colon separated Account descriptor line columns. Account Name;Status;State;AlternateNames Columns</li>
+                <li>The 8th column contains a semi-colon separated Transaction descriptor line columns. Transaction Date;Name;Description;OriginalDescription;Type;Amount;Balance;Category;Labels Columns</li>
+            </ul>
+        </ul>
 	</ul>
     <br>
     <hr>

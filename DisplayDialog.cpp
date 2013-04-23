@@ -18,6 +18,7 @@ DisplayDialog::DisplayDialog
     ):
     QDialog(parent)
 {
+    setModal( true );
     mLabel.setReadOnly( false );
     mLabel.setWordWrapMode( QTextOption::NoWrap );
     mLabel.setReadOnly( true );

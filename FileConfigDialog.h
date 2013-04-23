@@ -9,33 +9,17 @@
 #define FileConfigDialog_H
 
 #include <QObject>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDialog>
 #include <QGroupBox>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QRadioButton>
 
-class TextEdit : public QTextEdit
-{
-public:
-    TextEdit()
-    {
-        setTabChangesFocus(true);
-        setWordWrapMode(QTextOption::NoWrap);
-        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        QFontMetrics fm(font());
-        setFixedHeight(fm.height() + 6);
-    }
-    void keyPressEvent( QKeyEvent* aEvent )
-    {
-        if( aEvent->key() == Qt::Key_Return || aEvent->key() == Qt::Key_Enter ){ aEvent->accept(); }
-        else{ QTextEdit::keyPressEvent(aEvent); }
-    }
-};
+#include "Parser.h"
 
 class FileConfigDialog : public QDialog
 {
@@ -57,8 +41,9 @@ public:
     ~FileConfigDialog();
 
 private slots:
+    void handlePresetSelected();
+    void handleTransactionClicked( bool aChecked );
     void handleCancelButton();
-    void handleRestoreButton();
     void handleDoneButton();
 
 private:
@@ -66,11 +51,26 @@ private:
     void updateData();
     
     // Variables
+    int mSelected;
+    Parser::ConfigType mConfig;
+    QGroupBox mConfigBox;
+    QList<QRadioButton*> mRadioButtonList;
+
     QGroupBox mFileBox;
+    QComboBox mFileSeperator;
+    QComboBox mDateFormat;
+
     QGroupBox mAccountBox;
+    QCheckBox mAccountCheckBox;
+    QLineEdit mAccountDescriptor;
+    QComboBox mAccountName;
+    QComboBox mAccountStatus;
+    QComboBox mAccountState;
+    QComboBox mAccountAltName;
+
     QGroupBox mTransactionBox;
-    TextEdit mTransactionDescriptor;
-    TextEdit mAccountDescriptor;
+    QCheckBox mTransactionCheckBox;
+    QLineEdit mTransactionDescriptor;
     QComboBox mTransactionDate;
     QComboBox mTransactionName;
     QComboBox mTransactionDescription;
@@ -79,15 +79,8 @@ private:
     QComboBox mTransactionBalance;
     QComboBox mTransactionCategory;
     QComboBox mTransactionLabels;
-    QComboBox mFileSeperator;
-    QComboBox mDateFormat;
-    QComboBox mAccountName;
-    QComboBox mAccountStatus;
-    QComboBox mAccountState;
-    QComboBox mAccountAltName;
     
     QPushButton mCancelButton;
-    QPushButton mRestoreButton;
     QPushButton mDoneButton;
 };
 

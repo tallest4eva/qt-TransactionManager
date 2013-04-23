@@ -38,6 +38,7 @@ QDate TransactionManager::sLastTransactionDate = TransactionManager::cDefaultEnd
 QVector<bool> TransactionManager::sCategoriesEnabledList( Category::CATEGORY_TYPE_CNT, false );
 QVector<bool> TransactionManager::sLabelsEnabledList( Category::LABEL_CNT, false );
 
+static const QString sVersionStr = "1.03";
 static const QString sToolboxAccountsStr = "Accounts";
 static const QString sToolboxCategoriesStr = "Categories";
 static const QString sToolboxLabelsStr = "Labels";
@@ -75,7 +76,12 @@ TransactionManager::~TransactionManager()
 void TransactionManager::init()
 {
     // Init Parser
-    Parser::restore();
+    Parser::init();
+
+    // Set up status labels
+    mStatusConfigLabel.setText( "Loaded Config: " + Parser::sPresetConfigList[Parser::sPresetSelected].mName );
+    ui->statusBar->addWidget( &mStatusFileLabel );
+    ui->statusBar->addPermanentWidget( &mStatusConfigLabel );
 
     // Init tab/toolbox widgets
     ui->tabWidget->setCurrentIndex(0);
@@ -220,8 +226,8 @@ void TransactionManager::on_actionOpen_triggered()
 
         // Parse file contents
         mFileName = fileName;
-        QTextStream in( &file );
-        Parser::parseFile( in );
+        QTextStream inStream( &file );
+        Parser::parseFile( inStream );
         file.close();
 
         // Update ui contents
@@ -272,7 +278,10 @@ void TransactionManager::on_actionFileInputConfig_triggered()
 {
     FileConfigDialog dialog;
     dialog.exec();
-} // TransactionManager::on_actionSave_triggered()
+
+    // Update status label
+    mStatusConfigLabel.setText( "Loaded Config: " + Parser::sPresetConfigList[Parser::sPresetSelected].mName );
+} // TransactionManager::on_actionFileInputConfig_triggered()
 
 //----------------------------------------------------------------------------
 // on_actionDisplayLog_triggered
@@ -280,7 +289,7 @@ void TransactionManager::on_actionFileInputConfig_triggered()
 void TransactionManager::on_actionAbout_triggered()
 {
     QMessageBox msgBox;
-    msgBox.setText("Transaction Manager\nAuthor: tallest4eva\nVersion 1.03");
+    msgBox.setText( "Transaction Manager\nAuthor: Obi Modum (tallest4eva)\nVersion: " + sVersionStr );
     msgBox.setIcon( QMessageBox::Information );
     msgBox.exec();
 } // TransactionManager::on_actionDisplayLog_triggered()
@@ -334,14 +343,13 @@ void TransactionManager::updateUI()
     // Update ui elements, menu and status
     ui->actionClose->setEnabled( false );
     ui->actionDisplayFile->setEnabled( false );
-    ui->statusBar->removeWidget( &mStatusLabel );
+    mStatusFileLabel.setText("");
+    
     if( !mFileName.isEmpty() )
     {
         ui->actionClose->setEnabled( true );
         ui->actionDisplayFile->setEnabled( true );
-        mStatusLabel.setText( "File Opened: " + mFileName );
-        mStatusLabel.show();
-        ui->statusBar->addPermanentWidget( &mStatusLabel );
+        mStatusFileLabel.setText( "File Opened: " + mFileName );
     }
     
     updateOverviewTab();
