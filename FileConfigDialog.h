@@ -61,7 +61,6 @@ private:
     QComboBox mDateFormat;
 
     QGroupBox mAccountBox;
-    QCheckBox mAccountCheckBox;
     QLineEdit mAccountDescriptor;
     QComboBox mAccountName;
     QComboBox mAccountStatus;

@@ -38,7 +38,7 @@ QDate TransactionManager::sLastTransactionDate = TransactionManager::cDefaultEnd
 QVector<bool> TransactionManager::sCategoriesEnabledList( Category::CATEGORY_TYPE_CNT, false );
 QVector<bool> TransactionManager::sLabelsEnabledList( Category::LABEL_CNT, false );
 
-static const QString sVersionStr = "1.03";
+static const QString sVersionStr = "1.04";
 static const QString sToolboxAccountsStr = "Accounts";
 static const QString sToolboxCategoriesStr = "Categories";
 static const QString sToolboxLabelsStr = "Labels";

@@ -127,7 +127,7 @@ void TransactionList::setTransactionFilter( const Transaction::FilterType& aFilt
             numberItem->setTextAlignment( Qt::AlignRight | Qt::AlignVCenter );
         }
         mModel->setItem( i, (int)HDR_BALANCE, numberItem );
-        item = new QStandardItem( Category::getCategoryText( transaction->getCategory() ) );
+        item = new QStandardItem( transaction->getCategoryLabel() );
         if( transaction->getCategory() == Category::UNCATEGORIZED ){ item->setForeground( Qt::red ); }
         mModel->setItem( i, (int)HDR_CATEGORY, item );
         item = new QStandardItem( transaction->getLabelStrings().join(";") );

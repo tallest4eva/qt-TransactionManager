@@ -77,6 +77,8 @@ public:
     bool  isBalanceSet() const { return mBalanceSet; }
     Category::CategoryIdType getCategory() const { return mCategory; }
     void  setCategory( Category::CategoryIdType aCategory ){ mCategory = aCategory; }
+    QString getCategoryLabel() const;
+    void  setCategoryLabel( const QString& aCategoryLabel );
     QList<Category::LabelIdType> getLabels() const { return mLabels; }
     QStringList getLabelStrings() const { return mLabelStrings; }
     void setLabels( const QStringList& aLabels );
@@ -109,6 +111,7 @@ private:
     float mCurrentBalance;
     bool mBalanceSet;
     Category::CategoryIdType mCategory;
+    QString mUncategorizedLabel;
     QList<Category::LabelIdType> mLabels;
     QStringList mLabelStrings;
 };

@@ -79,6 +79,32 @@ void Transaction::setTransactionDate( QDate aTransactionDate )
 } // Transaction::setTransactionDate
 
 //----------------------------------------------------------------------------
+// getCategoryLabel
+//----------------------------------------------------------------------------
+QString Transaction::getCategoryLabel() const
+{
+    QString label = Category::getCategoryText( mCategory );
+    if( !mUncategorizedLabel.isEmpty() )
+    {
+        label += ": " + mUncategorizedLabel;
+    }
+    return label;
+} // Transaction::getCategoryLabel
+
+//----------------------------------------------------------------------------
+// setCategoryLabel
+//----------------------------------------------------------------------------
+void Transaction::setCategoryLabel( const QString& aCategoryLabel )
+{
+    mCategory = Category::getCategoryId( aCategoryLabel );
+    if( mCategory == Category::UNCATEGORIZED && aCategoryLabel != Category::getCategoryText( Category::UNCATEGORIZED ) )
+    {
+        // Category label was unmatched
+        mUncategorizedLabel = aCategoryLabel;
+    }
+} // Transaction::setCategoryLabel
+
+//----------------------------------------------------------------------------
 // Set Labels
 //----------------------------------------------------------------------------
 void Transaction::setLabels

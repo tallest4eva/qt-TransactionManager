@@ -1,4 +1,3 @@
 # test input files
 release/transactions.csv
-release/Transactions - All.csv
-release/Transactions - Marion.csv
+release/Transactions*.csv

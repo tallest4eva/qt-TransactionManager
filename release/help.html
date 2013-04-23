@@ -10,11 +10,21 @@
 
     <!-- Table Of Contents -->
     <br>
-    <b>Table Of Contents</b><br>
+    <font size="+2"><b>Table Of Contents</b></font><br>
 	<ul>
-    <li><a href="#Overview">Transaction Manager Overview</a></li>
-    <li><a href="#HowToUse">How To Use</a></li>
-    <li><a href="#TransactionDataFile">Input Data File Description</a></li>
+        <li><a href="#Overview">Transaction Manager Overview</a></li>
+        <li><a href="#HowToUse">How To Use</a></li>
+        <ul>
+            <li><a href="#HowToUse_Open">Open Transaction Data File</a></li>
+            <li><a href="#HowToUse_Display">Transaction Manager Display</a></li>
+            <li><a href="#HowToUse_FilterToolBox">The Filter Selection Tool Box</a></li>
+	    </ul>
+        <li><a href="#TransactionDataFile">Input Data File Description</a></li>
+        <ul>
+            <li><a href="#TransactionDataFile_DisplayFile">Display Input File Contents</a></li>
+            <li><a href="#TransactionDataFile_DefaultFile">Default Input File Format</a></li>
+            <li><a href="#TransactionDataFile_InputFileDialog">Input File Config Dialog</a></li>
+	    </ul>
 	</ul>
     <br>
 
@@ -29,7 +39,7 @@
     <img width='480' height='280' hspace='30' src='help/transactionManager.png' /img><br>
     <br>
     <b>Release Contents</b><br>
-    The Transaction Manager release contains:
+    The Transaction Manager 1.04 release contains:
     <ul>
         <li>TransactionManager.exe --- Application executable</li>
         <li>help.html --- For help documentation.</li>
@@ -49,7 +59,7 @@
     <hr>
     <font size="+2"><b><a id="HowToUse">How To Use</a></b></font><br>
     <br>
-    <b>Open Transaction Data File</b><br>
+    <b><a id="HowToUse_Open">Open Transaction Data File</a></b><br>
     <ul>
         <li>Click on the 'File' menu</li>
         <li>Click on the 'Open' menu item</li>
@@ -60,7 +70,7 @@
         <img width='350' height='120' src='help/transactionManager - Status Bar - Input File Label.png' /img><br>
     </ul>
     <br>
-    <b>Transaction Manager Display</b><br>
+    <b><a id="HowToUse_Display">Transaction Manager Display</a></b><br>
     The Transaction Manager displays transaction data in 3 general tabs:<br>
     <br>
 
@@ -85,7 +95,7 @@
     <ul>
         <li>The Transactions list is, by default, sorted by date from most recent to oldest transaction.</li>
         <li>The Transactions list can sorted by any of the transaction values by clicking the desired header.</li>
-        <li>The Transaction selection tool box can be used to filter the transactions list's contents. <a href="#FilterToolBox">See Filter Selection Toolbox</a></li>
+        <li>The Transaction selection tool box can be used to filter the transactions list's contents. <a href="#HowToUse_FilterToolBox">See Filter Selection Toolbox</a></li>
         <li>The 'Apply' button updates the transaction list with the current filter</li>
         <li>The 'Show All' button clears all transaction filters and displays entire transaction list</li>
     </ul>
@@ -93,7 +103,7 @@
     The Reports tab contains mutiple tabs containing the Report charts for the selected data.<br>
     <img width='480' height='280' hspace='30' src='help/transactionManager - Reports Tab.png' /img><br>
     <ul>
-        <li>The Report selection tool box can be used to filter the items displayed in the reports. <a href="#FilterToolBox">See Filter Selection Toolbox</a></li>
+        <li>The Report selection tool box can be used to filter the items displayed in the reports. <a href="#HowToUse_FilterToolBox">See Filter Selection Toolbox</a></li>
         <li>The 'Apply' button updates the report tabs with the current filter</li>
         <li>The 'Show All' button clears all report filters and displays entire reports</li>
     </ul>
@@ -142,7 +152,7 @@
     </ul>
 
     <br>
-    <b><a id="FilterToolBox">The Filter Selection Tool Box</a></b><br>
+    <b><a id="HowToUse_FilterToolBox">The Filter Selection Tool Box</a></b><br>
     The Filter Selection Toolbox allows users to create customized filters to apply to the Transactions and Reports tabs.<br>
     The Filter Selection Toolbox is enabled when the user opens an input data file.<br>
     <ul>
@@ -189,35 +199,25 @@
     <font size="+2"><b><a id="TransactionDataFile">Input Data File Description</a></b></font><br>
     The Transaction Manager takes a configurable text data file as input.<br>
     <br>
-    <b>Default Input File Format</b><br>
+
+    <b><a id="TransactionDataFile_DisplayFile">Display Input File Contents</a></b><br>
+    You can view the contents of the input file being viewed.<br>
+	<ul>
+    	<li>Press on the 'Tools' Menu</li>
+    	<li>Press on the 'Display File Contents' Menu Item</li>
+	    <img width='320' height='180' src='help/transactionManager - Tools Menu - Display File Contents.png' /img><br>
+    	<li>This opens the 'Display File Contents' Dialog</li>
+	    <img width='480' height='280' src='help/transactionManager - Display File Contents Dialog.png' /img><br>
+    	<li>Press the 'Done' button to close dialog.</li>
+	</ul>
+    <br>
+    
+    <b><a id="TransactionDataFile_DefaultFile">Default Input File Format</a></b><br>
     The default input data file is a csv (comma-separated-values) file.<br>
     The csv file contains lines describing accounts and transactions.<br>
     All other lines are ignored.<br>
     <em>NOTE: As per csv guildelines, Fields containing a comma should be quoted.</em><br>
     <br>
-    Account Descriptor Line (Optional):<br>
-    <font color="green" size="+1"><b><code>Account,,Bank - Checking Account-0002,Open,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002</code></b></font><br>
-    <ul>
-        <li>The 1st column must have the 'Account' keyword.</li>
-        <li>The 2nd column is left empty.</li>
-        <li>The 3rd column contains the Account Name.</li>
-        <li>The 4th column contains the Account Status stating whether the account is opened or close. (Optional)</li>
-        <em>NOTE: If the Account Status is omitted, it defaults to the Open Status.</em><br>
-        <font size="-1"><table border="1">
-          <tr><th>Valid Account Status values</th></tr>
-          <tr><td>Open</td></tr> 
-          <tr><td>Closed</td></tr>
-        </table></font>
-        <li>The 5th column contains the Account State stating whether the account has all its transactions present in the data file. (Optional)</li>
-        <em>NOTE: If the Account State is omitted, it defaults to the Complete State.</em><br>
-        <font size="-1"><table border="1">
-          <tr><th>Valid Account State values</th></tr>
-          <tr><td>Complete</td></tr> 
-          <tr><td>Incomplete</td></tr>
-        </table></font>
-        <em>NOTE: If an account is marked as complete, transactions without current balances are calculated automatically.</em><br>
-        <li>The 6th column contains a semi-colon separated list of Alternate Account Names. (Optional)</li>
-    </ul>
     Transaction Descriptor Line:<br>
     <font color="green" size="+1"><b><code>Transaction,12/10/12,Bank - Credit Card-2000,QuikTrip,CREDITCARD QT 200,debit,-80.00,660.00,Gas & Fuel,Reviewed Manual</code></b></font><br>
     <em>NOTE: Transactions with unmatched category labels are defaulted with a red 'Uncategorized' category in the Transactions tab.</em><br>
@@ -280,21 +280,33 @@
           <tr><td>Projected</td></tr>
         </table></font>
     </ul>
+    <br>
+    Account Descriptor Line (Optional):<br>
+    <font color="green" size="+1"><b><code>Account,,Bank - Checking Account-0002,Open,Complete,Bank - Checking Account-0001;Bank - Checking Account-0002</code></b></font><br>
+    <ul>
+        <li>The 1st column must have the 'Account' keyword.</li>
+        <li>The 2nd column is left empty.</li>
+        <li>The 3rd column contains the Account Name.</li>
+        <li>The 4th column contains the Account Status stating whether the account is opened or close. (Optional)</li>
+        <em>NOTE: If the Account Status is omitted, it defaults to the Open Status.</em><br>
+        <font size="-1"><table border="1">
+          <tr><th>Valid Account Status values</th></tr>
+          <tr><td>Open</td></tr> 
+          <tr><td>Closed</td></tr>
+        </table></font>
+        <li>The 5th column contains the Account State stating whether the account has all its transactions present in the data file. (Optional)</li>
+        <em>NOTE: If the Account State is omitted, it defaults to the Complete State.</em><br>
+        <font size="-1"><table border="1">
+          <tr><th>Valid Account State values</th></tr>
+          <tr><td>Complete</td></tr> 
+          <tr><td>Incomplete</td></tr>
+        </table></font>
+        <em>NOTE: If an account is marked as complete, transactions without current balances are calculated automatically.</em><br>
+        <li>The 6th column contains a semi-colon separated list of Alternate Account Names. (Optional)</li>
+    </ul>
     
     <br>
-    <b>Display Input File Contents</b><br>
-    You can view the contents of the input file being viewed.<br>
-	<ul>
-    	<li>Press on the 'Tools' Menu</li>
-    	<li>Press on the 'Display File Contents' Menu Item</li>
-	    <img width='320' height='180' src='help/transactionManager - Tools Menu - Display File Contents.png' /img><br>
-    	<li>This opens the 'Display File Contents' Dialog</li>
-	    <img width='480' height='280' src='help/transactionManager - Display File Contents Dialog.png' /img><br>
-    	<li>Press the 'Done' button to close dialog.</li>
-	</ul>
-    
-    <br>
-    <b>'Input File Config' Dialog</b><br>
+    <b><a id="TransactionDataFile_InputFileDialog">'Input File Config' Dialog</a></b><br>
     The format of the input data file can be configured by the 'Input File Config' Dialog.<br>
 	<ul>
 	    <li>Press on the 'Tools' Menu</li>
@@ -317,14 +329,10 @@
             <ul>
                 <li>File Separator: Sets the file separator character. Valid value: ','</li>
                 <li>Date Format: Sets the date format used for date fields. Default: 'M/d/yy'</li>
-                <li>Require Account Descriptors: Sets whether Account Descriptor Lines are required.</li>
-                <em>NOTE: If checked, transactions with unmatched account names are defaulted with a red 'None' account name in the Transactions tab.<br>
-                If unchecked, transactions with unmatched account names create new accounts.</em><br>
-                <img width='350' height='200' src='help/transactionManager - Transactions Tab - Unmatched Transaction.png' /img><br>
                 <li>The Account line column 1 keyword. Default: 'Account'</li>
                 <li>The Account descriptor column order</li>
                 <li>Use Transaction Keyword: Sets whether Transaction Descriptor Keywords are used.</li>
-                <em>NOTE: Unchecking this disables the Transaction keyowrd line edit box.</em><br>
+                <em>NOTE: Unchecking this disables the Transaction keyword line edit box.</em><br>
                 <li>The Transaction line column 1 keyword. Default: 'Account'</li>
                 <li>The Transaction descriptor column order</li>
             </ul>
@@ -334,19 +342,22 @@
             <li><b>Loaded Configs <font color="red">(Advanced Users)</font></b></li>
             This allows the user to load saved configurations from a config file: <font color="red">config.cfg.</font><br>
             Loaded configs are displayed if a config file is located in the applications directory.<br>
+            For convenience, a config file is provided in the release with preset configs for several common finanical export files: Mint, Bank of America, Chase Bank and TD Ameritrade.<br>
             <img width='480' height='280' src='help/transactionManager - File Config Dialog - Loaded Config.png' /img><br>
             The config file is a simple csv (comma-separated-values) file.<br>
             Config descriptor Line:<br>
-            <font color="green" size="+1"><b><code>Mint Config,M/d/yyyy,false,,false,,,0;6;1;2;4;3;;5;7;</code></b></font><br>
+            <font color="green" size="+1"><b><code>Mint Preset Config,M/d/yyyy,,,,0;6;1;2;4;3;;5;7</code></b></font><br>
             <ul>
                 <li>The 1st column contains the Config Name.</li>
                 <li>The 2nd column contains the Date Format. e.g 'M/d/yyyy'</li>
-                <li>The 3rd column contains the Require Account Descriptor Lines value. Valid values: true or false</li>
-                <li>The 4th column contains the Account Keyword.</li>
-                <li>The 5th column contains the Use Transaction Keyword value. Valid values: true or false</li>
-                <li>The 6th column contains the Transaction Keyword.</li>
-                <li>The 7th column contains a semi-colon separated Account descriptor line columns. Account Name;Status;State;AlternateNames Columns</li>
-                <li>The 8th column contains a semi-colon separated Transaction descriptor line columns. Transaction Date;Name;Description;OriginalDescription;Type;Amount;Balance;Category;Labels Columns</li>
+                <li>The 3rd column contains the Account Keyword.</li>
+                <em>NOTE: Leave blank to not using Account Descriptor lines.</em><br>
+                <li>The 4th column contains a semi-colon-separated integer list Account descriptor line columns.</li>
+                <table border="1"><tr><td>Account Name; Status; State; AlternateNames Columns</td></tr></table>
+                <li>The 5th column contains the Transaction Keyword.</li>
+                <em>NOTE: Leave blank to not use a Transaction keyword for transactions.</em><br>
+                <li>The 6th column contains a semi-colon-separated integer list of Transaction descriptor line columns.</li>
+                <table border="1"><tr><td>Transaction Date; Name; Description; Original Description; Type; Amount; Balance; Category; Labels Columns</td></tr></table>
             </ul>
         </ul>
 	</ul>

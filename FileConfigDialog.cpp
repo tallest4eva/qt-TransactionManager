@@ -75,7 +75,6 @@ FileConfigDialog::FileConfigDialog
     fLayout->addRow( "Date Format:", &mDateFormat );
     mFileBox.setLayout( fLayout );
     fLayout = new QFormLayout;
-    fLayout->addRow( "Require Account Descriptors:", &mAccountCheckBox );
     fLayout->addRow( "Column 1 Keyword:", &mAccountDescriptor );
     fLayout->addRow( "Name:", &mAccountName );
     fLayout->addRow( "Status:", &mAccountStatus );
@@ -140,7 +139,6 @@ void FileConfigDialog::updateData()
     mFileSeperator.setCurrentIndex( mFileSeperator.findData(mConfig.mSeparator) );
     mDateFormat.setCurrentIndex( mDateFormat.findData(mConfig.mDateFormat) );
 
-    mAccountCheckBox.setChecked( mConfig.mAccountRequireTag );
     mAccountDescriptor.setText( mConfig.mAccountTag );
     mAccountName.setCurrentIndex( mAccountName.findData(mConfig.mEntryList[Parser::ENTRY_ACCOUNT_NAME]) );
     mAccountStatus.setCurrentIndex( mAccountStatus.findData(mConfig.mEntryList[Parser::ENTRY_ACCOUNT_STATUS]) );
@@ -211,7 +209,6 @@ void FileConfigDialog::handleDoneButton()
         mConfig.mSeparator = (Parser::SeparatorType)mFileSeperator.itemData( mFileSeperator.currentIndex() ).toInt();
         mConfig.mDateFormat = (Parser::DateFormatType)mDateFormat.itemData( mDateFormat.currentIndex() ).toInt();
 
-        mConfig.mAccountRequireTag = mAccountCheckBox.isChecked();
         if( !mAccountDescriptor.text().isEmpty() ){ mConfig.mAccountTag = mAccountDescriptor.text(); }
         mConfig.mEntryList[Parser::ENTRY_ACCOUNT_NAME] = mAccountName.itemData( mAccountName.currentIndex() ).toInt();
         mConfig.mEntryList[Parser::ENTRY_ACCOUNT_STATUS] = mAccountStatus.itemData( mAccountStatus.currentIndex() ).toInt();

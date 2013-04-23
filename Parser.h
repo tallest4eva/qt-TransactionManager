@@ -68,14 +68,12 @@ public:
         DateFormatType mDateFormat;
         QString mDateFormatStr;
         SeparatorType mSeparator;
-        bool mAccountRequireTag;
         QString mAccountTag;
         bool mTransactionUseTag;
         QString mTransactionTag;
         QVector<int> mEntryList;
         ConfigType(): mDateFormat(cDefaultDateFormat), mSeparator(cDefaultSeparator),
-                      mAccountRequireTag(true), mAccountTag(cDefaultAccountTag),
-                      mTransactionUseTag(true), mTransactionTag(cDefaultTransactionTag),
+                      mAccountTag(cDefaultAccountTag), mTransactionUseTag(cDefaultTransactionUseTag), mTransactionTag(cDefaultTransactionTag),
                       mEntryList( ENTRY_CNT, INVALID_COLUMN ){}
         QString getEntry( const QStringList& aTokenList, int aEntry )
         {
@@ -91,10 +89,8 @@ public:
     {
         CONFIG_ENTRY_NAME,
         CONFIG_ENTRY_DATE,
-	    CONFIG_ENTRY_ACCOUNT_USE_KW,
-	    CONFIG_ENTRY_ACCOUNT_KW,
-	    CONFIG_ENTRY_TRANS_USE_KW,
-	    CONFIG_ENTRY_TRANS_KW,
+	    CONFIG_ENTRY_ACCOUNT_KEYWORD,
+	    CONFIG_ENTRY_TRANS_KEYWORD,
         CONFIG_ENTRY_ACCOUNT_COLUMNS,
         CONFIG_ENTRY_TRANS_COLUMNS,
 
@@ -118,7 +114,6 @@ public:
 
     static const DateFormatType cDefaultDateFormat;
     static const SeparatorType cDefaultSeparator;
-    static const bool cDefaultAccountRequireTag;
     static const QString cDefaultAccountTag;
     static const bool cDefaultTransactionUseTag;
     static const QString cDefaultTransactionTag;

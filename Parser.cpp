@@ -21,7 +21,6 @@ const Parser::SeparatorType Parser::cDefaultSeparator = Parser::SEPARATOR_COMMA;
 const QString Parser::cDefaultAccountTag = "Account";
 const QString Parser::cDefaultTransactionTag = "Transaction";
 const bool Parser::cDefaultTransactionUseTag = true;
-const bool Parser::cDefaultAccountRequireTag = true;
 const int Parser::cDefaultEntryList[] =
 {
     1,              /* ENTRY_TRANS_DATE           */
@@ -185,12 +184,12 @@ void Parser::parseFile
                 if( !date.isValid() ){ continue; }
                 Transaction* transaction = new Transaction();
                 transaction->setTransactionDate( date );
-                Account::addToAccount( sConfig.getEntry(tokens, ENTRY_TRANS_ACCOUNT_NAME), transaction, !sConfig.mAccountRequireTag );
+                Account::addToAccount( sConfig.getEntry(tokens, ENTRY_TRANS_ACCOUNT_NAME), transaction, true );
                 Month::addToMonth( transaction->getTransactionDate(), transaction );
                 transaction->setNumber( TransactionManager::sTransactionList.size() );
                 transaction->setDescription( sConfig.getEntry(tokens, ENTRY_TRANS_DESCRIPTION) );
                 transaction->setAmount( sConfig.getEntry(tokens, ENTRY_TRANS_AMOUNT).toFloat() );
-                transaction->setCategory( Category::getCategoryId( sConfig.getEntry(tokens, ENTRY_TRANS_CATEGORY) ) );
+                transaction->setCategoryLabel( sConfig.getEntry(tokens, ENTRY_TRANS_CATEGORY) );
                 transaction->setLabels( sConfig.getEntry(tokens, ENTRY_TRANS_LABELS).split(' ',QString::SkipEmptyParts) );
                 transaction->setOriginalDescription( sConfig.getEntry(tokens, ENTRY_TRANS_ORIG_DESC) );
                 if( sConfig.mEntryList[ENTRY_TRANS_TYPE] != INVALID_COLUMN && !sConfig.getEntry(tokens, ENTRY_TRANS_TYPE).isEmpty() )
@@ -268,10 +267,19 @@ bool Parser::parseConfigFile
                 aInConfig.mDateFormatStr = dateFormat;
             }
         }
-        aInConfig.mAccountRequireTag = ( tokens[CONFIG_ENTRY_ACCOUNT_USE_KW] == "true" ) ? true : false;
-        if( !tokens[CONFIG_ENTRY_ACCOUNT_KW].isEmpty() ){ aInConfig.mAccountTag = tokens[CONFIG_ENTRY_ACCOUNT_KW]; }
-        aInConfig.mTransactionUseTag = ( tokens[CONFIG_ENTRY_TRANS_USE_KW] == "true" ) ? true : false;
-        if( !tokens[CONFIG_ENTRY_TRANS_KW].isEmpty() ){ aInConfig.mTransactionTag = tokens[CONFIG_ENTRY_TRANS_KW]; }
+        if( !tokens[CONFIG_ENTRY_ACCOUNT_KEYWORD].isEmpty() )
+        {
+            aInConfig.mAccountTag = tokens[CONFIG_ENTRY_ACCOUNT_KEYWORD];
+        }
+        if( tokens[CONFIG_ENTRY_TRANS_KEYWORD].isEmpty() )
+        {
+            aInConfig.mTransactionUseTag = false;
+        }
+        else
+        {
+            aInConfig.mTransactionUseTag = true;
+            aInConfig.mTransactionTag = tokens[CONFIG_ENTRY_TRANS_KEYWORD];
+        }
         if( !tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].isEmpty() )
         {
             QStringList cols = tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].split(';');
