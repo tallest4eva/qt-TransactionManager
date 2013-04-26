@@ -56,7 +56,7 @@ const char* Parser::cDateFormatList[] =
 const char Parser::cSeparatorList[] =
 {
     ',',     // SEPARATOR_COMMA
-    ';',     // SEPARATOR_SEMI_COLON,
+    '|',     // SEPARATOR_PIPE,
 };
 static const QString sConfigFileName = "config.cfg";
 
@@ -139,8 +139,19 @@ void Parser::parseFile
         if( line.contains("\"") )
         {
             // Handle double quotes with csv reader
+            QString expStr;
+            switch( sConfig.mSeparator )
+            {
+            case SEPARATOR_PIPE:
+                expStr = "(?:^|\\|)(\"(?:[^\"]+|\"\")*\"|[^\\|]*)";
+                break;
+            case SEPARATOR_COMMA:
+            default:
+                expStr = "(?:^|,)(\"(?:[^\"]+|\"\")*\"|[^,]*)";
+                break;
+            }
 	        int position = 0;
-            QRegExp regEx("(?:^|,)(\"(?:[^\"]+|\"\")*\"|[^,]*)");
+            QRegExp regEx( expStr );
 	        while( line.size() > position && (position = regEx.indexIn(line, position)) != -1 )
             {
 		        QString col;
@@ -156,6 +167,7 @@ void Parser::parseFile
                 col.remove('\"');
 		        tokens << col;
 	        }
+            //qDebug() << line; for( int i = 0; i < tokens.size(); i++ ){ qDebug() << "Item: " << QString::number(i) << ": " << tokens[i]; }
         }
         else
         {
@@ -188,7 +200,7 @@ void Parser::parseFile
                 Month::addToMonth( transaction->getTransactionDate(), transaction );
                 transaction->setNumber( TransactionManager::sTransactionList.size() );
                 transaction->setDescription( sConfig.getEntry(tokens, ENTRY_TRANS_DESCRIPTION) );
-                transaction->setAmount( sConfig.getEntry(tokens, ENTRY_TRANS_AMOUNT).toFloat() );
+                transaction->setAmount( sConfig.getEntry(tokens, ENTRY_TRANS_AMOUNT).remove(',').toFloat() );
                 transaction->setCategoryLabel( sConfig.getEntry(tokens, ENTRY_TRANS_CATEGORY) );
                 transaction->setLabels( sConfig.getEntry(tokens, ENTRY_TRANS_LABELS).split(' ',QString::SkipEmptyParts) );
                 transaction->setOriginalDescription( sConfig.getEntry(tokens, ENTRY_TRANS_ORIG_DESC) );
@@ -198,7 +210,7 @@ void Parser::parseFile
                 }
                 if( sConfig.mEntryList[ENTRY_TRANS_BALANCE] != INVALID_COLUMN && !sConfig.getEntry(tokens, ENTRY_TRANS_BALANCE).isEmpty() )
                 {
-                    transaction->setCurrentBalance( sConfig.getEntry(tokens, ENTRY_TRANS_BALANCE).toFloat() );
+                    transaction->setCurrentBalance( sConfig.getEntry(tokens, ENTRY_TRANS_BALANCE).remove(',').toFloat() );
                 }
                 TransactionManager::sTransactionList.push_back( transaction );
                 //Logger::logString( "Adding to account:" + QString(transaction->getAccount()->getName()) + QString(transaction->getInfo()) );
@@ -282,7 +294,7 @@ bool Parser::parseConfigFile
         }
         if( !tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].isEmpty() )
         {
-            QStringList cols = tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].split(';');
+            QStringList cols = tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].split('|');
             int idx = ENTRY_ACCOUNT_NAME;
             for( int i = 0; idx <= ENTRY_ACCOUNT_ALT_NAMES && i < cols.size(); i++ )
             {
@@ -292,7 +304,7 @@ bool Parser::parseConfigFile
         }
         if( !tokens[CONFIG_ENTRY_TRANS_COLUMNS].isEmpty() )
         {
-            QStringList cols = tokens[CONFIG_ENTRY_TRANS_COLUMNS].split(';');
+            QStringList cols = tokens[CONFIG_ENTRY_TRANS_COLUMNS].split('|');
             int idx = ENTRY_TRANS_DATE;
             for( int i = 0; idx <= ENTRY_TRANS_LABELS && i < cols.size(); i++ )
             {

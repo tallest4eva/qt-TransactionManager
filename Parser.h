@@ -58,7 +58,7 @@ public:
     enum SeparatorType
     {
         SEPARATOR_COMMA,
-        //SEPARATOR_SEMI_COLON,
+        SEPARATOR_PIPE,
 
         SEPARATOR_CNT
     };

@@ -39,7 +39,7 @@
     <img width='480' height='280' hspace='30' src='help/transactionManager.png' /img><br>
     <br>
     <b>Release Contents</b><br>
-    The Transaction Manager 1.04 release contains:
+    The Transaction Manager 1.05 release contains:
     <ul>
         <li>TransactionManager.exe --- Application executable</li>
         <li>help.html --- For help documentation.</li>
@@ -327,7 +327,7 @@
             <img width='480' height='280' src='help/transactionManager - File Config Dialog - Custom Config.png' /img><br>
             <li>Use the checkbox, dropdown and text edit boxes to configure:</li>
             <ul>
-                <li>File Separator: Sets the file separator character. Valid value: ','</li>
+                <li>File Separator: Sets the file separator character. Valid values: ',' and '|'</li>
                 <li>Date Format: Sets the date format used for date fields. Default: 'M/d/yy'</li>
                 <li>The Account line column 1 keyword. Default: 'Account'</li>
                 <li>The Account descriptor column order</li>
@@ -346,18 +346,18 @@
             <img width='480' height='280' src='help/transactionManager - File Config Dialog - Loaded Config.png' /img><br>
             The config file is a simple csv (comma-separated-values) file.<br>
             Config descriptor Line:<br>
-            <font color="green" size="+1"><b><code>Mint Preset Config,M/d/yyyy,,,,0;6;1;2;4;3;;5;7</code></b></font><br>
+            <font color="green" size="+1"><b><code>Mint Preset Config,M/d/yyyy,,,,0|6|1|2|4|3||5|7|</code></b></font><br>
             <ul>
                 <li>The 1st column contains the Config Name.</li>
                 <li>The 2nd column contains the Date Format. e.g 'M/d/yyyy'</li>
                 <li>The 3rd column contains the Account Keyword.</li>
-                <em>NOTE: Leave blank to not using Account Descriptor lines.</em><br>
-                <li>The 4th column contains a semi-colon-separated integer list Account descriptor line columns.</li>
-                <table border="1"><tr><td>Account Name; Status; State; AlternateNames Columns</td></tr></table>
+                <em>NOTE: Leave blank to not use Account Descriptor lines.</em><br>
+                <li>The 4th column contains a pipe-separated integer list of the Account descriptor line's columns.</li>
+                <table border="1"><tr><td>Account Name|Status|State|AlternateNames Columns</td></tr></table>
                 <li>The 5th column contains the Transaction Keyword.</li>
-                <em>NOTE: Leave blank to not use a Transaction keyword for transactions.</em><br>
-                <li>The 6th column contains a semi-colon-separated integer list of Transaction descriptor line columns.</li>
-                <table border="1"><tr><td>Transaction Date; Name; Description; Original Description; Type; Amount; Balance; Category; Labels Columns</td></tr></table>
+                <em>NOTE: Leave blank to not use a Transaction keyword for transaction descriptor lines.</em><br>
+                <li>The 6th column contains a pipe-separated integer list of the Transaction descriptor line's columns.</li>
+                <table border="1"><tr><td>Transaction Date|Name|Description|Original Description|Type|Amount|Balance|Category|Labels Columns</td></tr></table>
             </ul>
         </ul>
 	</ul>
