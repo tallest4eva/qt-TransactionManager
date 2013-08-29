@@ -8,6 +8,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <QFile>
 #include <QTextStream>
 #include <QList>
 
@@ -85,23 +86,12 @@ public:
             return token;
         }
     };
-    enum ConfigEntryType
-    {
-        CONFIG_ENTRY_NAME,
-        CONFIG_ENTRY_DATE,
-	    CONFIG_ENTRY_ACCOUNT_KEYWORD,
-	    CONFIG_ENTRY_TRANS_KEYWORD,
-        CONFIG_ENTRY_ACCOUNT_COLUMNS,
-        CONFIG_ENTRY_TRANS_COLUMNS,
-
-        CONFIG_ENTRY_CNT
-    };
     
     // Functions
     static void init();
     static void applyConfig( int aConfigIdx );
     static void parseFile( QTextStream& aTextStream );
-    static bool parseConfigFile( const QString& aLine, ConfigType& aInConfig );
+    static void parseConfigFile( QFile& aConfigFile );
         
     // Variables
     static const int MAX_COLUMNS = 12;

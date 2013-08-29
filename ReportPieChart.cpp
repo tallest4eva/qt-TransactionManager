@@ -118,7 +118,7 @@ void ReportPieChart::setTransactionFilter( const Transaction::FilterType& aFilte
             positiveValue = ( mChartType == INCOME_BY_CATEGORY );
             Transaction::FilterType filter = aFilter;
             QList<Transaction*> transactionList = Transaction::filterTransactions( TransactionManager::sTransactionList, filter );
-            QVector<float> categoryList( (int)Category::CATEGORY_TYPE_CNT, 0 );
+            QVector<float> categoryList( (int)Category::getCategoryCount(), 0 );
             for( int i = 0; i < transactionList.size(); i++ )
             {
                 Transaction* transaction = transactionList[i];
@@ -285,7 +285,7 @@ void ReportPieChart::handleDisplayClicked()
             filter.mCategoryList[ (int)category ] = true;
             if( mGroupCategories )
             {
-                for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
+                for( int i = 0; i < Category::getCategoryCount(); i++ )
                 {
                     if( category == Category::getParentCategoryId( (Category::CategoryIdType)i ) )
                     {

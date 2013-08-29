@@ -16,6 +16,7 @@ Transaction,01/01/12,Bank - Checking Account-0001,Account Opened,Account Opened,
 Account,,Bank - Checking Account-1000,Open,Complete
 Transaction,12/30/12,Bank - Checking Account-1000,Payment to Bank - Credit Card-2000,Credit Card Payment,debit,-510.00,1375.00,Credit Card Payment,Manual
 Transaction,12/15/12,Bank - Checking Account-1000,Employment Paycheck,DIRECT DEP,credit,500.00,"1,885.00",Paycheck,Reviewed
+Transaction,11/15/12,Bank - Checking Account-1000,Transaction will be Excluded,DIRECT DEP,credit,500.00,1385.00,Exclude,Reviewed
 Transaction,11/15/12,Bank - Checking Account-1000,Employment Paycheck,DIRECT DEP,credit,500.00,1385.00,Paycheck,Reviewed
 Transaction,10/15/12,Bank - Checking Account-1000,Employment Paycheck,DIRECT DEP,credit,500.00,885.00,Paycheck,Reviewed
 Transaction,09/30/12,Bank - Checking Account-1000,Payment to Bank - Credit Card-2000,Credit Card Payment,debit,-865.00,385.00,Credit Card Payment,Manual

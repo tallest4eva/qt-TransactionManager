@@ -177,6 +177,8 @@ const Category::CategoryType Category::cCategoryList[] =
     { UNCATEGORIZED,        "Family Expense" },
     { UNCATEGORIZED,        "Family Income" },
     { UNCATEGORIZED,        "Misc Expense" },
+
+    { EXCLUDE,              "Exclude" },
 };
 
 const char* Category::cLabelList[] =
@@ -189,7 +191,35 @@ const char* Category::cLabelList[] =
     "Family",       /* LABEL_FAMILY     */
     "Projected",    /* LABEL_PROJECTED  */
 };
+QList<Category::CategoryType> Category::sCategoryList;
     
+//----------------------------------------------------------------------------
+// addCategory
+//----------------------------------------------------------------------------
+void Category::addCategory
+    (
+    const CategoryType& aCategory
+    )
+{
+    getCategoryCount();
+    sCategoryList.push_back( aCategory );      
+} // Category::addCategory
+
+//----------------------------------------------------------------------------
+// getCategoryCount
+//----------------------------------------------------------------------------
+int Category::getCategoryCount()
+{
+    if( sCategoryList.size() == 0 )
+    { 
+        for( int i = 0; i < CATEGORY_TYPE_CNT; i++ )
+        {
+            sCategoryList.push_back( cCategoryList[i] );
+        }
+    }
+    return sCategoryList.size();
+} // Category::getCategoryCount
+
 //----------------------------------------------------------------------------
 // getCategoryId
 //----------------------------------------------------------------------------
@@ -200,9 +230,9 @@ Category::CategoryIdType Category::getCategoryId
 {
     bool found = false;
     CategoryIdType id = UNCATEGORIZED;
-    for( int i = 0; i < CATEGORY_TYPE_CNT; i++ )
+    for( int i = 0; i < sCategoryList.size(); i++ )
     {
-        if( aCategory == cCategoryList[ i ].text )
+        if( aCategory == sCategoryList[ i ].text )
         {
             id = (CategoryIdType)i;
             found = true;
@@ -225,9 +255,9 @@ Category::CategoryIdType Category::getParentCategoryId
     )
 {
     CategoryIdType id = UNCATEGORIZED;
-    if( aCategoryId < CATEGORY_TYPE_CNT )
+    if( aCategoryId < sCategoryList.size() )
     {
-        id = cCategoryList[ aCategoryId ].parentCategory;
+        id = sCategoryList[ aCategoryId ].parentCategory;
     }
     return id;
 } // Category::getParentCategoryId
@@ -242,15 +272,15 @@ QString Category::getCategoryText
     )
 {
     QString text;
-    if( aCategoryId < CATEGORY_TYPE_CNT )
+    if( aCategoryId < sCategoryList.size() )
     {
-        CategoryIdType parentCategoryId = cCategoryList[ aCategoryId ].parentCategory;
+        CategoryIdType parentCategoryId = sCategoryList[ aCategoryId ].parentCategory;
         if( aFullText && aCategoryId != parentCategoryId )
         {
-            text = cCategoryList[ parentCategoryId ].text;
+            text = sCategoryList[ parentCategoryId ].text;
             text += " > ";
         }
-        text += cCategoryList[ aCategoryId ].text;
+        text += sCategoryList[ aCategoryId ].text;
     }
     return text;
 } // Category::getCategoryText

@@ -5,13 +5,13 @@
 //  FILE NAME: Parser.cpp
 //******************************************************************************
 
-#include <QFile>
 #include <QString>
 #include <QStringList>
+#include <QtXml>
 
 #include "Parser.h"
 #include "Category.h"
-//#include "Logger.h"
+#include "Logger.h"
 #include "Month.h"
 #include "TransactionManager.h"
 
@@ -59,6 +59,9 @@ const char Parser::cSeparatorList[] =
     '|',     // SEPARATOR_PIPE,
 };
 static const QString sConfigFileName = "config.cfg";
+static const QString TAG_CONFIGS = "configs";
+static const QString TAG_CONFIG = "config";
+static const QString TAG_CATEGORY = "category";
 
 // Static variables
 Parser::ConfigType Parser::sConfig;
@@ -84,18 +87,7 @@ void Parser::init()
     QFile file(sConfigFileName);
     if( file.open( QIODevice::ReadOnly ) )
     {
-        QTextStream inStream( &file );
-        // Skip header line
-        QString line = inStream.readLine();
-        while( !inStream.atEnd() )
-        {
-            line = inStream.readLine();
-            ConfigType config;
-            if( !line.isEmpty() && parseConfigFile(line, config ) )
-            {
-                sPresetConfigList.push_back( config );
-            }
-        }
+        parseConfigFile( file );
         file.close();
     }
 
@@ -193,7 +185,11 @@ void Parser::parseFile
                 // Add to transaction list
                 QString dateFormat = ( sConfig.mDateFormat == DATE_FORMAT_CUSTOM ) ? sConfig.mDateFormatStr : cDateFormatList[sConfig.mDateFormat];
                 QDate date = QDate::fromString( sConfig.getEntry(tokens, ENTRY_TRANS_DATE), dateFormat );
-                if( !date.isValid() ){ continue; }
+                Category::CategoryIdType categoryId = Category::getCategoryId( sConfig.getEntry(tokens, ENTRY_TRANS_CATEGORY) );
+
+                // Skip invalid transactions
+                if( !date.isValid() || Category::getParentCategoryId( categoryId ) == Category::EXCLUDE ){ continue; }
+
                 Transaction* transaction = new Transaction();
                 transaction->setTransactionDate( date );
                 Account::addToAccount( sConfig.getEntry(tokens, ENTRY_TRANS_ACCOUNT_NAME), transaction, true );
@@ -246,73 +242,101 @@ void Parser::parseFile
 //----------------------------------------------------------------------------
 // parseConfigFile
 //----------------------------------------------------------------------------
-bool Parser::parseConfigFile
+void Parser::parseConfigFile
     (
-    const QString& aLine,
-    ConfigType& aInConfig
+    QFile& aConfigFile
     )
 {
-    bool success = false;
-    QStringList tokens = aLine.split(',');
-    if( tokens.size() == CONFIG_ENTRY_CNT )
+    QDomDocument doc( "configFile" );
+    QString errorMsg;
+    if( !doc.setContent( &aConfigFile, &errorMsg ) )
     {
-        // Read config file line
-        aInConfig.mName = tokens[CONFIG_ENTRY_NAME];
-        QString dateFormat = tokens[CONFIG_ENTRY_DATE];
-        if( !dateFormat.isEmpty() )
-        {
-            dateFormat.replace("MM", "M");
-            dateFormat.replace("dd", "d");
-            bool found = false;
-            for( int i = 0; i < DATE_FORMAT_CNT; i++ )
-            {
-                if( dateFormat == cDateFormatList[i] )
-                {
-                    aInConfig.mDateFormat = (DateFormatType)i;
-                    found = true;
-                    break;
-                }
-            }
-            if( !found )
-            {
-                aInConfig.mDateFormat = DATE_FORMAT_CUSTOM;
-                aInConfig.mDateFormatStr = dateFormat;
-            }
-        }
-        if( !tokens[CONFIG_ENTRY_ACCOUNT_KEYWORD].isEmpty() )
-        {
-            aInConfig.mAccountTag = tokens[CONFIG_ENTRY_ACCOUNT_KEYWORD];
-        }
-        if( tokens[CONFIG_ENTRY_TRANS_KEYWORD].isEmpty() )
-        {
-            aInConfig.mTransactionUseTag = false;
-        }
-        else
-        {
-            aInConfig.mTransactionUseTag = true;
-            aInConfig.mTransactionTag = tokens[CONFIG_ENTRY_TRANS_KEYWORD];
-        }
-        if( !tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].isEmpty() )
-        {
-            QStringList cols = tokens[CONFIG_ENTRY_ACCOUNT_COLUMNS].split('|');
-            int idx = ENTRY_ACCOUNT_NAME;
-            for( int i = 0; idx <= ENTRY_ACCOUNT_ALT_NAMES && i < cols.size(); i++ )
-            {
-                aInConfig.mEntryList[idx] = ( !cols[i].isEmpty() ) ? cols[i].toInt() : INVALID_COLUMN;
-                idx++;
-            }
-        }
-        if( !tokens[CONFIG_ENTRY_TRANS_COLUMNS].isEmpty() )
-        {
-            QStringList cols = tokens[CONFIG_ENTRY_TRANS_COLUMNS].split('|');
-            int idx = ENTRY_TRANS_DATE;
-            for( int i = 0; idx <= ENTRY_TRANS_LABELS && i < cols.size(); i++ )
-            {
-                aInConfig.mEntryList[idx] = ( !cols[i].isEmpty() ) ? cols[i].toInt() : INVALID_COLUMN;
-                idx++;
-            }
-        }
-        success = true;
+        Logger::logString( "Error. Failed to parse config.cfg file: " + errorMsg, Logger::LOG_ERROR );
+        return;
     }
-    return success;
+
+    QDomElement configsElement = doc.firstChildElement( TAG_CONFIGS );
+    if( !configsElement.isNull() )
+    {
+        for( QDomElement element = configsElement.firstChildElement(); !element.isNull(); element = element.nextSiblingElement() )
+        {
+            // Get config content
+            if( element.tagName() == TAG_CONFIG )
+            {
+                ConfigType config;
+                config.mName = element.attribute("name");
+
+                // Get config date format
+                QDomElement childElement = element.firstChildElement("dateFormat");
+                if( !childElement.isNull() && !childElement.text().isEmpty() )
+                {
+                    QString dateFormat = childElement.text();
+                    dateFormat.replace("MM", "M");
+                    dateFormat.replace("dd", "d");
+                    bool found = false;
+                    for( int i = 0; i < DATE_FORMAT_CNT; i++ )
+                    {
+                        if( dateFormat == cDateFormatList[i] )
+                        {
+                            config.mDateFormat = (DateFormatType)i;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if( !found )
+                    {
+                        config.mDateFormat = DATE_FORMAT_CUSTOM;
+                        config.mDateFormatStr = dateFormat;
+                    }
+                }
+
+                // Get config account info
+                childElement = element.firstChildElement("account");
+                if( !childElement.isNull() )
+                {
+                    if( !childElement.attribute("keyword").isEmpty() ){         config.mAccountTag = childElement.attribute("keyword"); }
+                    if( !childElement.attribute("name").isEmpty() ){            config.mEntryList[ENTRY_ACCOUNT_NAME] = childElement.attribute("name").toInt(); }
+                    if( !childElement.attribute("status").isEmpty() ){          config.mEntryList[ENTRY_ACCOUNT_STATUS] = childElement.attribute("status").toInt(); }
+                    if( !childElement.attribute("state").isEmpty() ){           config.mEntryList[ENTRY_ACCOUNT_STATE] = childElement.attribute("state").toInt(); }
+                    if( !childElement.attribute("alternateNames").isEmpty() ){  config.mEntryList[ENTRY_ACCOUNT_ALT_NAMES] = childElement.attribute("alternateNames").toInt(); }
+                }
+
+                // Get config transaction info
+                childElement = element.firstChildElement("transaction");
+                if( !childElement.isNull() )
+                {
+                    config.mTransactionUseTag = false;
+                    if( !childElement.attribute("keyword").isEmpty() )
+                    {
+                        config.mTransactionUseTag = true;
+                        config.mTransactionTag = childElement.attribute("keyword");
+                    }
+                    if( !childElement.attribute("date").isEmpty() ){                config.mEntryList[ENTRY_TRANS_DATE] = childElement.attribute("date").toInt(); }
+                    if( !childElement.attribute("name").isEmpty() ){                config.mEntryList[ENTRY_TRANS_ACCOUNT_NAME] = childElement.attribute("name").toInt(); }
+                    if( !childElement.attribute("description").isEmpty() ){         config.mEntryList[ENTRY_TRANS_DESCRIPTION] = childElement.attribute("description").toInt(); }
+                    if( !childElement.attribute("originalDescription").isEmpty() ){ config.mEntryList[ENTRY_TRANS_ORIG_DESC] = childElement.attribute("originalDescription").toInt(); }
+                    if( !childElement.attribute("type").isEmpty() ){                config.mEntryList[ENTRY_TRANS_TYPE] = childElement.attribute("type").toInt(); }
+                    if( !childElement.attribute("amount").isEmpty() ){              config.mEntryList[ENTRY_TRANS_AMOUNT] = childElement.attribute("amount").toInt(); }
+                    if( !childElement.attribute("balance").isEmpty() ){             config.mEntryList[ENTRY_TRANS_BALANCE] = childElement.attribute("balance").toInt(); }
+                    if( !childElement.attribute("category").isEmpty() ){            config.mEntryList[ENTRY_TRANS_CATEGORY] = childElement.attribute("category").toInt(); }
+                    if( !childElement.attribute("labels").isEmpty() ){              config.mEntryList[ENTRY_TRANS_LABELS] = childElement.attribute("labels").toInt(); }
+                }
+
+                sPresetConfigList.push_back( config );
+            } // if element.tagName() == TAG_CONFIG
+
+            else if( element.tagName() == TAG_CATEGORY )
+            {
+                QString categoryStr = element.attribute("category");
+                QString subCategoryStr = element.attribute("subCategory");
+                if( !categoryStr.isEmpty() && !subCategoryStr .isEmpty() )
+                {
+                    Category::CategoryType category;
+                    category.parentCategory = Category::getCategoryId( categoryStr );
+                    category.text = subCategoryStr;
+                    Category::addCategory( category );
+                }
+            } // if element.tagName() == TAG_CATEGORY
+        } // for element
+    }
 } // Parser::parseConfigFile

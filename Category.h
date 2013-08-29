@@ -9,6 +9,7 @@
 #define CATEGORY_H
 
 #include <QString>
+#include <QList>
 
 class Category
 {
@@ -182,6 +183,8 @@ public:
         FAMILY_EXPENSE,
         FAMILY_INCOME,
         MISC_EXPENSE,
+
+        EXCLUDE,
         
         CATEGORY_TYPE_CNT
     };
@@ -189,7 +192,10 @@ public:
     struct CategoryType
     {
         CategoryIdType parentCategory;
-        char* text;
+        QString text;
+        // Comparators
+        bool operator< ( const CategoryType& aType ) const { return( parentCategory < aType.parentCategory && text < aType.text ); }
+        bool operator> ( const CategoryType& aType ) const { return( parentCategory > aType.parentCategory && text > aType.text ); }
     };
 
     enum LabelIdType
@@ -206,6 +212,11 @@ public:
     };
 
     // Functions
+    static void addCategory
+        (
+        const CategoryType& aCategory
+        );
+    static int getCategoryCount();
     static CategoryIdType getCategoryId
         (
         const QString& aCategory
@@ -232,6 +243,7 @@ public:
 private:
     // Variable
     static const CategoryType cCategoryList[];
+    static QList<CategoryType> sCategoryList;
     static const char* cLabelList[];
 };
 

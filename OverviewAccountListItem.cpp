@@ -75,6 +75,11 @@ void OverviewAccountListItem::setAccount
             str.prepend( (mAccount->getBalance() > 0) ? "<font color=\"darkgreen\">" : "<font color=\"red\">" );
             str.append( "</font>" );
         }
+        else if( mAccount->getStatus() == Account::STATUS_CLOSED )
+        {
+            str.prepend( "<font color=\"grey\">" );
+            str.append( "</font>" );
+        }
         mBalanceLabel.setText( str );
         mBalanceLabel.setAlignment( Qt::AlignRight );
 

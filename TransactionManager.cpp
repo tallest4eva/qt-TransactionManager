@@ -77,6 +77,9 @@ void TransactionManager::init()
 {
     // Init Parser
     Parser::init();
+    sCategoriesEnabledList.fill( false, Category::getCategoryCount() );
+    mTransactionFilter.mCategoryList.fill( true, Category::getCategoryCount() );
+    mReportFilter.mCategoryList.fill( true, Category::getCategoryCount() );
 
     // Set up status labels
     mStatusConfigLabel.setText( "Loaded Config: " + Parser::sPresetConfigList[Parser::sPresetSelected].mName );
@@ -89,7 +92,7 @@ void TransactionManager::init()
     ui->reportToolBox->setCurrentIndex(0);
     ui->reportDisplayTabWidget->setCurrentIndex(0);
     ui->transactionListWidget->layout()->addWidget( &mTransactionTableView );
-    for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
+    for( int i = 0; i < Category::getCategoryCount(); i++ )
     {
         QString str = Category::getCategoryText( (Category::CategoryIdType)i, true ).replace( "&", "and" );
         QCheckBox* checkbox = new QCheckBox( str, ui->transactionCategoriesGroupBox );
@@ -155,7 +158,7 @@ void TransactionManager::init()
 void TransactionManager::deInit()
 {
     clearData();
-    for( int i = 0; i < Category::CATEGORY_TYPE_CNT; i++ )
+    for( int i = 0; i < Category::getCategoryCount(); i++ )
     {
         delete mTransactionCategoriesCheckBoxList[i];
         delete mReportCategoriesCheckBoxList[i];
@@ -392,10 +395,11 @@ void TransactionManager::updateOverviewTab()
     for( int i = 0; i < sAccountList.size(); i++ )
     {
         QListWidgetItem* listItem = new QListWidgetItem();
-        OverviewAccountListItem* item = new OverviewAccountListItem();
-        item->setAccount( sAccountList[i] );
         listItem->setSizeHint( QSize(0,70) );
         ui->overviewAccountList->addItem( listItem );
+
+        OverviewAccountListItem* item = new OverviewAccountListItem();
+        item->setAccount( sAccountList[i] );
         ui->overviewAccountList->setItemWidget( listItem, item );
     }
 } // TransactionManager::updateOverviewTab()

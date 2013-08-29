@@ -344,20 +344,44 @@
             Loaded configs are displayed if a config file is located in the applications directory.<br>
             For convenience, a config file is provided in the release with preset configs for several common finanical export files: Mint, Bank of America, Chase Bank and TD Ameritrade.<br>
             <img width='480' height='280' src='help/transactionManager - File Config Dialog - Loaded Config.png' /img><br>
-            The config file is a simple csv (comma-separated-values) file.<br>
-            Config descriptor Line:<br>
-            <font color="green" size="+1"><b><code>Mint Preset Config,M/d/yyyy,,,,0|6|1|2|4|3||5|7|</code></b></font><br>
+            The config file is a simple xml file which adds the ability to add config descriptions and add new categories.<br>
+            Sample Config file content:<br>
+            <font color="green" size="-1"><b><code>
+                &lt;configs\&gt;<br>
+                &nbsp;&nbsp;&lt;!-- Config definitions --&gt;<br>
+                &nbsp;&nbsp;&lt;config name='Sample Config'&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;dateFormat&gt;&lt;/dateFormat&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;account     keyword='' name='' status='' state='' alternateNames='' &gt;&lt;/account&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;transaction keyword='' date='' name='' description='' originalDescription='' type='' amount='' balance='' category='' labels='' &gt;&lt;/transaction&gt;<br>
+                &nbsp;&nbsp;&lt;/config&gt;<br><br>
+                &nbsp;&nbsp;&lt;!-- Category definitions --&gt;<br>
+                &nbsp;&nbsp;&lt;category category='' subCategory=''&gt;&lt;/category&gt;<br>
+                &lt;/configs&gt;<br>
+            </code></b></font><br>
+            Config Node Description:
             <ul>
-                <li>The 1st column contains the Config Name.</li>
-                <li>The 2nd column contains the Date Format. e.g 'M/d/yyyy'</li>
-                <li>The 3rd column contains the Account Keyword.</li>
-                <em>NOTE: Leave blank to not use Account Descriptor lines.</em><br>
-                <li>The 4th column contains a pipe-separated integer list of the Account descriptor line's columns.</li>
-                <table border="1"><tr><td>Account Name|Status|State|AlternateNames Columns</td></tr></table>
-                <li>The 5th column contains the Transaction Keyword.</li>
-                <em>NOTE: Leave blank to not use a Transaction keyword for transaction descriptor lines.</em><br>
-                <li>The 6th column contains a pipe-separated integer list of the Transaction descriptor line's columns.</li>
-                <table border="1"><tr><td>Transaction Date|Name|Description|Original Description|Type|Amount|Balance|Category|Labels Columns</td></tr></table>
+                <li>The 'name' attribute contains the Config Name.</li>
+                <li>The 'dateFormat' node contains the Date Format. Default: 'M/d/yy'</li>
+                <li>The 'account' node contains information about the account descriptor line.</li>
+                <em>NOTE: Do not include 'account' node if the config does not use account descriptor lines.</em><br>
+                <ul>
+                    <li>The 'keyword' attribute specifies the account descriptor line keyword</li>
+                    <li>The 'name', 'status', 'state', and 'AlternateNames' attributes specify the account descriptor line column numbers.</li>
+                    <em>NOTE: Attributes for unavailable columns are left empty or omitted.</em><br>
+                </ul>
+                <li>The 'transaction' node contains information about the transaction descriptor line.</li>
+                <ul>
+                    <li>The 'keyword' attribute specifies the transaction descriptor line keyword</li>
+                    <em>NOTE: If not using a transaction descriptor keyword, the keyword attribute is left empty or omitted.</em><br>
+                    <li>The 'date', 'name', 'description', 'originalDescription', 'type', 'amount', 'balance', 'category', 'labels' attributes specify the transaction descriptor line column numbers.</li>
+                    <em>NOTE: Attributes for unavailable columns are left empty or omitted.</em><br>
+                </ul>
+            </ul>
+            Category Node Description:
+            <ul>
+                <li>The 'category' attribute contains the Parent Category.</li>
+                <em>NOTE: This should match an existing Parent Category. Defaults to "Uncategorized" Category.</em><br>
+                <li>The 'subCategory' attribute contains the new Sub Category string.</li>
             </ul>
         </ul>
 	</ul>
