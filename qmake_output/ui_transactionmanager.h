@@ -68,6 +68,8 @@ public:
     QLabel *overviewFirstDateValue;
     QLabel *overviewLastDateLabel;
     QLabel *overviewLastDateValue;
+    QLabel *overviewShowClosedAccountsLabel;
+    QCheckBox *overviewShowClosedAccountsCheckBox;
     QWidget *transactionsTab;
     QHBoxLayout *horizontalLayout_5;
     QWidget *transactionSelectWidget;
@@ -335,6 +337,20 @@ public:
 
         formLayout->setWidget(4, QFormLayout::FieldRole, overviewLastDateValue);
 
+        overviewShowClosedAccountsLabel = new QLabel(overviewDisplayWidget);
+        overviewShowClosedAccountsLabel->setObjectName(QString::fromUtf8("overviewShowClosedAccountsLabel"));
+        overviewShowClosedAccountsLabel->setFont(font1);
+
+        formLayout->setWidget(5, QFormLayout::LabelRole, overviewShowClosedAccountsLabel);
+
+        overviewShowClosedAccountsCheckBox = new QCheckBox(overviewDisplayWidget);
+        overviewShowClosedAccountsCheckBox->setObjectName(QString::fromUtf8("overviewShowClosedAccountsCheckBox"));
+        overviewShowClosedAccountsCheckBox->setFont(font1);
+        overviewShowClosedAccountsCheckBox->setLayoutDirection(Qt::LeftToRight);
+        overviewShowClosedAccountsCheckBox->setChecked(true);
+
+        formLayout->setWidget(5, QFormLayout::FieldRole, overviewShowClosedAccountsCheckBox);
+
 
         horizontalLayout_8->addLayout(formLayout);
 
@@ -455,7 +471,7 @@ public:
         transactionToolBox->addItem(transactionLabelsToolBox, QString::fromUtf8("Labels"));
         transactionDateToolBox = new QWidget();
         transactionDateToolBox->setObjectName(QString::fromUtf8("transactionDateToolBox"));
-        transactionDateToolBox->setGeometry(QRect(0, 0, 282, 370));
+        transactionDateToolBox->setGeometry(QRect(0, 0, 250, 255));
         formLayout_1 = new QFormLayout(transactionDateToolBox);
         formLayout_1->setSpacing(6);
         formLayout_1->setContentsMargins(11, 11, 11, 11);
@@ -666,7 +682,7 @@ public:
         reportToolBox->addItem(reportLabelsToolBox, QString::fromUtf8("Labels"));
         reportDateToolBox = new QWidget();
         reportDateToolBox->setObjectName(QString::fromUtf8("reportDateToolBox"));
-        reportDateToolBox->setGeometry(QRect(0, 0, 282, 370));
+        reportDateToolBox->setGeometry(QRect(0, 0, 250, 255));
         formLayout_2 = new QFormLayout(reportDateToolBox);
         formLayout_2->setSpacing(6);
         formLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -919,6 +935,8 @@ public:
         overviewFirstDateValue->setText(QApplication::translate("TransactionManager", "TextLabel", 0, QApplication::UnicodeUTF8));
         overviewLastDateLabel->setText(QApplication::translate("TransactionManager", "Date of Last Transaction:", 0, QApplication::UnicodeUTF8));
         overviewLastDateValue->setText(QApplication::translate("TransactionManager", "TextLabel", 0, QApplication::UnicodeUTF8));
+        overviewShowClosedAccountsLabel->setText(QApplication::translate("TransactionManager", "Show Closed Accounts:", 0, QApplication::UnicodeUTF8));
+        overviewShowClosedAccountsCheckBox->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(overviewTab), QApplication::translate("TransactionManager", "Overview", 0, QApplication::UnicodeUTF8));
         transactionAllButton->setText(QApplication::translate("TransactionManager", "Show All", 0, QApplication::UnicodeUTF8));
         transactionAllAccountsCheckBox->setText(QApplication::translate("TransactionManager", "All Acounts", 0, QApplication::UnicodeUTF8));

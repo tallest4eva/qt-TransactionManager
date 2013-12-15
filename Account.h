@@ -39,6 +39,7 @@ public:
     void  setBalance( float aBalance ){ mBalance = aBalance; }
     StatusType getStatus() const { return mStatus; }
     void  setStatus( StatusType aStatus ){ mStatus = aStatus; }
+    bool  isClosed() const { return( mStatus == STATUS_CLOSED ); }
     bool  getAccountComplete() const { return mComplete; }
     void  setAccountComplete( bool aComplete ){ mComplete = aComplete; }
     QDate getOpenDate() const { return mOpenDate; }

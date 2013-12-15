@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'TransactionManager.h'
 **
-** Created: Mon Apr 22 16:22:34 2013
+** Created: Tue Dec 3 12:55:51 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_TransactionManager[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      37,   14, // methods
+      38,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -40,34 +40,35 @@ static const uint qt_meta_data_TransactionManager[] = {
      189,   19,   19,   19, 0x08,
      222,   19,   19,   19, 0x08,
      260,  254,   19,   19, 0x08,
-     319,   19,   19,   19, 0x08,
-     356,   19,   19,   19, 0x08,
-     388,   19,   19,   19, 0x08,
-     431,   19,   19,   19, 0x08,
-     471,   19,   19,   19, 0x08,
-     511,   19,   19,   19, 0x08,
-     552,   19,   19,   19, 0x08,
-     594,   19,   19,   19, 0x08,
-     628,   19,   19,   19, 0x08,
-     666,   19,   19,   19, 0x08,
-     701,   19,   19,   19, 0x08,
-     736,   19,   19,   19, 0x08,
-     772,   19,   19,   19, 0x08,
-     809,   19,   19,   19, 0x08,
-     847,  838,   19,   19, 0x08,
-     895,  838,   19,   19, 0x08,
-     944,  838,   19,   19, 0x08,
-     994,  838,   19,   19, 0x08,
-    1047,  838,   19,   19, 0x08,
-    1101,  838,   19,   19, 0x08,
-    1147,  838,   19,   19, 0x08,
-    1190,  838,   19,   19, 0x08,
-    1234,  838,   19,   19, 0x08,
-    1279,  838,   19,   19, 0x08,
-    1327,  838,   19,   19, 0x08,
-    1376,  838,   19,   19, 0x08,
-    1425, 1417,   19,   19, 0x08,
-    1500, 1480,   19,   19, 0x08,
+     328,  319,   19,   19, 0x08,
+     380,   19,   19,   19, 0x08,
+     417,   19,   19,   19, 0x08,
+     449,   19,   19,   19, 0x08,
+     492,   19,   19,   19, 0x08,
+     532,   19,   19,   19, 0x08,
+     572,   19,   19,   19, 0x08,
+     613,   19,   19,   19, 0x08,
+     655,   19,   19,   19, 0x08,
+     689,   19,   19,   19, 0x08,
+     727,   19,   19,   19, 0x08,
+     762,   19,   19,   19, 0x08,
+     797,   19,   19,   19, 0x08,
+     833,   19,   19,   19, 0x08,
+     870,   19,   19,   19, 0x08,
+     899,  319,   19,   19, 0x08,
+     947,  319,   19,   19, 0x08,
+     996,  319,   19,   19, 0x08,
+    1046,  319,   19,   19, 0x08,
+    1099,  319,   19,   19, 0x08,
+    1153,  319,   19,   19, 0x08,
+    1199,  319,   19,   19, 0x08,
+    1242,  319,   19,   19, 0x08,
+    1286,  319,   19,   19, 0x08,
+    1331,  319,   19,   19, 0x08,
+    1379,  319,   19,   19, 0x08,
+    1428,  319,   19,   19, 0x08,
+    1477, 1469,   19,   19, 0x08,
+    1552, 1532,   19,   19, 0x08,
 
        0        // eod
 };
@@ -82,6 +83,7 @@ static const char qt_meta_stringdata_TransactionManager[] = {
     "on_actionDisplayFile_triggered()\0"
     "on_actionDisplayLog_triggered()\0aItem\0"
     "on_overviewAccountList_itemDoubleClicked(QListWidgetItem*)\0"
+    "aChecked\0on_overviewShowClosedAccountsCheckBox_clicked(bool)\0"
     "on_transactionSelectButton_clicked()\0"
     "on_reportSelectButton_clicked()\0"
     "on_transactionDateThisYearButton_clicked()\0"
@@ -95,7 +97,7 @@ static const char qt_meta_stringdata_TransactionManager[] = {
     "on_reportDate5YearButton_clicked()\0"
     "on_reportDate10YearButton_clicked()\0"
     "on_reportDateAllTimeButton_clicked()\0"
-    "on_reportAllButton_clicked()\0aChecked\0"
+    "on_reportAllButton_clicked()\0"
     "on_transactionAllAccountsCheckBox_clicked(bool)\0"
     "on_transactionOpenAccountsCheckBox_clicked(bool)\0"
     "on_transactionAllCategoriesCheckBox_clicked(bool)\0"
@@ -128,34 +130,35 @@ void TransactionManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         case 6: _t->on_actionDisplayFile_triggered(); break;
         case 7: _t->on_actionDisplayLog_triggered(); break;
         case 8: _t->on_overviewAccountList_itemDoubleClicked((*reinterpret_cast< QListWidgetItem*(*)>(_a[1]))); break;
-        case 9: _t->on_transactionSelectButton_clicked(); break;
-        case 10: _t->on_reportSelectButton_clicked(); break;
-        case 11: _t->on_transactionDateThisYearButton_clicked(); break;
-        case 12: _t->on_transactionDate1YearButton_clicked(); break;
-        case 13: _t->on_transactionDate5YearButton_clicked(); break;
-        case 14: _t->on_transactionDate10YearButton_clicked(); break;
-        case 15: _t->on_transactionDateAllTimeButton_clicked(); break;
-        case 16: _t->on_transactionAllButton_clicked(); break;
-        case 17: _t->on_reportDateThisYearButton_clicked(); break;
-        case 18: _t->on_reportDate1YearButton_clicked(); break;
-        case 19: _t->on_reportDate5YearButton_clicked(); break;
-        case 20: _t->on_reportDate10YearButton_clicked(); break;
-        case 21: _t->on_reportDateAllTimeButton_clicked(); break;
-        case 22: _t->on_reportAllButton_clicked(); break;
-        case 23: _t->on_transactionAllAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 24: _t->on_transactionOpenAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 25: _t->on_transactionAllCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 26: _t->on_transactionIncomeCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 27: _t->on_transactionExpenseCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 28: _t->on_transactionAllLabelsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 29: _t->on_reportAllAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 30: _t->on_reportOpenAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 31: _t->on_reportAllCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 32: _t->on_reportIncomeCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 33: _t->on_reportExpenseCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 34: _t->on_reportAllLabelsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 35: _t->handleShowTransactionByFilter((*reinterpret_cast< const Transaction::FilterType(*)>(_a[1]))); break;
-        case 36: _t->handleShowReportByDate((*reinterpret_cast< QDate(*)>(_a[1])),(*reinterpret_cast< QDate(*)>(_a[2]))); break;
+        case 9: _t->on_overviewShowClosedAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 10: _t->on_transactionSelectButton_clicked(); break;
+        case 11: _t->on_reportSelectButton_clicked(); break;
+        case 12: _t->on_transactionDateThisYearButton_clicked(); break;
+        case 13: _t->on_transactionDate1YearButton_clicked(); break;
+        case 14: _t->on_transactionDate5YearButton_clicked(); break;
+        case 15: _t->on_transactionDate10YearButton_clicked(); break;
+        case 16: _t->on_transactionDateAllTimeButton_clicked(); break;
+        case 17: _t->on_transactionAllButton_clicked(); break;
+        case 18: _t->on_reportDateThisYearButton_clicked(); break;
+        case 19: _t->on_reportDate1YearButton_clicked(); break;
+        case 20: _t->on_reportDate5YearButton_clicked(); break;
+        case 21: _t->on_reportDate10YearButton_clicked(); break;
+        case 22: _t->on_reportDateAllTimeButton_clicked(); break;
+        case 23: _t->on_reportAllButton_clicked(); break;
+        case 24: _t->on_transactionAllAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 25: _t->on_transactionOpenAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 26: _t->on_transactionAllCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 27: _t->on_transactionIncomeCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 28: _t->on_transactionExpenseCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 29: _t->on_transactionAllLabelsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 30: _t->on_reportAllAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 31: _t->on_reportOpenAccountsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 32: _t->on_reportAllCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 33: _t->on_reportIncomeCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 34: _t->on_reportExpenseCategoriesCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 35: _t->on_reportAllLabelsCheckBox_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 36: _t->handleShowTransactionByFilter((*reinterpret_cast< const Transaction::FilterType(*)>(_a[1]))); break;
+        case 37: _t->handleShowReportByDate((*reinterpret_cast< QDate(*)>(_a[1])),(*reinterpret_cast< QDate(*)>(_a[2]))); break;
         default: ;
         }
     }
@@ -193,9 +196,9 @@ int TransactionManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 37)
+        if (_id < 38)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 37;
+        _id -= 38;
     }
     return _id;
 }

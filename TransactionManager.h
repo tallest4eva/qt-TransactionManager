@@ -87,6 +87,7 @@ private slots:
     void on_actionDisplayLog_triggered();
 
     void on_overviewAccountList_itemDoubleClicked( QListWidgetItem* aItem );
+    void on_overviewShowClosedAccountsCheckBox_clicked( bool aChecked );
     void on_transactionSelectButton_clicked();
     void on_reportSelectButton_clicked();
     void on_transactionDateThisYearButton_clicked();
@@ -125,6 +126,7 @@ private:
     void updateUI();
     void clearData();
     void updateOverviewTab();
+    void updateAccountsList();
     void initTransactionsTab();
     void updateTransactionsTab();
     void initReportsTab();

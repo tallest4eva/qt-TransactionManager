@@ -22,6 +22,7 @@ public:
     explicit OverviewAccountListItem(QWidget* parent = 0);
     ~OverviewAccountListItem();
     void setAccount( Account* aAccount );
+    Account* getAccount() const { return mAccount; }
 
 private:
     // Functions

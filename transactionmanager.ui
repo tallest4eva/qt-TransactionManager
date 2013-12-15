@@ -234,6 +234,36 @@
                </property>
               </widget>
              </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="overviewShowClosedAccountsLabel">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Show Closed Accounts:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QCheckBox" name="overviewShowClosedAccountsCheckBox">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -420,8 +450,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>282</width>
-                <height>370</height>
+                <width>250</width>
+                <height>255</height>
                </rect>
               </property>
               <attribute name="label">
@@ -780,8 +810,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>282</width>
-                <height>370</height>
+                <width>250</width>
+                <height>255</height>
                </rect>
               </property>
               <attribute name="label">

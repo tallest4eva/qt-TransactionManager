@@ -322,7 +322,17 @@ void Parser::parseConfigFile
                     if( !childElement.attribute("labels").isEmpty() ){              config.mEntryList[ENTRY_TRANS_LABELS] = childElement.attribute("labels").toInt(); }
                 }
 
-                sPresetConfigList.push_back( config );
+                // Update default config using config file
+                if( config.mName == "Default Config" )
+                {
+                    sPresetConfigList[ DEFAULT_CONFIG_IDX ] = config;
+                    sPresetConfigList[ CUSTOM_CONFIG_IDX ] = config;
+                    sPresetConfigList[ CUSTOM_CONFIG_IDX ].mName = "Custom Config";
+                }
+                else
+                {
+                    sPresetConfigList.push_back( config );
+                }
             } // if element.tagName() == TAG_CONFIG
 
             else if( element.tagName() == TAG_CATEGORY )

@@ -38,7 +38,7 @@ QDate TransactionManager::sLastTransactionDate = TransactionManager::cDefaultEnd
 QVector<bool> TransactionManager::sCategoriesEnabledList( Category::CATEGORY_TYPE_CNT, false );
 QVector<bool> TransactionManager::sLabelsEnabledList( Category::LABEL_CNT, false );
 
-static const QString sVersionStr = "1.05";
+static const QString sVersionStr = "1.06";
 static const QString sToolboxAccountsStr = "Accounts";
 static const QString sToolboxCategoriesStr = "Categories";
 static const QString sToolboxLabelsStr = "Labels";
@@ -325,18 +325,28 @@ void TransactionManager::on_actionDisplayLog_triggered()
 void TransactionManager::on_overviewAccountList_itemDoubleClicked( QListWidgetItem* aItem )
 {
     // Show Transactions with selected account
-    int row = ui->overviewAccountList->row( aItem );
-    if( row >= 0 && row < sAccountList.size() )
+    OverviewAccountListItem* item = (OverviewAccountListItem*)ui->overviewAccountList->itemWidget( aItem );
+    if( item )
     {
         Transaction::FilterType filter = Transaction::FilterType();
         filter.mAllAccounts = false;
         filter.mShowAccounts = true;
-        filter.mAccountList.push_back( sAccountList[row] );
+        filter.mAccountList.push_back( item->getAccount() );
         filter.mStartDate = sFirstTransactionDate;
         filter.mEndDate = sLastTransactionDate;
         handleShowTransactionByFilter( filter );
     }
 } // TransactionManager::on_overviewAccountList_itemDoubleClicked()
+
+//----------------------------------------------------------------------------
+// item show hidden check box clicked
+//----------------------------------------------------------------------------
+void TransactionManager::on_overviewShowClosedAccountsCheckBox_clicked( bool aChecked )
+{
+    // Update account list
+    Q_UNUSED( aChecked );
+    updateAccountsList();
+} // TransactionManager::on_overviewShowClosedAccountsCheckBox_clicked()
 
 //----------------------------------------------------------------------------
 // updateUI
@@ -390,19 +400,32 @@ void TransactionManager::updateOverviewTab()
         ui->overviewLastDateValue->setText("--");
     }
 
+    // Update accounts list
+    updateAccountsList();
+} // TransactionManager::updateOverviewTab()
+
+//----------------------------------------------------------------------------
+// update Accounts List
+//----------------------------------------------------------------------------
+void TransactionManager::updateAccountsList()
+{
     // Update overview account list
     ui->overviewAccountList->clear();
+    bool showClosed = ui->overviewShowClosedAccountsCheckBox->isChecked();
     for( int i = 0; i < sAccountList.size(); i++ )
     {
-        QListWidgetItem* listItem = new QListWidgetItem();
-        listItem->setSizeHint( QSize(0,70) );
-        ui->overviewAccountList->addItem( listItem );
+        if( !sAccountList[i]->isClosed() || showClosed )
+        {
+            QListWidgetItem* listItem = new QListWidgetItem();
+            listItem->setSizeHint( QSize(0,70) );
+            ui->overviewAccountList->addItem( listItem );
 
-        OverviewAccountListItem* item = new OverviewAccountListItem();
-        item->setAccount( sAccountList[i] );
-        ui->overviewAccountList->setItemWidget( listItem, item );
+            OverviewAccountListItem* item = new OverviewAccountListItem();
+            item->setAccount( sAccountList[i] );
+            ui->overviewAccountList->setItemWidget( listItem, item );
+        }
     }
-} // TransactionManager::updateOverviewTab()
+} // TransactionManager::updateAccountsList()
 
 //----------------------------------------------------------------------------
 // Init Transactions Tab
