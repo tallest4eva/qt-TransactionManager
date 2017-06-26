@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: FileConfigDialog.h
@@ -19,7 +19,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 
-#include "Parser.h"
+#include "Parser.hpp"
 
 class FileConfigDialog : public QDialog
 {
@@ -35,7 +35,7 @@ public:
 
         BUTTON_CNT
     };
-    
+
     // Functions
     explicit FileConfigDialog(QWidget* parent = 0);
     ~FileConfigDialog();
@@ -49,7 +49,7 @@ private slots:
 private:
     // Functions
     void updateData();
-    
+
     // Variables
     int mSelected;
     Parser::ConfigType mConfig;
@@ -78,7 +78,7 @@ private:
     QComboBox mTransactionBalance;
     QComboBox mTransactionCategory;
     QComboBox mTransactionLabels;
-    
+
     QPushButton mCancelButton;
     QPushButton mDoneButton;
 };

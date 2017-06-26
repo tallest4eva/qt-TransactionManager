@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Logger.h

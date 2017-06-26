@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Category.h
@@ -15,222 +15,99 @@ class Category
 {
 public:
     // Types
-    enum CategoryIdType
+    typedef int CategoryIdxType;
+
+    enum ParentCategoryType
     {
         AUTO_AND_TRANSPORT,
-        AUTO_INSURANCE,
-        AUTO_PAYMENT,
-        AUTO_TAXES_AND_FEES,
-        CAR_WASH_DETAIL,
-        GAS_AND_FUEL,
-        PARKING,
-        PUBLIC_TRANSPORTATION,
-        SERVICE_AND_PARTS,
-        
         BILLS_AND_UTILITIES,
-        HOME_PHONE,
-        INTERNET,
-        MOBILE_PHONE,
-        PHONE_CARD,
-        TELEVISION,
-        UTILITIES,
-        
         BUSINESS_SERVICES,
-        ADVERTISING,
-        LEGAL,
-        OFFICE_SUPPLIES,
-        PRINTING,
-        SHIPPING,
-        
         EDUCATION,
-        BOOKS_AND_SUPPLIES,
-        STUDENT_LOAN,
-        TUITION,
-        
         ENTERTAINMENT,
-        AMUSEMENT,
-        ARTS,
-        MOVIES_AND_DVDS,
-        MUSIC,
-        NEWSPAPERS_AND_MAGAZINES,
-        NIGHT_CLUBS_AND_BARS,
-        
         FEES_AND_CHARGES,
-        ATM_FEE,
-        BANK_FEE,
-        FINANCE_CHARGE,
-        FINES,
-        LATE_FEE,
-        SERVICE_FEE,
-        TRADE_COMMISSIONS,
-        
         FINANCIAL,
-        FINANCIAL_ADVISOR,
-        LIFE_INSURANCE,
-        TAX_PREPARATION,
-        
         FOOD_AND_DINING,
-        ALCOHOL_AND_BARS,
-        COFFEE_SHOPS,
-        FAST_FOOD,
-        GROCERIES,
-        RESTAURANTS,
-        SNACKS_AND_DRINKS,
-        
         GIFTS_AND_DONATIONS,
-        CHARITY,
-        FAMILY_LOAN,
-        GIFT,
-        PERSONAL_LOAN,
-        
         HEALTH_AND_FITNESS,
-        DENTIST,
-        DOCTOR,
-        EYECARE,
-        GYM,
-        HEALTH_INSURANCE,
-        PHARMACY,
-        SPORTS,
-        
         HOME,
-        FURNISHINGS,
-        HOME_IMPROVEMENT,
-        HOME_INSURANCE,
-        HOME_SERVICES,
-        HOME_SUPPLIES,
-        LAWN_AND_GARDEN,
-        MORTGAGE_AND_RENT,
-        
         INCOME,
-        BONUS,
-        INTEREST_INCOME,
-        MISC_INCOME,
-        PAYCHECK,
-        REIMBURSEMENT,
-        RENTAL_INCOME,
-        RETURNED_PURCHASE,
-        REWARDS_INCOME,
-        
         INVESTMENTS,
-        BUY,
-        DEPOSIT,
-        DIVIDEND_AND_CAP_GAINS,
-        RETIREMENT_DEPOSIT,
-        RETIREMENT_DIVIDENDS,
-        SELL,
-        STOCK_DIVIDENDS,
-        STOCK_PURCHASE,
-        STOCK_SALE,
-        WITHDRAWAL,
-        
         KIDS,
-        ALLOWANCE,
-        BABY_SUPPLIES,
-        BABYSITTER_AND_DAYCARE,
-        CHILD_SUPPORT,
-        KIDS_ACTIVITIES,
-        TOYS,
-        
         LOANS,
-        LOAN_FEES_AND_CHARGES,
-        LOAN_INSURANCE,
-        LOAN_INTEREST,
-        LOAN_PAYMENT,
-        LOAN_PRINCIPAL,
-        
+        MISC_EXPENSES,
         PERSONAL_CARE,
-        HAIR,
-        LAUNDRY,
-        SPA_AND_MASSAGE,
-        
         PETS,
-        PET_FOOD_AND_SUPPLIES,
-        PET_GROOMING,
-        VETERINARY,
-        
         SHOPPING,
-        BOOKS,
-        CLOTHING,
-        ELECTRONICS_AND_SOFTWARE,
-        GENERAL_MERCHANDISE,
-        HOBBIES,
-        SPORTING_GOODS,
-        
         TAXES,
-        FEDERAL_TAX,
-        LOCAL_TAX,
-        PROPERTY_TAX,
-        SALES_TAX,
-        STATE_TAX,
-        TAX_REFUND,
-        
         TRANSFER,
-        CREDIT_CARD_PAYMENT,
-        FAMILY_TRANSFER,
-        TRANSFER_FOR_CASH_SPENDING,
-        
         TRAVEL,
-        AIR_TRAVEL,
-        HOTEL,
-        MOVING_EXPENSES,
-        RENTAL_CAR_AND_TAXI,
-        VACATION,
-        
         UNCATEGORIZED,
-        ACCOUNT_BALANCE,
-        CASH_AND_ATM,
-        CHECK,
-        FAMILY_EXPENSE,
-        FAMILY_INCOME,
-        MISC_EXPENSE,
-
         EXCLUDE,
-        
-        CATEGORY_TYPE_CNT
+
+        PARENT_CATEGORY_TYPE_CNT
     };
 
-    struct CategoryType
+    enum TransactionType
     {
-        CategoryIdType parentCategory;
-        QString text;
-        // Comparators
-        bool operator< ( const CategoryType& aType ) const { return( parentCategory < aType.parentCategory && text < aType.text ); }
-        bool operator> ( const CategoryType& aType ) const { return( parentCategory > aType.parentCategory && text > aType.text ); }
+        TRANSACTION_TYPE_EXPENSE,
+        TRANSACTION_TYPE_INCOME,
+        TRANSACTION_TYPE_TRANSFER,
+        TRANSACTION_TYPE_BALANCE
     };
 
-    enum LabelIdType
-    {
-        LABEL_NONE,
-        LABEL_REVIEWED,
-        LABEL_MANUAL,
-        LABEL_SHARED,
-	    LABEL_BUSINESS,
-	    LABEL_FAMILY,
-        LABEL_PROJECTED,
-
-        LABEL_CNT
-    };
+    typedef int LabelIdType;
+	static const LabelIdType LABEL_INVALID;
+	static const LabelIdType LABEL_NONE;
 
     // Functions
+
+    // Constructor
+    Category
+        (
+        ParentCategoryType aParentCategory = UNCATEGORIZED,
+        const QString& aText = QString(),
+        bool aIsParent = false,
+        TransactionType aType = TRANSACTION_TYPE_EXPENSE
+        );
+
+    static void initCategoryList();
     static void addCategory
         (
-        const CategoryType& aCategory
+        const Category& aCategory
         );
     static int getCategoryCount();
-    static CategoryIdType getCategoryId
+    static CategoryIdxType getCategoryIndex
         (
         const QString& aCategory
         );
-    static CategoryIdType getParentCategoryId
+    static ParentCategoryType getParentCategoryId
         (
-        CategoryIdType aCategoryId
+        const QString& aParentCategoryStr
+        );
+    static ParentCategoryType getParentCategoryId
+        (
+        CategoryIdxType aCategoryIdx
+        );
+    static QString getParentCategoryText
+        (
+        ParentCategoryType aParentCategoryIdx
         );
     static QString getCategoryText
         (
-        CategoryIdType aCategoryId,
+        CategoryIdxType aCategoryIdx,
         bool aFullText = false
         );
+    static TransactionType getCategoryTransactionType
+        (
+        CategoryIdxType aCategoryIdx
+        );
+    static void orderCategoryList();
 
+    // Label functions
+    static void addLabel
+        (
+        const QString& aLabel
+        );
     static LabelIdType getLabelId
         (
         const QString& aLabel
@@ -239,12 +116,22 @@ public:
         (
         LabelIdType aLabelId
         );
-    
+    static int getLabelCount();
+    static void orderLabelList();
+
+    // Comparators
+    bool operator< ( const Category& aCategory ) const;
+    bool operator> ( const Category& aCategory ) const;
+
+    // Variables
+    static CategoryIdxType sUnmatchedCategoryIdx;
+
+    ParentCategoryType parentCategory;
+    QString text;
+    TransactionType type;
+    bool mIsParent;
+
 private:
-    // Variable
-    static const CategoryType cCategoryList[];
-    static QList<CategoryType> sCategoryList;
-    static const char* cLabelList[];
 };
 
 #endif // CATEGORY_H

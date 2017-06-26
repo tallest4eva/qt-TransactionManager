@@ -1,49 +1,24 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: BarGraph.h
 //******************************************************************************
 
-#ifndef BarGraph_H
-#define BarGraph_H
+#ifndef BarGraph_HPP
+#define BarGraph_HPP
 
 #include <QDate>
-#include <QLabel>
 #include <QList>
 #include <QString>
-#include <QTimer>
 #include <QWidget>
 #include <QRubberBand>
 
-#include <qwt_plot.h>
-#include <qwt_plot_grid.h>
-#include <qwt_plot_histogram.h>
-#include <qwt_plot_curve.h>
-#include <qwt_scale_draw.h>
+#include <qcustomplot.hpp>
 
-#include "Account.h"
-#include "Transaction.h"
-
-class DisplayLabel : public QLabel
-{
-    Q_OBJECT
-public:
-    DisplayLabel::DisplayLabel();
-    virtual void mouseDoubleClickEvent( QMouseEvent* aEvent );
-    virtual void mousePressEvent( QMouseEvent* aEvent );
-    QDate getDate() const { return mDate; }
-    void  setDate( const QDate& aDate ){ mDate = aDate; }
-    QString getString() const { return mString; }
-    void  setString( const QString& aString ){ mString = aString; }
-signals:
-    void clicked();
-private:
-    QTimer mPressTimer;
-    QTimer mReleaseTimer;
-    QDate mDate;
-    QString mString;
-};
+#include "Account.hpp"
+#include "DisplayLabel.hpp"
+#include "Transaction.hpp"
 
 class BarGraph : public QWidget
 {
@@ -55,24 +30,39 @@ public:
     {
         BAR_NET_INCOME,
         BAR_NET_WORTH,
+        BAR_ACCOUNT_BALANCE,
+    };
+    struct AccountInfoType
+    {
+        QString name;
+        QColor color;
+        float balance;
+        bool operator< ( const AccountInfoType& aAccount ) const { return( balance > aAccount.balance ); }
+    };
+    struct BarDataType
+    {
+        bool set;
+        float expense;
+        float income;
+        float transfers;
+        float netWorth;
+        QDate startDate;
+        QDate endDate;
+        QList<AccountInfoType> accountList;
+        BarDataType(): set(false), expense(0.0), income(0.0), transfers(0.0), netWorth(0.0), startDate(2000,1,1), endDate(2000,1,1){}
     };
 
-    // Variable
-    static const QDate REFERENCE_DATE;
-
     // Functions
-    BarGraph(QWidget *parent = 0);
+    BarGraph( BarChartType aGraphMode, QWidget* aParent = 0 );
 
     ~BarGraph();
-
-    virtual void mousePressEvent( QMouseEvent* aEvent );
-    virtual void mouseMoveEvent( QMouseEvent* aEvent );
-    virtual void mouseReleaseEvent( QMouseEvent * aEvent );
 
     QSize minimumSizeHint() const { return QSize(50, 50); }
     QSize sizeHint() const { return QSize(100, 100); }
 
-    void setGraphMode( BarChartType aGraphMode );
+    void setMonthInterval( int aMonthInterval );
+    void setShowNetIncome( bool aShowNetIncome, bool aUpdate = true );
+    void setShowTransfers( bool aShowTransfers, bool aUpdate = true );
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void clear();
 
@@ -84,22 +74,31 @@ signals:
 private slots:
     void hideDisplayLabel();
     void handleDisplayClicked();
+    void handlePlottableMousePressEvent( QMouseEvent* aEvent );
+    void handlePlottableMouseMoveEvent( QMouseEvent* aEvent );
+    void handlePlottableMouseReleaseEvent( QMouseEvent * aEvent );
+
+private:
+    void updateTitleText();
+    void updateChart();
 
 private:
     // Date graph widget
     BarChartType mGraphMode;
-    QwtPlot mPlot;
-    QwtPlotGrid* mGrid;
-    QwtPlotCurve* mIncomeCurve;
-    QwtPlotHistogram* mPositiveHistogram;
-    QwtPlotHistogram* mNegativeHistogram;
+    QCustomPlot mPlot;
+    QCPBars* mPositiveHistogram;
+    QCPBars* mNegativeHistogram;
     DisplayLabel mDisplayLabel;
     Transaction::FilterType mFilter;
-    QPoint mMousePosition;
+    int mStartDragPosition;
     QRubberBand* mRubberBand;
     bool mDrag;
     bool mDataSet;
+    int mMonthInterval;
+    QList<BarDataType> mBarDataList;
+    bool mShowNetIncome;
+    bool mShowTransfers;
 
 };
 
-#endif // BarGraph_H
+#endif // BarGraph_HPP

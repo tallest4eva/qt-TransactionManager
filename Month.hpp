@@ -1,19 +1,19 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Month.h
 //******************************************************************************
 
-#ifndef Month_H
-#define Month_H
+#ifndef Month_HPP
+#define Month_HPP
 
 #include <QDate>
 #include <QList>
 #include <QString>
 
-#include "Account.h"
-#include "Transaction.h"
+#include "Account.hpp"
+#include "Transaction.hpp"
 
 class Month
 {
@@ -23,7 +23,13 @@ public:
     {
         Account* mAccount;
         float mNetWorth;
-        NetWorthType(): mAccount(NULL), mNetWorth(0.0){} 
+        NetWorthType(): mAccount(NULL), mNetWorth(0.0){}
+    };
+    struct DateIntervalType
+    {
+        QDate startDate;
+        QDate endDate;
+        DateIntervalType(): startDate(2000,1,1), endDate(2000,1,1){}
     };
 
     // Functions
@@ -31,7 +37,7 @@ public:
     virtual ~Month();
 
     QDate getDate() const { return mDate; }
-    void  setDate( QDate aDate ){ mDate.setDate( aDate.year(), aDate.month(), 1 ); mDateString = mDate.toString("MMM dd yyyy"); }
+    void  setDate( const QDate& aDate ){ mDate.setDate( aDate.year(), aDate.month(), 1 ); mDateString = mDate.toString("MMM dd yyyy"); }
 
     float getIncome() const { return mIncome; }
     float getIncome( const Transaction::FilterType& aFilter ) const;
@@ -39,11 +45,14 @@ public:
     float getExpense() const { return mExpense; }
     float getExpense( const Transaction::FilterType& aFilter ) const;
     void  setExpense( float aExpense ){ mExpense = aExpense; }
+    float getTransfers() const { return mTransfers; }
+    float getTransfers( const Transaction::FilterType& aFilter ) const;
+    void  setTransfers( float aTransfers ){ mTransfers = aTransfers; }
     float getNetWorth() const;
     float getNetWorth( const Transaction::FilterType& aFilter ) const;
-    float getNetWorth( Account* aAccount, bool* aExist ) const;
+    float getNetWorth( Account* aAccount, bool* aExist = NULL ) const;
     void  addTransaction( Transaction* aTransaction );
-    QList<Transaction*> getTransactionList(){ return mTransactionList; }
+    const QList<Transaction*>& getTransactionList() const { return mTransactionList; }
     void  updateData( Month* aPreviousMonth = NULL );
 
     // Comparators
@@ -60,8 +69,9 @@ private:
     QString mDateString;
     float mIncome;
     float mExpense;
+    float mTransfers;
     QList<Transaction*> mTransactionList;
     QVector<NetWorthType> mNetWorthList;
 };
 
-#endif // Month_H
+#endif // Month_HPP

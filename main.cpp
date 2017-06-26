@@ -1,18 +1,18 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: main.cpp
 //******************************************************************************
 
-#include "transactionmanager.h"
+#include "TransactionManager.hpp"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    TransactionManager w;
-    w.show();
-    
-    return a.exec();
+    QApplication app(argc, argv);
+    TransactionManager mgr;
+    mgr.show();
+
+    return app.exec();
 }

@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: DisplayDialog.cpp
@@ -7,7 +7,7 @@
 
 #include <QGridLayout>
 
-#include "DisplayDialog.h"
+#include "DisplayDialog.hpp"
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -56,7 +56,8 @@ void DisplayDialog::handleDoneButton()
 //----------------------------------------------------------------------------
 void DisplayDialog::setDisplay
     (
-    const QStringList& aStringList
+    const QStringList& aStringList,
+    const QString& aEmptyDisplayString
     )
 {
     if( aStringList.count() > 0 )
@@ -65,6 +66,6 @@ void DisplayDialog::setDisplay
     }
     else
     {
-        mLabel.setText( "No content to display" );
+        mLabel.setText( aEmptyDisplayString );
     }
 } // DisplayDialog::setDisplay

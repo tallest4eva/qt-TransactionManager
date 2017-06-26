@@ -1,12 +1,12 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Month.cpp
 //******************************************************************************
 
-#include "Month.h"
-#include "TransactionManager.h"
+#include "Month.hpp"
+#include "TransactionManager.hpp"
 
 // Static functions
 static bool monthSortLessThan( Month* arg1, Month* &arg2 )
@@ -20,6 +20,7 @@ Month::Month() :
       mDate( 2000, 1, 1 )
     , mIncome( 0.0 )
     , mExpense( 0.0 )
+    , mTransfers( 0.0 )
 {
 } // Month::Month
 
@@ -59,7 +60,7 @@ void Month::addTransaction( Transaction* aTransaction )
 //----------------------------------------------------------------------------
 float Month::getIncome( const Transaction::FilterType& aFilter ) const
 {
-    if( aFilter.mAllAccounts && aFilter.mAllCategories && aFilter.mAllLabels && aFilter.mAllDates )
+    if( aFilter.allSelected() )
     {
         return mIncome;
     }
@@ -67,7 +68,7 @@ float Month::getIncome( const Transaction::FilterType& aFilter ) const
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         Transaction* transaction = mTransactionList[i];
-        if( transaction->getTransactionType() == Transaction::INCOME && transaction->matchTransaction( aFilter ) )
+        if( transaction->getTransactionType() == Category::TRANSACTION_TYPE_INCOME && transaction->matchTransaction( aFilter ) )
         {
             income += transaction->getAmount();
         }
@@ -76,11 +77,11 @@ float Month::getIncome( const Transaction::FilterType& aFilter ) const
 } // Month::getIncome()
 
 //----------------------------------------------------------------------------
-//! getExpense
+//! Get Expense
 //----------------------------------------------------------------------------
 float Month::getExpense( const Transaction::FilterType& aFilter ) const
 {
-    if( aFilter.mAllAccounts && aFilter.mAllCategories && aFilter.mAllLabels && aFilter.mAllDates )
+    if( aFilter.allSelected() )
     {
         return mExpense;
     }
@@ -88,13 +89,34 @@ float Month::getExpense( const Transaction::FilterType& aFilter ) const
     for( int i = 0; i < mTransactionList.size(); i++ )
     {
         Transaction* transaction = mTransactionList[i];
-        if( transaction->getTransactionType() == Transaction::EXPENSE && transaction->matchTransaction( aFilter ) )
+        if( transaction->getTransactionType() == Category::TRANSACTION_TYPE_EXPENSE && transaction->matchTransaction( aFilter ) )
         {
             expense += transaction->getAmount();
         }
     }
     return expense;
 } // Month::getExpense()
+
+//----------------------------------------------------------------------------
+//! Get Transfer
+//----------------------------------------------------------------------------
+float Month::getTransfers( const Transaction::FilterType& aFilter ) const
+{
+    if( aFilter.allSelected() )
+    {
+        return mTransfers;
+    }
+    float transfers = 0.0;
+    for( int i = 0; i < mTransactionList.size(); i++ )
+    {
+        Transaction* transaction = mTransactionList[i];
+        if( transaction->getTransactionType() == Category::TRANSACTION_TYPE_TRANSFER && transaction->matchTransaction( aFilter ) )
+        {
+            transfers += transaction->getAmount();
+        }
+    }
+    return transfers;
+} // Month::getTransfers()
 
 //----------------------------------------------------------------------------
 //! getNetWorth
@@ -114,24 +136,26 @@ float Month::getNetWorth() const
 //----------------------------------------------------------------------------
 float Month::getNetWorth( const Transaction::FilterType& aFilter ) const
 {
-    if( aFilter.mAllAccounts )
+    if( aFilter.allAccountsSelected() )
     {
         return getNetWorth();
     }
     float netWorth = 0.0;
-    for( int i = 0; i < aFilter.mAccountList.size(); i++ )
+    for( int i = 0; i < aFilter.mAccountList.size() && i < Account::sAccountList.size(); i++ )
     {
-        int index = Account::getAccountIndex( aFilter.mAccountList[i] );
-        if( index >= 0 && mNetWorthList[index].mAccount && aFilter.mAccountList[i] == mNetWorthList[index].mAccount  )
+        if( aFilter.mAccountList[i] )
         {
-            netWorth += mNetWorthList[index].mNetWorth;
+            if( mNetWorthList[i].mAccount && Account::sAccountList[i] == mNetWorthList[i].mAccount )
+            {
+                netWorth += mNetWorthList[i].mNetWorth;
+            }
         }
     }
     return netWorth;
 } // Month::getNetWorth()
- 
+
 //----------------------------------------------------------------------------
-//! getNetWorth
+//! Get Account Balance on this month
 //----------------------------------------------------------------------------
 float Month::getNetWorth( Account* aAccount, bool* aExist ) const
 {
@@ -152,7 +176,7 @@ float Month::getNetWorth( Account* aAccount, bool* aExist ) const
 void Month::updateData( Month* aPreviousMonth )
 {
     mNetWorthList.clear();
-    mNetWorthList.fill( NetWorthType(), TransactionManager::sAccountList.size() );
+    mNetWorthList.fill( NetWorthType(), Account::sAccountList.size() );
     if( aPreviousMonth )
     {
         for( int i = 0; i < mNetWorthList.size(); i++ )
@@ -181,14 +205,20 @@ void Month::updateData( Month* aPreviousMonth )
             }
 
             // Skip excluded transfer categories
-            Transaction::TransactionType transType = transaction->getTransactionType();
+            Category::TransactionType transType = transaction->getTransactionType();
             switch( transType )
             {
-            case Transaction::INCOME:
+            case Category::TRANSACTION_TYPE_INCOME:
                 mIncome += transaction->getAmount();
                 break;
-            case Transaction::EXPENSE:
+            case Category::TRANSACTION_TYPE_EXPENSE:
                 mExpense += transaction->getAmount();
+                break;
+            case Category::TRANSACTION_TYPE_TRANSFER:
+                mTransfers += transaction->getAmount();
+                break;
+            default:
+                // do nothing
                 break;
             }
         }

@@ -1,19 +1,20 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Account.cpp
 //******************************************************************************
 
-#include "Account.h"
-#include "Transaction.h"
-#include "TransactionManager.h"
+#include <QDebug>
 
-// Static functions
-static bool accountSortLessThan( Account* arg1, Account* &arg2 )
-{
-     return arg1->getName() < arg2->getName();
-}
+#include "Account.hpp"
+#include "Transaction.hpp"
+#include "TransactionManager.hpp"
+
+// Static variables
+QList<Account*> Account::sAccountList;
+QList<Account*> Account::sAccountOpenList;
+
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
@@ -35,6 +36,30 @@ Account::Account() :
 Account::~Account()
 {
 } // Account::~Account()
+
+//----------------------------------------------------------------------------
+//! Account Sort By Name Less Than
+//----------------------------------------------------------------------------
+bool Account::accountSortByNameLessThan( Account* arg1, Account* &arg2 )
+{
+    return arg1->getName() < arg2->getName();
+}
+
+//----------------------------------------------------------------------------
+//! Account Sort By Balance Less Than
+//----------------------------------------------------------------------------
+bool Account::accountSortByBalanceLessThan( Account* arg1, Account* &arg2 )
+{
+    return arg1->getBalance() < arg2->getBalance();
+}
+
+//----------------------------------------------------------------------------
+//! Account Sort By Open Date Less Than
+//----------------------------------------------------------------------------
+bool Account::accountSortByOpenDateLessThan( Account* arg1, Account* &arg2 )
+{
+    return arg1->getOpenDate() < arg2->getOpenDate();
+}
 
 //----------------------------------------------------------------------------
 //! operator ==
@@ -99,9 +124,10 @@ void Account::updateData()
         mOpenDate = mTransactionList[0]->getTransactionDate();
         Transaction* last = mTransactionList[mTransactionList.size()-1];
         mBalance = last->getCurrentBalance();
+        mLastDate = last->getTransactionDate();;
         if( mStatus == STATUS_CLOSED && last->getDescription() == "Account Closed" )
         {
-            mCloseDate = last->getTransactionDate();
+            mCloseDate = mLastDate;
         }
      }
 } // Account::updateData()
@@ -109,7 +135,7 @@ void Account::updateData()
 //----------------------------------------------------------------------------
 //! Checks if name matches this account
 //----------------------------------------------------------------------------
-bool Account::isAccountMatch( const QString& aAccountName, bool aAllowAltNames ) 
+bool Account::isAccountMatch( const QString& aAccountName, bool aAllowAltNames )
 {
     bool found = false;
     if( mName == aAccountName )
@@ -125,7 +151,7 @@ bool Account::isAccountMatch( const QString& aAccountName, bool aAllowAltNames )
                 found = true;
                 break;
             }
-        } 
+        }
     }
     return found;
 } // Account::isAccountMatch()
@@ -157,18 +183,18 @@ QString Account::getInfo()
 //----------------------------------------------------------------------------
 void Account::updateAccountList()
 {
-    qSort( TransactionManager::sAccountList.begin(), TransactionManager::sAccountList.end(), accountSortLessThan );
-    for( int i = 0; i < TransactionManager::sAccountList.size(); i++ )
+    qSort( sAccountList.begin(), sAccountList.end(), accountSortByNameLessThan );
+    for( int i = 0; i < sAccountList.size(); i++ )
     {
-        TransactionManager::sAccountList[i]->updateData();
-        TransactionManager::sAccountList[i]->setNumber( i );
+        sAccountList[i]->updateData();
+        sAccountList[i]->setNumber( i );
     }
 } // Account::updateAccountList
 
 //----------------------------------------------------------------------------
 // getAccountIndex
 //----------------------------------------------------------------------------
-int Account::getAccountIndex( Account* aAccount )
+int Account::getAccountIndex( const Account* aAccount )
 {
     int index = -1;
     if( aAccount )
@@ -184,11 +210,11 @@ int Account::getAccountIndex( Account* aAccount )
 Account* Account::getAccount( const QString& aAccountName, bool aAllowAltNames )
 {
     Account* account = NULL;
-    for( int i = 0; i < TransactionManager::sAccountList.size(); i++ )
+    for( int i = 0; i < sAccountList.size(); i++ )
     {
-        if( TransactionManager::sAccountList[i]->isAccountMatch( aAccountName, aAllowAltNames ) )
+        if( sAccountList[i]->isAccountMatch( aAccountName, aAllowAltNames ) )
         {
-            account = TransactionManager::sAccountList[i];
+            account = sAccountList[i];
             break;
         }
     }
@@ -206,12 +232,12 @@ bool Account::addToAccount
     )
 {
     bool found = false;
-    for( int i = TransactionManager::sAccountList.size()-1; i >= 0; --i )
+    for( int i = sAccountList.size()-1; i >= 0; --i )
     {
-        if( TransactionManager::sAccountList[i]->isAccountMatch( aAccountName, true ) )
+        if( sAccountList[i]->isAccountMatch( aAccountName, true ) )
         {
-            aTransaction->setAccount( TransactionManager::sAccountList[i] );
-            TransactionManager::sAccountList[i]->addTransaction( aTransaction );
+            aTransaction->setAccount( sAccountList[i] );
+            sAccountList[i]->addTransaction( aTransaction );
             found = true;
             break;
         }
@@ -227,12 +253,37 @@ bool Account::addToAccount
         account->setAccountComplete( true );
         aTransaction->setAccount( account );
         account->addTransaction( aTransaction );
-        TransactionManager::sAccountList.push_back( account );
-        //Logger::logString( "Adding account:" + QString(account->getInfo()) );
+        addAccount( account );
         found = true;
     }
     return found;
 } // Account::addToAccount
+
+//----------------------------------------------------------------------------
+// Add account to account list
+//----------------------------------------------------------------------------
+void Account::addAccount( Account* aAccount )
+{
+    sAccountList.push_back( aAccount );
+    if( aAccount->getStatus() == Account::STATUS_OPEN )
+    {
+        sAccountOpenList.push_back( aAccount );
+    }
+    //qDebug() << "Adding account:" << account->getInfo();
+} // Account::addAccount
+
+//----------------------------------------------------------------------------
+// Clear account list
+//----------------------------------------------------------------------------
+void Account::clearAccountList()
+{
+    for( int i = 0; i < sAccountList.size(); i++ )
+    {
+        delete sAccountList[i];
+    }
+    sAccountList.clear();
+    sAccountOpenList.clear();
+} // Account::clearAccountList
 
 //----------------------------------------------------------------------------
 // getTotalAccountBalance
@@ -240,9 +291,9 @@ bool Account::addToAccount
 float Account::getTotalAccountBalance()
 {
     float balance = 0;
-    for( int i = 0; i < TransactionManager::sAccountList.size(); i++ )
+    for( int i = 0; i < sAccountList.size(); i++ )
     {
-        balance += TransactionManager::sAccountList[i]->getBalance();
+        balance += sAccountList[i]->getBalance();
     }
     return balance;
 } // Account::getTotalAccountBalance()

@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Logger.cpp
@@ -9,8 +9,8 @@
 #include <QStringList>
 #include <QDebug>
 
-#include "Logger.h"
-#include "Category.h"
+#include "Logger.hpp"
+#include "Category.hpp"
 
 // Static variables
 QStringList Logger::sLogList;
@@ -36,6 +36,8 @@ void Logger::logString
         break;
     case LOG_ERROR:
         str = "Error  : ";
+        break;
+    default:
         break;
     }
     str.append( aString );

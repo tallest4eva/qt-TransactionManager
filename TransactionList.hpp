@@ -1,27 +1,38 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: TransactionList.h
 //******************************************************************************
 
-#ifndef TransactionList_H
-#define TransactionList_H
+#ifndef TransactionList_HPP
+#define TransactionList_HPP
 
 #include <QStandardItemModel>
 #include <QList>
 #include <QTableView>
 
-#include "Transaction.h"
+#include "Transaction.hpp"
 
+// Custom Number and Dat Standard Items
 class NumberStandardItem : public QStandardItem
 {
 public:
-    NumberStandardItem::NumberStandardItem() : mNumber(0.0f){}
+    NumberStandardItem() : mNumber(0.0f){}
     bool operator< ( const QStandardItem& other ) const;
     void setNumber( float aNumber );
 private:
     float mNumber;
+};
+
+class DateStandardItem : public QStandardItem
+{
+public:
+    DateStandardItem(){}
+    bool operator< ( const QStandardItem& other ) const;
+    void setDate( const QDate& aDate, const QString& aFormat );
+private:
+    QDate mDate;
 };
 
 class TransactionList : public QTableView
@@ -45,6 +56,9 @@ public:
     // Functions
     explicit TransactionList();
     ~TransactionList();
+    float getTotalCredit() const { return mTotalCredit; }
+    float getTotalDebit() const { return mTotalDebit; }
+    float getNetAmount() const { return mTotalNet; }
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void setupTableView( QTableView* aTableView );
     void resort();
@@ -56,8 +70,11 @@ private:
     // Variables
     QStandardItemModel* mModel;
     QList<Transaction*> mTransactionList;
+    float mTotalCredit;
+    float mTotalDebit;
+    float mTotalNet;
 
     static const char* cHeaderList[];
 };
 
-#endif // TransactionList_H
+#endif // TransactionList_HPP

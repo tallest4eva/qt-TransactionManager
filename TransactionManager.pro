@@ -6,7 +6,9 @@
 
 QT       += core gui xml
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport charts
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = TransactionManager
 TEMPLATE = app
@@ -18,6 +20,7 @@ SOURCES += main.cpp\
         BarGraph.cpp\
         Category.cpp\
         DisplayDialog.cpp\
+        DisplayLabel.cpp\
         FileConfigDialog.cpp\
         Logger.cpp\
         Month.cpp\
@@ -28,34 +31,30 @@ SOURCES += main.cpp\
         ReportTableView.cpp\
         Transaction.cpp\
         TransactionList.cpp\
-        TransactionManager.cpp
+        TransactionManager.cpp\
+        TripleRadioButton.cpp\
+        qcustomplot.cpp
 
-HEADERS  += Account.h\
-        Category.h\
-        BarGraph.h\
-        DisplayDialog.h\
-        FileConfigDialog.h\
-        Logger.h\
-        Month.h\
-        OverviewAccountListItem.h\
-        Parser.h\
-        PieView.h\
-        ReportPieChart.h\
-        ReportTableView.h\
-        Transaction.h\
-        TransactionList.h\
-        TransactionManager.h
+HEADERS  += Account.hpp\
+        Category.hpp\
+        BarGraph.hpp\
+        DisplayDialog.hpp\
+        DisplayLabel.hpp\
+        FileConfigDialog.hpp\
+        Logger.hpp\
+        Month.hpp\
+        OverviewAccountListItem.hpp\
+        Parser.hpp\
+        PieView.hpp\
+        ReportPieChart.hpp\
+        ReportTableView.hpp\
+        Transaction.hpp\
+        TransactionList.hpp\
+        TransactionManager.hpp\
+        TripleRadioButton.hpp\
+        qcustomplot.hpp
 
 FORMS    += transactionmanager.ui
 
 RESOURCES += \
     TransactionManager.qrc
-
-CONFIG += qwt
-
-#QWT
-QWT_LOCATION = C:/Qwt-6.0.2
- 
-INCLUDEPATH +=  $${QWT_LOCATION}/include/
-LIBS =          -L$${QWT_LOCATION}/lib \
-                -lqwt

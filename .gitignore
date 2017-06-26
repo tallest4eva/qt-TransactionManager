@@ -1,3 +1,10 @@
 # test input files
 release/transactions.csv
 release/Transactions*.csv
+
+# Legacy releases
+release_1_06/
+release_1_07/
+release_1_08/
+source_1_06/
+source_1_08/

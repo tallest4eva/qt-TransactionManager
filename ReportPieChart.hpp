@@ -1,19 +1,20 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: ReportPieChart.h
 //******************************************************************************
 
-#ifndef ReportPieChart_H
-#define ReportPieChart_H
+#ifndef ReportPieChart_HPP
+#define ReportPieChart_HPP
 
 #include <QStandardItemModel>
 #include <QList>
 
-#include "PieView.h"
-#include "BarGraph.h"
-#include "Transaction.h"
+#include "BarGraph.hpp"
+#include "DisplayLabel.hpp"
+#include "PieView.hpp"
+#include "Transaction.hpp"
 
 class ReportPieChart : public PieView
 {
@@ -30,6 +31,11 @@ public:
 
         PIE_CHART_CNT
     };
+    enum SortType
+    {
+        SORT_BY_BALANCE_DESCENDING,
+        SORT_BY_NAME_ASCENDING,
+    };
     struct PieDataType
     {
         QString mName;
@@ -41,11 +47,13 @@ public:
     // Functions
     explicit ReportPieChart();
     ~ReportPieChart();
-    virtual void mouseReleaseEvent( QMouseEvent * aEvent );
+    virtual void mouseReleaseEvent( QMouseEvent* aEvent );
     void setChartType( PieChartType aChartType ){ mChartType = aChartType; }
     void setTransactionFilter( const Transaction::FilterType& aFilter );
     void setGroupCategories( bool aGroupCategories ){ mGroupCategories = aGroupCategories; }
     void clear();
+    void sortChart( SortType aSortType );
+    void setShowTransfers( bool aShowTransfers, bool aUpdate = true );
 
 signals:
     void transactionFilterSelected( const Transaction::FilterType& aFilter );
@@ -57,6 +65,7 @@ private slots:
 
 private:
     // Functions
+    void updateChart();
 
     // Variables
     QStandardItemModel* mModel;
@@ -65,6 +74,9 @@ private:
     Transaction::FilterType mFilter;
     PieChartType mChartType;
     bool mGroupCategories;
+    SortType mSortType;
+    QList<PieDataType> mDataList;
+    bool mShowTransfers;
 };
 
-#endif // ReportPieChart_H
+#endif // ReportPieChart_HPP

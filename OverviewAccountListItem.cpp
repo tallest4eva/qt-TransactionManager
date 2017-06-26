@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: OverviewAccountListItem.cpp
@@ -7,7 +7,8 @@
 
 #include <QGridLayout>
 
-#include "OverviewAccountListItem.h"
+#include "OverviewAccountListItem.hpp"
+#include "Transaction.hpp"
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -18,29 +19,29 @@ OverviewAccountListItem::OverviewAccountListItem
     ):
     QFrame(parent)
 {
+    mSelected = false;
     setFrameShape( QFrame::StyledPanel );
     setFrameShadow( QFrame::Raised );
 
     mNameLabel.setText( "Account Name" );
-    mBalanceLabel.setText( "$0" );
-    mStatusLabel.setText("CLOSED");
-    mDateLabel.setText("20xx-xx-xx --> 20yy-yy-yy");
+    mBalanceLabel.setText( "$0.00" );
+    mTransactionLabel.setText("Transaction count: 0");
+    mDateLabel.setText("Status: CLOSED | 20xx-xx-xx --> 20yy-yy-yy");
 
     QFont font;
     font.setPointSize(10);
-    mBalanceLabel.setFont(font);
-    mStatusLabel.setFont(font);
+    mTransactionLabel.setFont(font);
     mDateLabel.setFont(font);
     font.setBold( true );
+    mBalanceLabel.setFont(font);
     mNameLabel.setFont(font);
 
     QGridLayout *layout = new QGridLayout;
-    layout->addWidget( &mNameLabel,    0, 0 );
-    layout->addWidget( &mBalanceLabel, 0, 1 );
-    layout->addWidget( &mStatusLabel,  1, 0 );
-    layout->addWidget( &mDateLabel,    1, 1 );
+    layout->addWidget( &mNameLabel,         0, 0 );
+    layout->addWidget( &mBalanceLabel,      0, 1 );
+    layout->addWidget( &mTransactionLabel,  1, 0 );
+    layout->addWidget( &mDateLabel,         1, 1 );
     setLayout( layout );
-    show();
 } // OverviewAccountListItem::OverviewAccountListItem
 
 //----------------------------------------------------------------------------
@@ -51,7 +52,7 @@ OverviewAccountListItem::~OverviewAccountListItem()
 } // OverviewAccountListItem::~OverviewAccountListItem
 
 //----------------------------------------------------------------------------
-// Constructor
+// Set Account
 //----------------------------------------------------------------------------
 void OverviewAccountListItem::setAccount
     (
@@ -61,44 +62,57 @@ void OverviewAccountListItem::setAccount
     mAccount = aAccount;
     if( mAccount )
     {
+        // Update labels with account information
         QString str = mAccount->getName();
-        if( mAccount->getStatus() == Account::STATUS_CLOSED )
-        {
-            str.prepend( "<font color=\"grey\">" );
-            str.append( "</font>" );
-        }
         mNameLabel.setText( str );
-
-        str = "$" + QString::number(mAccount->getBalance(), 'f', 2);
-        if( mAccount->getBalance() != 0 )
-        {
-            str.prepend( (mAccount->getBalance() > 0) ? "<font color=\"darkgreen\">" : "<font color=\"red\">" );
-            str.append( "</font>" );
-        }
-        else if( mAccount->getStatus() == Account::STATUS_CLOSED )
-        {
-            str.prepend( "<font color=\"grey\">" );
-            str.append( "</font>" );
-        }
+        str = Transaction::getAmountText( mAccount->getBalance() );
         mBalanceLabel.setText( str );
         mBalanceLabel.setAlignment( Qt::AlignRight );
-
-        str = ( mAccount->getStatus() == Account::STATUS_OPEN ) ? "OPEN" : "CLOSED";
-        if( mAccount->getStatus() == Account::STATUS_CLOSED )
-        {
-            str.prepend( "<font color=\"grey\">" );
-            str.append( "</font>" );
-        }
-        mStatusLabel.setText( str );
-
-        str = mAccount->getOpenDate().toString("yyyy-MM-dd") + " --> ";
-        str += ( mAccount->getStatus() == Account::STATUS_OPEN ) ? "   PRESENT" : mAccount->getCloseDate().toString("yyyy-MM-dd");
-        if( mAccount->getStatus() == Account::STATUS_CLOSED )
-        {
-            str.prepend( "<font color=\"grey\">" );
-            str.append( "</font>" );
-        }
-        mDateLabel.setText( str );
+        str = "Transaction count: " + QString::number( mAccount->getTransactionList().size() );
+        mTransactionLabel.setText( str );
+        str = ( mAccount->isOpen() ) ? "(Status: OPEN)    " : "(Status: CLOSED)  ";
+        str += mAccount->getOpenDate().toString("yyyy-MM-dd") + " --> " + mAccount->getLastDate().toString("yyyy-MM-dd");
         mDateLabel.setAlignment( Qt::AlignRight );
+        mDateLabel.setText( str );
+    }
+    updateLabelColors();
+} // OverviewAccountListItem::setAccount
+
+//----------------------------------------------------------------------------
+// Set / Deselect account item
+//----------------------------------------------------------------------------
+void OverviewAccountListItem::setSelected( bool aSelected )
+{
+    mSelected = aSelected;
+} // OverviewAccountListItem::setSelected
+
+//----------------------------------------------------------------------------
+// update Label Colors
+//----------------------------------------------------------------------------
+void OverviewAccountListItem::updateLabelColors()
+{
+    if( mAccount )
+    {
+        QPalette palette;
+        if( mAccount->getStatus() == Account::STATUS_CLOSED )
+        {
+            palette.setColor( QPalette::Text, Qt::gray );
+            mNameLabel.setPalette( palette );
+            mBalanceLabel.setPalette( palette );
+            mTransactionLabel.setPalette( palette );
+            mDateLabel.setPalette( palette );
+        }
+        else // If open and not selected
+        {
+            palette.setColor( QPalette::Text, Qt::black );
+            mNameLabel.setPalette( palette );
+            mDateLabel.setPalette( palette );
+            mTransactionLabel.setPalette( palette );
+            if( mAccount->getBalance() != 0 )
+            {
+                palette.setColor( QPalette::Text, (mAccount->getBalance() > 0) ? Qt::darkGreen : Qt::red );
+            }
+            mBalanceLabel.setPalette( palette );
+        }
     }
 } // OverviewAccountListItem::setAccount

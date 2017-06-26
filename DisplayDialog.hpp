@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: DisplayDialog.h
@@ -22,7 +22,11 @@ public:
     // Functions
     explicit DisplayDialog(QWidget* parent = 0);
     ~DisplayDialog();
-    void setDisplay( const QStringList& aStringList );
+    void setDisplay
+        (
+        const QStringList& aStringList,
+        const QString& aEmptyDisplayString = QString( "No content to display" )
+        );
 
 private slots:
     void handleDoneButton();

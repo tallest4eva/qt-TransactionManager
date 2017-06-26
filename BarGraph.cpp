@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: BarGraph.cpp
@@ -8,110 +8,69 @@
 #include <QtGui>
 #include <QHBoxLayout>
 
-#include <qwt_plot_layout.h>
+#include "BarGraph.hpp"
+#include "Month.hpp"
+#include "TransactionManager.hpp"
 
-#include "BarGraph.h"
-#include "Month.h"
-#include "TransactionManager.h"
-
-const QDate BarGraph::REFERENCE_DATE = QDate(1990,1,1);
-static const int DISPLAY_LABEL_TIMOEUT = 5000;              // Display label timeout
-static const int DOUBLE_CLICK_INTERVAL = 300;               // Double click interval
-
-class TimeScaleDraw : public QwtScaleDraw
-{
-public:
-    virtual QwtText label( double aValue ) const
-    {
-        QDate date = BarGraph::REFERENCE_DATE.addDays( aValue );
-        return QwtText( date.toString("MMMyy") );
-    }
-};
+static const int SECONDS_IN_A_DAY = 86400;                      // Number of seconds in a day
+static const int SECONDS_IN_A_MONTH = SECONDS_IN_A_DAY * 28;    // Number of days in a month
+static const int NET_INCOME_GRAPH_IDX = 0;
+static const int COLOR_RANGE = 260;
+static const int MAX_COLOR_STEP = 40;
+static QColor BASE_COLOR = QColor(140, 80, 230);
 
 //----------------------------------------------------------------------------
-// DisplayLabel
+// Constructor
 //----------------------------------------------------------------------------
-DisplayLabel::DisplayLabel()
-{
-    mPressTimer.setSingleShot( true );
-    mReleaseTimer.setSingleShot( true );
-    connect( &mPressTimer, SIGNAL(timeout()), this, SLOT(hide()) );
-} // DisplayLabel::DisplayLabel
-
-//----------------------------------------------------------------------------
-// mouseDoubleClickEvent
-//----------------------------------------------------------------------------
-void DisplayLabel::mouseDoubleClickEvent( QMouseEvent* aEvent )
-{
-    QLabel::mouseDoubleClickEvent( aEvent );
-    mPressTimer.stop();
-    mReleaseTimer.start(DOUBLE_CLICK_INTERVAL);
-    clicked(); 
-} // DisplayLabel::mouseDoubleClickEvent
-
-//----------------------------------------------------------------------------
-// mousePressEvent
-//----------------------------------------------------------------------------
-void DisplayLabel::mousePressEvent( QMouseEvent* aEvent )
-{
-    QLabel::mousePressEvent( aEvent );
-    if( !mReleaseTimer.isActive() ){ mPressTimer.start(DOUBLE_CLICK_INTERVAL); }
-} // DisplayLabel::mousePressEvent
-
-//----------------------------------------------------------------------------
-// Destructor
-//----------------------------------------------------------------------------
-BarGraph::BarGraph(QWidget *parent) :
-    QWidget(parent)
-  , mGraphMode( BAR_NET_INCOME )
-  , mGrid( NULL )
-  , mIncomeCurve( NULL )
+BarGraph::BarGraph( BarChartType aGraphMode, QWidget* aParent ) :
+    QWidget( aParent )
+  , mGraphMode( aGraphMode )
   , mPositiveHistogram( NULL )
   , mNegativeHistogram( NULL )
+  , mRubberBand( NULL )
   , mDrag( false )
   , mDataSet( false )
-  , mRubberBand( NULL )
+  , mMonthInterval( 1 )
+  , mShowNetIncome( false )
+  , mShowTransfers( false )
 {
-    setBackgroundRole(QPalette::Base);
+    setBackgroundRole( QPalette::Base );
 
     // Create graph
-    mPlot.setCanvasBackground( QColor(Qt::white) );
-    mPlot.setAxisScaleDraw( QwtPlot::xBottom, new TimeScaleDraw() );
-    mGrid = new QwtPlotGrid;
-    mGrid->enableXMin(true);
-    mGrid->enableYMin(true);
-    mGrid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-    mGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    mGrid->attach(&mPlot);
+    mPlot.xAxis->setTickLabelType( QCPAxis::ltDateTime );
+    mPlot.xAxis->setDateTimeFormat( "MMMyyyy" );
+    mPlot.xAxis->setTickLabelFont( QFont(QFont().family(), 7) );
+    mPlot.xAxis->setAutoTickStep( true );
+    mPlot.xAxis->setAutoTickLabels( true );
 
-    mPositiveHistogram = new QwtPlotHistogram();
-    mPositiveHistogram->setStyle(QwtPlotHistogram::Columns);
+    mPlot.plotLayout()->insertRow( 0 );
+    mPlot.plotLayout()->addElement( 0, 0, new QCPPlotTitle(&mPlot) );
+    mPlot.yAxis->setLabel( "Amount ($)" );
+    mPlot.xAxis->setLabel( "Date" );
+
+    mPositiveHistogram = new QCPBars( mPlot.xAxis, mPlot.yAxis );
     mPositiveHistogram->setPen(QPen(Qt::black));
-    mPositiveHistogram->setBrush(QBrush(Qt::gray));
-    mPositiveHistogram->setOrientation(Qt::Vertical);
-    QwtColumnSymbol* symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
-    symbol->setFrameStyle(QwtColumnSymbol::Raised);
-    symbol->setLineWidth(2);
-    symbol->setPalette(QPalette(Qt::green));
-    mPositiveHistogram->setSymbol(symbol);
-    mPositiveHistogram->attach( &mPlot );
+    mPositiveHistogram->setBrush(QBrush(Qt::green));
+    mPositiveHistogram->setSelectedBrush(QBrush(Qt::green, Qt::Dense1Pattern ));
+    mPlot.addPlottable( mPositiveHistogram );
 
-    mNegativeHistogram = new QwtPlotHistogram();
-    mNegativeHistogram->setStyle(QwtPlotHistogram::Columns);
+    mNegativeHistogram = new QCPBars( mPlot.xAxis, mPlot.yAxis );
     mNegativeHistogram->setPen(QPen(Qt::black));
-    mNegativeHistogram->setBrush(QBrush(Qt::gray));
-    mNegativeHistogram->setOrientation(Qt::Vertical);
-    symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
-    symbol->setFrameStyle(QwtColumnSymbol::Raised);
-    symbol->setLineWidth(2);
-    symbol->setPalette(QPalette(Qt::red));
-    mNegativeHistogram->setSymbol(symbol);
-    mNegativeHistogram->attach(&mPlot);
+    mNegativeHistogram->setBrush(QBrush(Qt::red));
+    mNegativeHistogram->setSelectedBrush(QBrush(Qt::red, Qt::Dense1Pattern ));
+    mPlot.addPlottable( mNegativeHistogram );
 
-    mIncomeCurve = new QwtPlotCurve();
-    mIncomeCurve->setPen( QPen(QBrush(Qt::black),1) );
-    mIncomeCurve->attach(&mPlot);
+    mPlot.addGraph();
+    mPlot.graph(NET_INCOME_GRAPH_IDX)->setPen(QPen(Qt::black));
+    mPlot.graph(NET_INCOME_GRAPH_IDX)->setLineStyle(QCPGraph::lsLine);
+    mPlot.graph(NET_INCOME_GRAPH_IDX)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
 
+    // Add mouse events
+	connect( &mPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(handlePlottableMousePressEvent(QMouseEvent*)) );
+	connect( &mPlot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(handlePlottableMouseMoveEvent(QMouseEvent*)) );
+	connect( &mPlot, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(handlePlottableMouseReleaseEvent(QMouseEvent*)) );
+
+    // Add plotter to widget
     QHBoxLayout* layout = new QHBoxLayout;
     layout->addWidget( &mPlot );
     setLayout( layout );
@@ -119,17 +78,18 @@ BarGraph::BarGraph(QWidget *parent) :
     // Set up display label
     mDisplayLabel.setParent( this );
     mDisplayLabel.hide();
-    mDisplayLabel.setGeometry( 0, 0, 170, 90 );
-    mDisplayLabel.setFrameShadow( QFrame::Raised );
-    mDisplayLabel.setFrameShape( QFrame::StyledPanel );
-    mDisplayLabel.setPalette( QPalette(Qt::black,Qt::white) );
-    mDisplayLabel.setAutoFillBackground( true );
+    if( mGraphMode == BAR_ACCOUNT_BALANCE )
+    {
+        mDisplayLabel.setGeometry( 0, 0, 270, 135 );
+    }
+    else
+    {
+        mDisplayLabel.setGeometry( 0, 0, 175, 105 );
+    }
     connect( &mDisplayLabel, SIGNAL(clicked()), this, SLOT(handleDisplayClicked()) );
-    QFont font;
-    font.setPointSize( 10 );
-    mDisplayLabel.setFont( font );
     mRubberBand = new QRubberBand( QRubberBand::Rectangle, this );
-    
+
+    updateTitleText();
     clear();
 } // BarGraph::BarGraph
 
@@ -139,10 +99,6 @@ BarGraph::BarGraph(QWidget *parent) :
 BarGraph::~BarGraph()
 {
     delete mRubberBand;
-    delete mGrid;
-    delete mIncomeCurve;
-    delete mPositiveHistogram;
-    delete mNegativeHistogram;
 } // BarGraph::~BarGraph
 
 //----------------------------------------------------------------------------
@@ -158,28 +114,24 @@ void BarGraph::hideDisplayLabel()
 //----------------------------------------------------------------------------
 void BarGraph::handleDisplayClicked()
 {
-    QDate date = mDisplayLabel.getDate();
     Transaction::FilterType filter = mFilter;
-    filter.mStartDate = date;
-    filter.mEndDate = date.addMonths(1).addDays(-1);
-    filter.mAllDates = false;
-    filter.mShowDates = true;
+    filter.selectDateRange( mDisplayLabel.getStartDate(), mDisplayLabel.getEndDate() );
+    filter.showToolBox = "dates";
     transactionFilterSelected( filter );
 } // BarGraph::handleDisplayClicked
 
 //----------------------------------------------------------------------------
 // mousePressEvent
 //----------------------------------------------------------------------------
-void BarGraph::mousePressEvent( QMouseEvent* aEvent )
+void BarGraph::handlePlottableMousePressEvent( QMouseEvent* aEvent )
 {
     mDrag = false;
-    QWidget::mousePressEvent( aEvent );
-
-    if( mDataSet )
+    QRect axisRect = mPlot.axisRect()->rect();
+    if( mDataSet && axisRect.contains( aEvent->x(), aEvent->y() ) )
     {
-        QRectF rect = mPlot.plotLayout()->canvasRect();
-        mMousePosition = QPoint( aEvent->x(), rect.y()+10 );
-        mRubberBand->setGeometry( QRect( mMousePosition, QSize(0,rect.height()) ) );
+        mStartDragPosition = aEvent->x();
+        int offset = mPlot.xAxis->padding() + mPlot.xAxis->labelPadding();
+        mRubberBand->setGeometry( QRect( aEvent->x()+offset, axisRect.y()+offset, 0, axisRect.height() ) );
         mRubberBand->show();
     }
 } // BarGraph::mousePressEvent
@@ -187,37 +139,42 @@ void BarGraph::mousePressEvent( QMouseEvent* aEvent )
 //----------------------------------------------------------------------------
 // mouseMoveEvent
 //----------------------------------------------------------------------------
-void BarGraph::mouseMoveEvent( QMouseEvent* aEvent )
+void BarGraph::handlePlottableMouseMoveEvent( QMouseEvent* aEvent )
 {
     mDrag = true;
-    QWidget::mouseMoveEvent( aEvent );
-
-    if( mDataSet )
+    QRect axisRect = mPlot.axisRect()->rect();
+    if( mDataSet && axisRect.contains( aEvent->x(), aEvent->y() ) )
     {
-        QRectF rect = mRubberBand->rect();
-        mRubberBand->setGeometry( QRect(mMousePosition, QSize( aEvent->x() - mMousePosition.x(),rect.height() )) );
+        int offset = mPlot.xAxis->padding() + mPlot.xAxis->labelPadding();
+        QRect rect = mRubberBand->geometry();
+        rect.setRight( aEvent->x()+offset );
+        mRubberBand->setGeometry( rect );
     }
 } // BarGraph::mouseMoveEvent
-    
+
 //----------------------------------------------------------------------------
 // mouseReleaseEvent
 //----------------------------------------------------------------------------
-void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
+void BarGraph::handlePlottableMouseReleaseEvent( QMouseEvent* aEvent )
 {
-    QWidget::mouseReleaseEvent( aEvent );
-
     mRubberBand->hide();
-    int offset = mPlot.plotLayout()->canvasRect().x()+10;
+    int xOffset = mPlot.xAxis->padding() + mPlot.xAxis->labelPadding();
+    int yOffset = mPlot.yAxis->padding() + mPlot.yAxis->labelPadding();
+    QRect axisRect = mPlot.axisRect()->rect();
+    if( !axisRect.contains( aEvent->x(), aEvent->y() ) ){ return; }
     if( mDrag )
     {
         mDrag = false;
         if( mDataSet )
         {
             // Set new report date interval
-            int startDateVal = mPlot.invTransform( QwtPlot::xBottom, mMousePosition.x() - offset );
-            QDate startDate = REFERENCE_DATE.addDays( startDateVal );
-            int endDateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
-            QDate endDate = REFERENCE_DATE.addDays( endDateVal );
+            double key = mPlot.xAxis->pixelToCoord( mStartDragPosition );
+            QDateTime dateTime;
+            dateTime.setTime_t( key );
+            QDate startDate = dateTime.date();
+            key = mPlot.xAxis->pixelToCoord( aEvent->x() );
+            dateTime.setTime_t( key );
+            QDate endDate = dateTime.date();
             if( endDate > startDate )
             {
                 startDate.setDate( startDate.year(), startDate.month(), 1 );
@@ -228,7 +185,7 @@ void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
         }
         return;
     }
-    
+
     if( !mDisplayLabel.isHidden() )
     {
         hideDisplayLabel();
@@ -238,10 +195,10 @@ void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
         // Place display label
         int labelRectW = mDisplayLabel.width();
         int labelRectH = mDisplayLabel.height();
-        int labelRectX = aEvent->x() - labelRectW/2;
+        int labelRectX = aEvent->x()+xOffset - labelRectW/2;
         labelRectX = ( labelRectX < 0 ) ? 0 : labelRectX;
         labelRectX = ( labelRectX + labelRectW > width() ) ? width() - labelRectW : labelRectX;
-        int labelRectY = aEvent->y() - labelRectH;
+        int labelRectY = aEvent->y()+yOffset - labelRectH;
         labelRectY = ( labelRectY < 0 ) ? 0 : labelRectY;
         labelRectY = ( labelRectY + labelRectH > height() ) ? height() - labelRectH : labelRectY;
         mDisplayLabel.move( labelRectX, labelRectY );
@@ -249,60 +206,124 @@ void BarGraph::mouseReleaseEvent( QMouseEvent* aEvent )
         mDisplayLabel.hide();
 
         // Get point info
-        int dateVal = mPlot.invTransform( QwtPlot::xBottom, aEvent->x() - offset );
-        QDate date = REFERENCE_DATE.addDays( dateVal );
-        if( mFilter.mStartDate <= date && mFilter.mEndDate >= date )
+        double key = mPlot.xAxis->pixelToCoord( aEvent->x() );
+        double selectedBalance = mPlot.yAxis->pixelToCoord( aEvent->y() );
+        QDateTime dateTime;
+        dateTime.setTime_t( key );
+        QDate date = dateTime.date();
+        for( int i = 0; i < mBarDataList.size(); i++ )
         {
-            mDisplayLabel.setDate( QDate(date.year(), date.month(), 1) );
-            for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
+            if( date <= mBarDataList[i].endDate )
             {
-                Month* month = TransactionManager::sMonthList[i];
-                if( date.year() == month->getDate().year() && date.month() == month->getDate().month() )
+                QDate startDate = ( mBarDataList[i].startDate < mFilter.mStartDate ) ? mFilter.mStartDate : mBarDataList[i].startDate;
+                QDate endDate = ( mBarDataList[i].endDate > mFilter.mEndDate ) ? mFilter.mEndDate : mBarDataList[i].endDate;
+                mDisplayLabel.setDates( startDate, endDate );
+                float income = mBarDataList[i].income;
+                float expense = mBarDataList[i].expense;
+                float netIncome = income + expense;
+                float netWorth = mBarDataList[i].netWorth;
+                float transfers = mBarDataList[i].transfers;
+                QString colorStr = "black";
+                QString str = "Month: ";
+                // Assumes the dates are in the same year
+                if( startDate.month() != endDate.month() ){ str += startDate.toString("MMM") + "-" + endDate.toString("MMM yyyy"); }
+                else{ str += startDate.toString("MMM yyyy"); }
+                str += "<br>";
+                if( mGraphMode == BAR_ACCOUNT_BALANCE )
                 {
-                    float income = month->getIncome( mFilter );
-                    float expense = month->getExpense( mFilter );
-                    float netWorth = month->getNetWorth( mFilter );
-                    QString colorStr = "black";
-                    QString str = "Month: " + date.toString("MMM yyyy") + "<br>";
+                    // Display closest account balance, and top 3 accounts info
+                    const int cAccountBalanceDisplayCount = 3;
+                    QString topAccountsStr;
+                    QString selectedAccountStr;
+                    float currentDiff = 10000000;
+                    for( int j = 0; j < mBarDataList[i].accountList.size(); j++ )
+                    {
+                        float balance = mBarDataList[i].accountList[j].balance;
+                        colorStr = "black";
+                        if( balance != 0 ){ colorStr = ( balance > 0 ) ? "green" : "red"; }
+                        QString accountStr = "<font size=\"-1\" color=\"" + mBarDataList[i].accountList[j].color.name() + "\">- " +
+                               mBarDataList[i].accountList[j].name.left(35) + "</font>: <font color=\"" + colorStr + "\">" +
+                               Transaction::getAmountText( balance ) + "</font><br>";
+
+                        float diff = qAbs( selectedBalance - balance );
+                        if( diff < currentDiff ){ selectedAccountStr = accountStr; currentDiff = diff; }
+                        if( j < cAccountBalanceDisplayCount ){ topAccountsStr += accountStr; }
+                    }
+                    str += "Selected Account:<br>" + selectedAccountStr;
+                    str += "Top Account Balances:<br>" + topAccountsStr;
+                }
+                else
+                {
+                    // Net income and Net worth bar graphs
                     if( income != 0 ){ colorStr = ( income > 0 ) ? "green" : "red"; }
-                    str += "Income: <font color=\"" + colorStr + "\">$" + QString::number( income, 'f', 2 ) + "</font><br>";
+                    str += "Income: <font color=\"" + colorStr + "\">" + Transaction::getAmountText( income ) + "</font><br>";
                     colorStr = "black";
                     if( expense != 0 ){ colorStr = ( expense > 0 ) ? "green" : "red"; }
-                    str += "Expense: <font color=\"" + colorStr + "\">$" + QString::number( expense, 'f', 2 ) + "</font><br>";
+                    str += "Expense: <font color=\"" + colorStr + "\">" + Transaction::getAmountText( expense ) + "</font><br>";
                     colorStr = "black";
-                    if( netWorth != 0 ){ colorStr = ( netWorth > 0 ) ? "green" : "red"; }
-                    str += "Net Worth: <font color=\"" + colorStr + "\">$" + QString::number( netWorth, 'f', 2 ) + "</font>";
-                    str += "<center><font size=\"-2\" color=\"blue\">Dbl click to See Transactions</font></center>";
-                    mDisplayLabel.setText( str );
-                    mDisplayLabel.show();
-                    break;
+                    if( netIncome != 0 ){ colorStr = ( netIncome > 0 ) ? "green" : "red"; }
+                    str += "Net Income: <font color=\"" + colorStr + "\">" + Transaction::getAmountText( netIncome ) + "</font><br>";
+                    colorStr = "black";
+                    if( transfers != 0 ){ colorStr = ( transfers > 0 ) ? "green" : "red"; }
+                    str += "Net Transfers: <font color=\"" + colorStr + "\">" + Transaction::getAmountText( transfers ) + "</font><br>";
                 }
+                colorStr = "black";
+                if( netWorth != 0 ){ colorStr = ( netWorth > 0 ) ? "green" : "red"; }
+                str += "Net Worth: <font color=\"" + colorStr + "\">" + Transaction::getAmountText( netWorth ) + "</font>";
+                str += "<center><font size=\"-2\" color=\"blue\">Double-click to See Transactions</font></center>";
+                mDisplayLabel.setText( str );
+                mDisplayLabel.show();
+                break;
             }
         }
     }
-} // BarGraph::mouseReleaseEvent
+} // BarGraph::handlePlottableMouseReleaseEvent
 
 //----------------------------------------------------------------------------
-// Set Graph Mode
+// UpdateTitleText
 //----------------------------------------------------------------------------
-void BarGraph::setGraphMode( BarChartType aGraphMode )
+void BarGraph::updateTitleText()
 {
-    mGraphMode = aGraphMode;
+    QString titleText;
+    switch( mMonthInterval )
+    {
+    case 1:
+        titleText = "Monthly";
+        break;
+    case 3:
+        titleText = "Quarterly";
+        break;
+    case 6:
+        titleText = "BiAnnual";
+        break;
+    case 12:
+    default:
+        titleText = "Annual";
+        break;
+    }
+
     switch( mGraphMode )
     {
     case BAR_NET_INCOME:
-        mPlot.setTitle("Net Income / Expense");
-        mPlot.setAxisTitle( QwtPlot::yLeft, "Amount ($)" );
-        mPlot.setAxisTitle( QwtPlot::xBottom, "Date" );
+        titleText += " Income / Expense";
+        if( mShowTransfers ){ titleText += " / Transfers"; }
+        if( mShowNetIncome ){ titleText += " / Net Income"; }
         break;
     case BAR_NET_WORTH:
+        titleText += " Net Worth";
+        break;
+    case BAR_ACCOUNT_BALANCE:
+        titleText += " Account Balance";
+        break;
     default:
-        mPlot.setTitle("Net Worth");
-        mPlot.setAxisTitle( QwtPlot::yLeft, "Amount ($)" );
-        mPlot.setAxisTitle( QwtPlot::xBottom, "Date" );
         break;
     }
-} // BarGraph::setGraphMode
+    QCPPlotTitle* title = (QCPPlotTitle*)mPlot.plotLayout()->element( 0, 0 );
+    if( title )
+    {
+        title->setText( titleText );
+    }
+} // BarGraph::updateTitleText
 
 //----------------------------------------------------------------------------
 // clear
@@ -313,97 +334,246 @@ void BarGraph::clear()
     mFilter = Transaction::FilterType();
     mFilter.mStartDate = TransactionManager::cDefaultStartDate;
     mFilter.mEndDate = TransactionManager::cDefaultEndDate;
-    mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mFilter.mStartDate), REFERENCE_DATE.daysTo(mFilter.mEndDate), 30.416 );
-    mPlot.setAxisScale( QwtPlot::yLeft, -1000, 1000 );
-    mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
-    mPositiveHistogram->setSamples( QVector<QwtIntervalSample>() );
-    mNegativeHistogram->setSamples( QVector<QwtIntervalSample>() );
+    mPlot.xAxis->setRange( QDateTime(mFilter.mStartDate).toTime_t(), QDateTime(mFilter.mEndDate).toTime_t() );
+    mPlot.yAxis->setRange( -1000, 1000 );
+    mPlot.graph(NET_INCOME_GRAPH_IDX)->clearData();
+    mPositiveHistogram->clearData();
+    mNegativeHistogram->clearData();
     mPlot.replot();
+    mBarDataList.clear();
     mDataSet = false;
 } // BarGraph::clear
+
+//----------------------------------------------------------------------------
+// Set Show Net Income graph
+//----------------------------------------------------------------------------
+void BarGraph::setShowNetIncome( bool aShowNetIncome, bool aUpdate )
+{
+    mShowNetIncome = aShowNetIncome;
+    if( aUpdate )
+    {
+        if( mGraphMode == BAR_NET_INCOME )
+        {
+            updateTitleText();
+            updateChart();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+// Set Show Transfers
+//----------------------------------------------------------------------------
+void BarGraph::setShowTransfers( bool aShowTransfers, bool aUpdate )
+{
+    mShowTransfers = aShowTransfers;
+    if( aUpdate )
+    {
+        if( mGraphMode == BAR_NET_INCOME )
+        {
+            updateTitleText();
+            updateChart();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+// Set Month Interval
+//----------------------------------------------------------------------------
+void BarGraph::setMonthInterval( int aMonthInterval )
+{
+    mMonthInterval = aMonthInterval;
+    updateTitleText();
+    updateChart();
+}
 
 //----------------------------------------------------------------------------
 // Set Transaction Data
 //----------------------------------------------------------------------------
 void BarGraph::setTransactionFilter( const Transaction::FilterType& aFilter )
 {
-    mDataSet = false;
     mFilter = aFilter;
+    updateChart();
+}
+
+//----------------------------------------------------------------------------
+// Update chart
+//----------------------------------------------------------------------------
+void BarGraph::updateChart()
+{
+    mDataSet = false;
     hideDisplayLabel();
+    mPlot.graph(NET_INCOME_GRAPH_IDX)->clearData();
+    mPositiveHistogram->clearData();
+    mNegativeHistogram->clearData();
+    mBarDataList.clear();
 
     // Setup date axis
-    mFilter.mStartDate.setDate( aFilter.mStartDate.year(), aFilter.mStartDate.month(), 1 );
-    mFilter.mEndDate.setDate( aFilter.mEndDate.year(), aFilter.mEndDate.month(), 1 );
-    if( aFilter.mStartDate < aFilter.mEndDate )
+    QDate originalStartDate = mFilter.mStartDate;
+    QDate originalEndDate = mFilter.mEndDate;
+    mFilter.mStartDate.setDate( originalStartDate.year(), originalStartDate.month(), 1 );
+    mFilter.mEndDate.setDate( originalEndDate.year(), originalEndDate.month(), originalEndDate.daysInMonth() );
+    QDate rangeStartDate = mFilter.mStartDate;
+    QDate rangeEndDate = mFilter.mEndDate;
+    if( mFilter.mStartDate < mFilter.mEndDate )
     {
-        int monthStep = 1;
-        mFilter.mEndDate = mFilter.mEndDate.addMonths(1).addDays(-1);
-        if( mFilter.mStartDate.daysTo(mFilter.mEndDate) > 365*7 )
+        if( mMonthInterval > 1 )
         {
-            monthStep = 12;
+            int month = rangeStartDate.month() - 1;
+            rangeStartDate = rangeStartDate.addMonths( -(month % mMonthInterval) );
+            month = rangeEndDate.month();
+            rangeEndDate = rangeEndDate.addMonths( (month%mMonthInterval != 0) ? mMonthInterval - (month % mMonthInterval) : 0 );
         }
-        else if( mFilter.mStartDate.daysTo(mFilter.mEndDate) > 365*3 )
-        {
-            monthStep = 6;
-        }
-        else if( mFilter.mStartDate.daysTo(mFilter.mEndDate) > 365*1.5 )
-        {
-            monthStep = 2;
-        }
-        mPlot.setAxisScale( QwtPlot::xBottom, REFERENCE_DATE.daysTo(mFilter.mStartDate), REFERENCE_DATE.daysTo(mFilter.mEndDate), 30.416*monthStep );
-        mPlot.updateAxes();
+        mPlot.xAxis->setRange( QDateTime( rangeStartDate.addDays(-3) ).toTime_t(), QDateTime( rangeEndDate ).toTime_t() );
+        if( mPositiveHistogram ){ mPositiveHistogram->setWidth( SECONDS_IN_A_MONTH * mMonthInterval ); }
+        if( mNegativeHistogram ){ mNegativeHistogram->setWidth( SECONDS_IN_A_MONTH * mMonthInterval ); }
+
+        // Set up date ticks
+        int monthCount = 0;
+        for( QDate startDate = mFilter.mStartDate; startDate < originalEndDate; startDate = startDate.addMonths(1) ){ monthCount++; }
+        if( monthCount < 12 ){ mPlot.xAxis->setAutoTickCount( monthCount ); }
+        else if( monthCount < 36 ){ mPlot.xAxis->setAutoTickCount( monthCount/3 ); }
+        else if( monthCount < 72 ){ mPlot.xAxis->setAutoTickCount( monthCount/6 ); }
+        else{ mPlot.xAxis->setAutoTickCount( monthCount/12 ); }
     }
 
-    // Setup histogram
-    QVector<QwtIntervalSample> positiveSamples;
-    QVector<QwtIntervalSample> negativeSamples;
-    QVector<double> curveXSamples;
-    QVector<double> curveYSamples;
+    // Setup account plotlines
+    QVector<QVector<double>> accountSamples;
+    QList<Account*> accountList = mFilter.getSelectedAccounts();
+    // Bail if no accounts is selected
+    if( accountList.isEmpty() ){ mPlot.replot(); return; }
+
+    QList<QColor> accountColorList;
+    if( mGraphMode == BAR_ACCOUNT_BALANCE )
+    {
+        // Clear previous account plotlines
+        while( mPlot.graphCount() > 1 )
+        {
+            mPlot.removeGraph( NET_INCOME_GRAPH_IDX+1 );
+        }
+        // Add each account plotline
+        const int colorRange = COLOR_RANGE;
+        int step = qMin( MAX_COLOR_STEP, (colorRange / accountList.size()) );
+        QColor baseColor = BASE_COLOR.toHsv();
+        int h = baseColor.hue();
+        int s = baseColor.saturation();
+        int v = baseColor.value();
+        for( int i = 0; i < accountList.size(); i++ )
+        {
+            mPlot.addGraph();
+            QColor nextColor;
+            int newH = (h + step*i)%colorRange;
+            nextColor.setHsv( newH, s, v );
+            QPen pen( nextColor );
+            pen.setWidth( 2 );
+            mPlot.graph(NET_INCOME_GRAPH_IDX+i)->setPen(pen);
+            mPlot.graph(NET_INCOME_GRAPH_IDX+i)->setLineStyle(QCPGraph::lsLine);
+            mPlot.graph(NET_INCOME_GRAPH_IDX+i)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
+            accountColorList.append( nextColor );
+            accountSamples.push_back( QVector<double>() );
+        }
+    }
+
+    // Setup histograms
+    QVector<double> keySamples;
+    QVector<double> positiveSamples;
+    QVector<double> negativeSamples;
+    QVector<double> differenceSamples;
     float maxValue = 0;
     float minValue = 0;
-    const int BAR_BUFFER = 3;
+    BarDataType barData;
     for( int i = 0; i < TransactionManager::sMonthList.size(); i++ )
     {
-        // Date
         Month* month = TransactionManager::sMonthList[i];
-        if( mFilter.mStartDate <= month->getDate() && mFilter.mEndDate >= month->getDate() )
+        QDate date = month->getDate();
+        if( mFilter.mStartDate <= date && mFilter.mEndDate >= date )
         {
-            float startDay = REFERENCE_DATE.daysTo(month->getDate()) + BAR_BUFFER;
-            float endDay = startDay + month->getDate().daysInMonth() - BAR_BUFFER*2;
-            float positiveValue = 0;
-            float negativeValue = 0;
-            float netWorth = 0;
-            switch( mGraphMode )
+            // Set values
+            if( !barData.set )
             {
-            case BAR_NET_INCOME:
-                positiveValue = month->getIncome( mFilter );
-                negativeValue = month->getExpense( mFilter );
-                curveXSamples.push_back( REFERENCE_DATE.daysTo(month->getDate())+14 );
-                curveYSamples.push_back( positiveValue + negativeValue );
-                break;
-            case BAR_NET_WORTH:
-                netWorth = month->getNetWorth( mFilter );
-                ( netWorth > 0 ) ? positiveValue = netWorth : negativeValue = netWorth;
-                break;
+                barData.set = true;
+                barData.startDate = ( keySamples.empty() ) ? rangeStartDate : date;
+                barData.endDate = barData.startDate.addMonths( mMonthInterval ).addDays(-1);
             }
-            QwtIntervalSample sample;
-            sample.interval = QwtInterval( startDay, endDay );
-            sample.value = positiveValue;
-            positiveSamples.push_back( sample );
-            sample.value = negativeValue;
-            negativeSamples.push_back( sample );
+            barData.income += month->getIncome( mFilter );
+            barData.expense += month->getExpense( mFilter );
+            barData.transfers += month->getTransfers( mFilter );
 
-            // Set max values
-            maxValue = ( positiveValue > maxValue ) ? positiveValue : maxValue;
-            minValue = ( negativeValue < minValue ) ? negativeValue : minValue;
+            // Create plot points on month intervals
+            if( date.month() % mMonthInterval == 0 || date.addMonths(1) >= mFilter.mEndDate )
+            {
+                float income = barData.income;
+                float expense = barData.expense;
+                if( mShowTransfers )
+                {
+                    if( barData.transfers > 0 ){ income += barData.transfers; }
+                    else{ expense += barData.transfers; }
+                }
+                barData.netWorth = month->getNetWorth( mFilter );
+                keySamples.append( QDateTime( barData.startDate.addDays(28*mMonthInterval/2) ).toTime_t() );
+                switch( mGraphMode )
+                {
+                case BAR_NET_INCOME:
+                    positiveSamples.append( income );
+                    negativeSamples.append( expense );
+                    differenceSamples.append( income + expense );
+                    if( positiveSamples.last() > maxValue ){ maxValue = positiveSamples.last(); }
+                    if( negativeSamples.last() < minValue ){ minValue = negativeSamples.last(); }
+                    break;
+                case BAR_NET_WORTH:
+                    positiveSamples.append( (barData.netWorth > 0) ? barData.netWorth : 0 );
+                    negativeSamples.append( (barData.netWorth < 0) ? barData.netWorth : 0 );
+                    if( positiveSamples.last() > maxValue ){ maxValue = positiveSamples.last(); }
+                    if( negativeSamples.last() < minValue ){ minValue = negativeSamples.last(); }
+                    break;
+                case BAR_ACCOUNT_BALANCE:
+                    // Add each account plotline
+                    for( int i = 0; i < accountList.size(); i++ )
+                    {
+                        bool accountExist = false;
+                        double balance = month->getNetWorth( accountList[i], &accountExist );
+                        accountSamples[i].append( balance );
+                        if( balance > maxValue ){ maxValue = balance; }
+                        if( balance < minValue ){ minValue = balance; }
+
+                        if( accountExist )
+                        {
+                            AccountInfoType accountInfo;
+                            accountInfo.name = accountList[i]->getName();
+                            accountInfo.color = accountColorList[i];
+                            accountInfo.balance = balance;
+                            barData.accountList.append( accountInfo );
+                        }
+                    }
+                    qSort( barData.accountList );
+                    break;
+                }
+                mBarDataList.append( barData );
+                barData = BarDataType();
+            }
             mDataSet = true;
         }
     }
 
-    mPlot.setAxisScale( QwtPlot::yLeft, minValue*1.20, maxValue*1.20 );
-    ( positiveSamples.size() < 15 ) ? mIncomeCurve->setSamples( curveXSamples, curveYSamples ) : mIncomeCurve->setSamples( QVector<double>(), QVector<double>() );
-    mPositiveHistogram->setSamples( positiveSamples );
-    mNegativeHistogram->setSamples( negativeSamples );
+    // Don't show difference plot if more that 3 years
+    mPlot.yAxis->setRange( minValue * 1.3, maxValue * 1.2 );
+    switch( mGraphMode )
+    {
+    case BAR_NET_INCOME:
+    case BAR_NET_WORTH:
+        if( mShowNetIncome ){ mPlot.graph(NET_INCOME_GRAPH_IDX)->setData( keySamples, differenceSamples ); }
+        mPositiveHistogram->setData( keySamples, positiveSamples );
+        mNegativeHistogram->setData( keySamples, negativeSamples );
+        break;
+    case BAR_ACCOUNT_BALANCE:
+        // Add each account plotline
+        for( int i = 0; i < accountList.size(); i++ )
+        {
+            mPlot.graph(NET_INCOME_GRAPH_IDX+i)->setData( keySamples, accountSamples[i] );
+        }
+        break;
+    default:
+        break;
+    }
     mPlot.replot();
 } // BarGraph::setTransactionData()
 

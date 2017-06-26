@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: FileConfigDialog.cpp
@@ -9,7 +9,7 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 
-#include "FileConfigDialog.h"
+#include "FileConfigDialog.hpp"
 
 //----------------------------------------------------------------------------
 // Constructor
@@ -95,7 +95,7 @@ FileConfigDialog::FileConfigDialog
     mTransactionBox.setLayout( fLayout );
 
     updateData();
-    
+
     // Set up buttons / checkboxes
     mCancelButton.setText( "Cancel" );
     mDoneButton.setText( "Done" );

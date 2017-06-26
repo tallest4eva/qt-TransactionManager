@@ -1,5 +1,5 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
 //  FILE NAME: Parser.cpp
@@ -8,15 +8,21 @@
 #include <QString>
 #include <QStringList>
 #include <QtXml>
+#include <QDebug>
 
-#include "Parser.h"
-#include "Category.h"
-#include "Logger.h"
-#include "Month.h"
-#include "TransactionManager.h"
+#include "Parser.hpp"
+#include "Category.hpp"
+#include "Logger.hpp"
+#include "Month.hpp"
+#include "TransactionManager.hpp"
 
 // Const variables
-const Parser::DateFormatType Parser::cDefaultDateFormat = Parser::DATE_FORMAT_Mdyy_SLASH;
+const int Parser::MAX_COLUMNS = 12;
+const int Parser::INVALID_COLUMN = 0xffff;
+const int Parser::DEFAULT_CONFIG_IDX = 0;
+const int Parser::CUSTOM_CONFIG_IDX = 1;
+
+const Parser::DateFormatType Parser::cDefaultDateFormat = Parser::DATE_FORMAT_yyyyMd_HYPHEN;
 const Parser::SeparatorType Parser::cDefaultSeparator = Parser::SEPARATOR_COMMA;
 const QString Parser::cDefaultAccountTag = "Account";
 const QString Parser::cDefaultTransactionTag = "Transaction";
@@ -26,17 +32,17 @@ const int Parser::cDefaultEntryList[] =
     1,              /* ENTRY_TRANS_DATE           */
     2,              /* ENTRY_TRANS_ACCOUNT_NAME   */
     3,              /* ENTRY_TRANS_DESCRIPTION    */
-	INVALID_COLUMN, /* ENTRY_TRANS_ORIG_DESC      */
-	5,              /* ENTRY_TRANS_TYPE           */
-	6,              /* ENTRY_TRANS_AMOUNT         */
-	7,              /* ENTRY_TRANS_BALANCE        */
-	8,              /* ENTRY_TRANS_CATEGORY       */
-	9,              /* ENTRY_TRANS_LABELS         */
-    
-	2,              /* ENTRY_ACCOUNT_NAME         */
-	3,              /* ENTRY_ACCOUNT_STATUS       */
-	4,              /* ENTRY_ACCOUNT_STATE        */
-	5,              /* ENTRY_ACCOUNT_ALT_NAMES    */
+    INVALID_COLUMN, /* ENTRY_TRANS_ORIG_DESC      */
+    5,              /* ENTRY_TRANS_TYPE           */
+    6,              /* ENTRY_TRANS_AMOUNT         */
+    7,              /* ENTRY_TRANS_BALANCE        */
+    8,              /* ENTRY_TRANS_CATEGORY       */
+    9,              /* ENTRY_TRANS_LABELS         */
+
+    2,              /* ENTRY_ACCOUNT_NAME         */
+    3,              /* ENTRY_ACCOUNT_STATUS       */
+    4,              /* ENTRY_ACCOUNT_STATE        */
+    5,              /* ENTRY_ACCOUNT_ALT_NAMES    */
 };
 const char* Parser::cDateFormatList[] =
 {
@@ -62,6 +68,7 @@ static const QString sConfigFileName = "config.cfg";
 static const QString TAG_CONFIGS = "configs";
 static const QString TAG_CONFIG = "config";
 static const QString TAG_CATEGORY = "category";
+static const QString TAG_LABEL = "label";
 
 // Static variables
 Parser::ConfigType Parser::sConfig;
@@ -126,7 +133,7 @@ void Parser::parseFile
 
         // Skip empty lines
         if( line.isEmpty() ){ continue; }
-        
+
         QStringList tokens;
         if( line.contains("\"") )
         {
@@ -142,23 +149,23 @@ void Parser::parseFile
                 expStr = "(?:^|,)(\"(?:[^\"]+|\"\")*\"|[^,]*)";
                 break;
             }
-	        int position = 0;
+            int position = 0;
             QRegExp regEx( expStr );
-	        while( line.size() > position && (position = regEx.indexIn(line, position)) != -1 )
+            while( line.size() > position && (position = regEx.indexIn(line, position)) != -1 )
             {
-		        QString col;
-		        if( regEx.cap(1).size() > 0 )
+                QString col;
+                if( regEx.cap(1).size() > 0 )
                 {
-			        col = regEx.cap(1);
+                    col = regEx.cap(1);
                 }
-		        else if( regEx.cap(2).size() > 0 )
+                else if( regEx.cap(2).size() > 0 )
                 {
-			        col = regEx.cap(2);
+                    col = regEx.cap(2);
                 }
                 position += ( col.size() ) ? regEx.matchedLength() : 1;
                 col.remove('\"');
-		        tokens << col;
-	        }
+                tokens << col;
+            }
             //qDebug() << line; for( int i = 0; i < tokens.size(); i++ ){ qDebug() << "Item: " << QString::number(i) << ": " << tokens[i]; }
         }
         else
@@ -177,15 +184,14 @@ void Parser::parseFile
                 if( !altNames.isEmpty() ){ account->setAlternateNames( altNames.split(';') ); }
                 account->setStatus( ( sConfig.getEntry(tokens, ENTRY_ACCOUNT_STATUS) == "Closed" ) ? Account::STATUS_CLOSED : Account::STATUS_OPEN );
                 account->setAccountComplete( ( sConfig.getEntry(tokens, ENTRY_ACCOUNT_STATE) == "Incomplete" ) ? false : true );
-                TransactionManager::sAccountList.push_back( account );
-                //Logger::logString( "Adding account:" + QString(account->getInfo()) );
+                Account::addAccount( account );
             }
             else if( !sConfig.mTransactionUseTag || tokens[0] == sConfig.mTransactionTag )
             {
                 // Add to transaction list
                 QString dateFormat = ( sConfig.mDateFormat == DATE_FORMAT_CUSTOM ) ? sConfig.mDateFormatStr : cDateFormatList[sConfig.mDateFormat];
                 QDate date = QDate::fromString( sConfig.getEntry(tokens, ENTRY_TRANS_DATE), dateFormat );
-                Category::CategoryIdType categoryId = Category::getCategoryId( sConfig.getEntry(tokens, ENTRY_TRANS_CATEGORY) );
+                Category::CategoryIdxType categoryId = Category::getCategoryIndex( sConfig.getEntry(tokens, ENTRY_TRANS_CATEGORY) );
 
                 // Skip invalid transactions
                 if( !date.isValid() || Category::getParentCategoryId( categoryId ) == Category::EXCLUDE ){ continue; }
@@ -209,7 +215,7 @@ void Parser::parseFile
                     transaction->setCurrentBalance( sConfig.getEntry(tokens, ENTRY_TRANS_BALANCE).remove(',').toFloat() );
                 }
                 TransactionManager::sTransactionList.push_back( transaction );
-                //Logger::logString( "Adding to account:" + QString(transaction->getAccount()->getName()) + QString(transaction->getInfo()) );
+                //qDebug() << "Adding to account:" << transaction->getAccount()->getName() << transaction->getInfo();
 
                 // Update transaction dates / values
                 if( transaction->getTransactionDate() < firstDate )
@@ -229,7 +235,7 @@ void Parser::parseFile
             }
         }
     }
-    
+
     // update dates and lists
     if( firstDate < QDate::currentDate() )
     {
@@ -249,15 +255,19 @@ void Parser::parseConfigFile
 {
     QDomDocument doc( "configFile" );
     QString errorMsg;
-    if( !doc.setContent( &aConfigFile, &errorMsg ) )
+    int errorLine = 0;
+    int errorColumn = 0;
+    if( !doc.setContent( &aConfigFile, &errorMsg, &errorLine, &errorColumn ) )
     {
-        Logger::logString( "Error. Failed to parse config.cfg file: " + errorMsg, Logger::LOG_ERROR );
+        Logger::logString( "Error. Failed to parse config.cfg file: " + errorMsg + "Line: " + QString::number(errorLine) + "Column: " + QString::number(errorColumn), Logger::LOG_ERROR );
         return;
     }
 
     QDomElement configsElement = doc.firstChildElement( TAG_CONFIGS );
     if( !configsElement.isNull() )
     {
+        bool sortCategoryList = false;
+        bool sortLabelList = false;
         for( QDomElement element = configsElement.firstChildElement(); !element.isNull(); element = element.nextSiblingElement() )
         {
             // Get config content
@@ -339,14 +349,41 @@ void Parser::parseConfigFile
             {
                 QString categoryStr = element.attribute("category");
                 QString subCategoryStr = element.attribute("subCategory");
-                if( !categoryStr.isEmpty() && !subCategoryStr .isEmpty() )
+                QString typeStr = element.attribute("type");
+                // If new category is defined
+                if( !categoryStr.isEmpty() && !subCategoryStr.isEmpty() )
                 {
-                    Category::CategoryType category;
-                    category.parentCategory = Category::getCategoryId( categoryStr );
+                    Category category;
+                    category.parentCategory = Category::getParentCategoryId( categoryStr );
                     category.text = subCategoryStr;
+                    if( !typeStr.isEmpty() )
+                    {
+                        if( typeStr == "transfer" ){ category.type = Category::TRANSACTION_TYPE_TRANSFER; }
+                        else if( typeStr == "income" ){ category.type = Category::TRANSACTION_TYPE_INCOME; }
+                        else if( typeStr == "balance" ){ category.type = Category::TRANSACTION_TYPE_BALANCE; }
+                        // else default to expense
+                    }
                     Category::addCategory( category );
+                    sortCategoryList = true;
                 }
             } // if element.tagName() == TAG_CATEGORY
+
+            else if( element.tagName() == TAG_LABEL )
+            {
+                QString labelStr = element.attribute("name");
+				Category::addLabel( labelStr );
+				sortLabelList = true;
+			} // if element.tagName() == TAG_CATEGORY
         } // for element
+
+        // Sort Category list
+        if( sortCategoryList )
+        {
+            Category::orderCategoryList();
+        }
+		if( sortLabelList )
+		{
+            Category::orderLabelList();
+		}
     }
 } // Parser::parseConfigFile

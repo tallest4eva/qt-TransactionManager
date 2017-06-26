@@ -1,12 +1,12 @@
 //******************************************************************************
-// Author: Obi Modum (tallest4eva)
+// Author: Obinna Modum (tallest4eva)
 // Disclaimer: This Software is provides "As Is". Use at your own risk.
 //
-//  FILE NAME: Account.h
+//  FILE NAME: Account.hpp
 //******************************************************************************
 
-#ifndef Account_H
-#define Account_H
+#ifndef Account_HPP
+#define Account_HPP
 
 #include <QDate>
 #include <QList>
@@ -39,25 +39,37 @@ public:
     void  setBalance( float aBalance ){ mBalance = aBalance; }
     StatusType getStatus() const { return mStatus; }
     void  setStatus( StatusType aStatus ){ mStatus = aStatus; }
+    bool  isOpen() const { return( mStatus == STATUS_OPEN ); }
     bool  isClosed() const { return( mStatus == STATUS_CLOSED ); }
     bool  getAccountComplete() const { return mComplete; }
     void  setAccountComplete( bool aComplete ){ mComplete = aComplete; }
     QDate getOpenDate() const { return mOpenDate; }
     void  setOpenDate( QDate aOpenDate ){ mOpenDate = aOpenDate; }
+    QDate getLastDate() const { return mLastDate; }
     QDate getCloseDate() const { return mCloseDate; }
     void  setCloseDate( QDate aCloseDate ){ mCloseDate = aCloseDate; }
     bool  isAccountMatch( const QString& aAccountName, bool aAllowAltNames = false );
     void  addTransaction( Transaction* aTransaction );
-    QList<Transaction*> getTransactionList(){ return mTransactionList; }
+    const QList<Transaction*>& getTransactionList() const { return mTransactionList; }
     void  updateData();
     QString getInfo();
     bool operator== ( const Account& aAccount ) const;
 
+    // Static functions
+    static bool accountSortByNameLessThan( Account* arg1, Account* &arg2 );
+    static bool accountSortByBalanceLessThan( Account* arg1, Account* &arg2 );
+    static bool accountSortByOpenDateLessThan( Account* arg1, Account* &arg2 );
     static void updateAccountList();
     static float getTotalAccountBalance();
-    static int getAccountIndex( Account* aAccount );
+    static int getAccountIndex( const Account* aAccount );
     static Account* getAccount( const QString& aAccountName, bool aAllowAltNames = false );
     static bool addToAccount( const QString& aAccountName, Transaction* aTransaction, bool aCreateNewAccount );
+    static void addAccount( Account* aAccount );
+    static void clearAccountList();
+
+    // Variables
+    static QList<Account*> sAccountList;
+    static QList<Account*> sAccountOpenList;
 
 private:
     bool mValid;
@@ -68,8 +80,9 @@ private:
     StatusType mStatus;
     bool mComplete;
     QDate mOpenDate;
+    QDate mLastDate;
     QDate mCloseDate;
     QList<Transaction*> mTransactionList;
 };
 
-#endif // Account_H
+#endif // Account_HPP

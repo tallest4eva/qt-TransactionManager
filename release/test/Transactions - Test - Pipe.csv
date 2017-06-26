@@ -1,0 +1,67 @@
+Account Descriptor||Account Name|Status|State|Alternate Account Names
+Transaction Descriptor|Date|Account Name|Description|Original Description|Transaction Type|Amount|Balance|Category|Labels
+
+Account||Bank - Checking Account-0002|Closed|Complete|Bank - Checking Account-0001;Bank - Checking Account-0002
+Transaction|06/20/12|Bank - Checking Account-0002|Account Closed|Account Closed|credit|0.00|0.00|Account Balance|Manual
+Transaction|"06/19/12"|Bank - Checking Account-0002|Transfer to Bank - Savings Account-2000|Requested transfer to XXXXXX2000|debit|-3000.00||Transfer|Reviewed
+Transaction|06/15/12|"Bank - Checking Account-0002"|Employment Paycheck|DIRECT DEP|credit|500.00||Paycheck|Reviewed
+Transaction|05/15/12|Bank - Checking Account-0002|"Employment| Paycheck"||credit|500.00||Paycheck|Reviewed
+Transaction|04/15/12|Bank - Checking Account-0002|Employment Paycheck|"DIRECT| DEP"|credit|500.00||Paycheck|Reviewed
+Transaction|03/20/12|Bank - Checking Account-0002|"BMW Motors, Co"|"BMW Motors| New York| NY"|debit|"-1,000.00"||Auto Payment|Reviewed
+Transaction|03/15/12|Bank - Checking Account-0002|Employment Paycheck|DIRECT DEP|credit|"1,500.00"||Paycheck|Reviewed
+Transaction|02/15/12|Bank - Checking Account-0001|Employment Paycheck|DIRECT DEP|credit|500.00||Paycheck|Reviewed
+Transaction|01/15/12|Bank - Checking Account-0001|Employment Paycheck|DIRECT DEP|credit|500.00||Paycheck|Reviewed
+Transaction|01/01/12|Bank - Checking Account-0001|Account Opened|Account Opened|credit|0.00|0.00|Account Balance|Manual
+
+Account||Bank - Checking Account-1000|Open|Complete
+Transaction|12/30/12|Bank - Checking Account-1000|Payment to Bank - Credit Card-2000|Credit Card Payment|debit|-510.00|1375.00|Credit Card Payment|Manual
+Transaction|12/15/12|Bank - Checking Account-1000|Employment Paycheck|DIRECT DEP|credit|500.00|"1,885.00"|Paycheck|Reviewed
+Transaction|11/15/12|Bank - Checking Account-1000|Employment Paycheck|DIRECT DEP|credit|500.00|1385.00|Paycheck|Reviewed
+Transaction|10/15/12|Bank - Checking Account-1000|Employment Paycheck|DIRECT DEP|credit|500.00|885.00|Paycheck|Reviewed
+Transaction|09/30/12|Bank - Checking Account-1000|Payment to Bank - Credit Card-2000|Credit Card Payment|debit|-865.00|385.00|Credit Card Payment|Manual
+Transaction|09/15/12|Bank - Checking Account-1000|Employment Paycheck|DIRECT DEP|credit|500.00|1250.00|Paycheck|Reviewed
+Transaction|09/01/12|Bank - Checking Account-1000|Transfer to Bank - Savings Account-2000|Requested transfer to XXXXXX2000|debit|-250.00|750.00|Transfer|Reviewed
+Transaction|08/15/12|Bank - Checking Account-1000|Employment Paycheck|DIRECT DEP|credit|500.00|1000.00|Paycheck|Reviewed
+Transaction|07/15/12|Bank - Checking Account-1000|Employment Paycheck|DIRECT DEP|credit|500.00|500.00|Paycheck|Reviewed
+Transaction|06/01/12|Bank - Checking Account-1000|Account Opened|Account Opened|credit|0.00|0.00|Account Balance|Manual
+
+Account||Bank - Savings Account-2000|Open|Complete
+Transaction|12/31/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3950.00|Interest Income|Reviewed
+Transaction|11/30/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3850.00|Interest Income|Reviewed
+Transaction|10/31/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3750.00|Interest Income|Reviewed
+Transaction|09/30/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3650.00|Interest Income|Reviewed
+Transaction|09/01/12|Bank - Savings Account-2000|Transfer from Bank - Checking Account-0002|Requested transfer from XXXXXX0002|credit|250.00|3550.00|Transfer|Reviewed
+Transaction|08/31/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3300.00|Interest Income|Reviewed
+Transaction|07/31/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3200.00|Interest Income|Reviewed
+Transaction|06/30/12|Bank - Savings Account-2000|Interest Earned|Interest Deposit|credit|100.00|3100.00|Interest Income|Reviewed
+Transaction|06/19/12|Bank - Savings Account-2000|Transfer from Bank - Checking Account-0002|Requested transfer from XXXXXX0002|credit|3000.00|3000.00|Transfer|Reviewed
+Transaction|06/01/12|Bank - Savings Account-2000|Account Opened|Account Opened|credit|0.00|0.00|Account Balance|Manual
+
+Account||Bank - Credit Card-2000|Open|Complete
+Transaction|12/30/12|Bank - Credit Card-2000|Payment from Bank - Checking Account-1000|Credit Card Payment|credit|510.00|-600.00|Credit Card Payment|
+Transaction|12/20/12|Bank - Credit Card-2000|Toyota Auto Services|Toyota AUTO|debit|-450.00|-1110.00|Auto Payment
+Transaction|12/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-80.00|-660.00|Gas & Fuel
+Transaction|12/05/12|Bank - Credit Card-2000|Famous Sams|CREDITCARD Fame Sam|debit|-40.00|-580.00|Restaurants|
+Transaction|11/20/12|Bank - Credit Card-2000|Wal-Mart|Wal-Mart Super Center|debit|-125.00|-540.00|Shopping|
+Transaction|11/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-40.00|-415.00|Gas & Fuel|
+Transaction|11/05/12|Bank - Credit Card-2000|EBay|CREDITCARD EBAY|debit|-250.00|-375.00|Shopping|
+Transaction|10/20/12|Bank - Credit Card-2000|USPS|CREDITCARD USPS|debit|-50.00|-125.00|Shipping|Reviewed
+Transaction|10/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-50.00|-75.00|Gas & Fuel|Reviewed
+Transaction|10/05/12|Bank - Credit Card-2000|Denny's|CREDITCARD DENNY'S|debit|-25.00|-25.00|Restaurants|Reviewed
+Transaction|09/30/12|Bank - Credit Card-2000|Payment from Bank - Checking Account-1000|Credit Card Payment|credit|865.00|0.00|Credit Card Payment|Manual
+Transaction|09/20/12|Bank - Credit Card-2000|StarBucks|STARBUCKS|debit|-20.00|-865.00|Coffee Shops|Manual
+Transaction|09/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-30.00|-845.00|Gas & Fuel|Reviewed
+Transaction|09/05/12|Bank - Credit Card-2000|Carrabas|CREDITCARD CARRABAS|debit|-25.00|-815.00|Restaurants|Reviewed
+Transaction|08/20/12|Bank - Credit Card-2000|Forever 21|FOREVER 21 INC|debit|-150.00|-790.00|Clothing|Reviewed Manual
+Transaction|08/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-50.00|-640.00|Gas & Fuel|Reviewed
+Transaction|08/05/12|Bank - Credit Card-2000|Buffalo Wild Wings|CREDITCARD BUFFALO WW|debit|-30.00|-590.00|Restaurants|Reviewed
+Transaction|07/20/12|Bank - Credit Card-2000|Target|TARGET T0001|debit|-100.00|-560.00|Groceries|Manual
+Transaction|07/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-60.00|-460.00|Gas & Fuel|Reviewed
+Transaction|07/05/12|Bank - Credit Card-2000|Arby's|CREDITCARD ARBY'S|debit|-35.00|-400.00|Restaurants|Reviewed
+Transaction|06/20/12|Bank - Credit Card-2000|Best Buy|CREDITCARD BESTBUY|debit|-300.00|-365.00|Electronics & Software|Reviewed
+Transaction|06/10/12|Bank - Credit Card-2000|QuikTrip|CREDITCARD QT 200|debit|-50.00|-65.00|Gas & Fuel|Reviewed
+Transaction|06/05/12|Bank - Credit Card-2000|AppleBees|CREDITCARD APPLEBEES|debit|-15.00|-15.00|Restaurants|Reviewed
+Transaction|06/01/12|Bank - Credit Card-2000|Account Opened|Account Opened|credit|0.00|0.00|Account Balance|Manual
+
+Testing Invalid transaction
+Transaction|01/10/12|Bank - Invalid Account|Invalid Account and Category|test|credit|500.00||Invalid Category|Reviewed
