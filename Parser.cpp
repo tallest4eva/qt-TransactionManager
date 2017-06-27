@@ -64,7 +64,7 @@ const char Parser::cSeparatorList[] =
     ',',     // SEPARATOR_COMMA
     '|',     // SEPARATOR_PIPE,
 };
-static const QString sConfigFileName = "config.cfg";
+static const QString sConfigFileName = "config.xml";
 static const QString TAG_CONFIGS = "configs";
 static const QString TAG_CONFIG = "config";
 static const QString TAG_CATEGORY = "category";
@@ -246,7 +246,7 @@ void Parser::parseFile
 } // Parser::parseFile
 
 //----------------------------------------------------------------------------
-// parseConfigFile
+// Parse Config File
 //----------------------------------------------------------------------------
 void Parser::parseConfigFile
     (
@@ -259,7 +259,7 @@ void Parser::parseConfigFile
     int errorColumn = 0;
     if( !doc.setContent( &aConfigFile, &errorMsg, &errorLine, &errorColumn ) )
     {
-        Logger::logString( "Error. Failed to parse config.cfg file: " + errorMsg + "Line: " + QString::number(errorLine) + "Column: " + QString::number(errorColumn), Logger::LOG_ERROR );
+        Logger::logString( "Error. Failed to parse config.xml file: " + errorMsg + "Line: " + QString::number(errorLine) + "Column: " + QString::number(errorColumn), Logger::LOG_ERROR );
         return;
     }
 

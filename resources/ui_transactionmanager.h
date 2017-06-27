@@ -28,6 +28,7 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBox>
@@ -62,11 +63,11 @@ public:
     QHBoxLayout *horizontalLayout_8;
     QFormLayout *formLayout;
     QLabel *overviewNumberOfAccountsLabel;
-    QLabel *overviewNumberOfTransactionsLabel;
     QLabel *overviewNumberOfAccountValue;
+    QLabel *overviewNumberOfTransactionsLabel;
     QLabel *overviewNumberOfTransactionsValue;
-    QLabel *overviewNetWorthValue;
     QLabel *overviewNetWorthLabel;
+    QLabel *overviewNetWorthValue;
     QLabel *overviewFirstDateLabel;
     QLabel *overviewFirstDateValue;
     QLabel *overviewLastDateLabel;
@@ -75,6 +76,8 @@ public:
     QCheckBox *overviewShowClosedAccountsCheckBox;
     QLabel *overviewSortAccountsLabel;
     QComboBox *overviewSortAccountsComboBox;
+    QSpacerItem *verticalSpacer;
+    QLabel *mNotesImageLabel;
     QWidget *transactionsTab;
     QHBoxLayout *horizontalLayout_5;
     QWidget *transactionSelectWidget;
@@ -314,12 +317,6 @@ public:
 
         formLayout->setWidget(0, QFormLayout::LabelRole, overviewNumberOfAccountsLabel);
 
-        overviewNumberOfTransactionsLabel = new QLabel(overviewDisplayWidget);
-        overviewNumberOfTransactionsLabel->setObjectName(QStringLiteral("overviewNumberOfTransactionsLabel"));
-        overviewNumberOfTransactionsLabel->setFont(font1);
-
-        formLayout->setWidget(1, QFormLayout::LabelRole, overviewNumberOfTransactionsLabel);
-
         overviewNumberOfAccountValue = new QLabel(overviewDisplayWidget);
         overviewNumberOfAccountValue->setObjectName(QStringLiteral("overviewNumberOfAccountValue"));
         overviewNumberOfAccountValue->setMinimumSize(QSize(0, 25));
@@ -331,6 +328,12 @@ public:
 
         formLayout->setWidget(0, QFormLayout::FieldRole, overviewNumberOfAccountValue);
 
+        overviewNumberOfTransactionsLabel = new QLabel(overviewDisplayWidget);
+        overviewNumberOfTransactionsLabel->setObjectName(QStringLiteral("overviewNumberOfTransactionsLabel"));
+        overviewNumberOfTransactionsLabel->setFont(font1);
+
+        formLayout->setWidget(1, QFormLayout::LabelRole, overviewNumberOfTransactionsLabel);
+
         overviewNumberOfTransactionsValue = new QLabel(overviewDisplayWidget);
         overviewNumberOfTransactionsValue->setObjectName(QStringLiteral("overviewNumberOfTransactionsValue"));
         overviewNumberOfTransactionsValue->setFont(font2);
@@ -340,6 +343,12 @@ public:
 
         formLayout->setWidget(1, QFormLayout::FieldRole, overviewNumberOfTransactionsValue);
 
+        overviewNetWorthLabel = new QLabel(overviewDisplayWidget);
+        overviewNetWorthLabel->setObjectName(QStringLiteral("overviewNetWorthLabel"));
+        overviewNetWorthLabel->setFont(font1);
+
+        formLayout->setWidget(2, QFormLayout::LabelRole, overviewNetWorthLabel);
+
         overviewNetWorthValue = new QLabel(overviewDisplayWidget);
         overviewNetWorthValue->setObjectName(QStringLiteral("overviewNetWorthValue"));
         overviewNetWorthValue->setFont(font2);
@@ -347,12 +356,6 @@ public:
         overviewNetWorthValue->setFrameShadow(QFrame::Sunken);
 
         formLayout->setWidget(2, QFormLayout::FieldRole, overviewNetWorthValue);
-
-        overviewNetWorthLabel = new QLabel(overviewDisplayWidget);
-        overviewNetWorthLabel->setObjectName(QStringLiteral("overviewNetWorthLabel"));
-        overviewNetWorthLabel->setFont(font1);
-
-        formLayout->setWidget(2, QFormLayout::LabelRole, overviewNetWorthLabel);
 
         overviewFirstDateLabel = new QLabel(overviewDisplayWidget);
         overviewFirstDateLabel->setObjectName(QStringLiteral("overviewFirstDateLabel"));
@@ -414,6 +417,22 @@ public:
         overviewSortAccountsComboBox->setFont(font2);
 
         formLayout->setWidget(6, QFormLayout::FieldRole, overviewSortAccountsComboBox);
+
+        verticalSpacer = new QSpacerItem(20, 100, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        formLayout->setItem(7, QFormLayout::FieldRole, verticalSpacer);
+
+        mNotesImageLabel = new QLabel(overviewDisplayWidget);
+        mNotesImageLabel->setObjectName(QStringLiteral("mNotesImageLabel"));
+        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(mNotesImageLabel->sizePolicy().hasHeightForWidth());
+        mNotesImageLabel->setSizePolicy(sizePolicy3);
+        mNotesImageLabel->setMaximumSize(QSize(350, 250));
+        mNotesImageLabel->setPixmap(QPixmap(QString::fromUtf8(":/images/resources/notes.png")));
+
+        formLayout->setWidget(8, QFormLayout::FieldRole, mNotesImageLabel);
 
 
         horizontalLayout_8->addLayout(formLayout);
@@ -489,7 +508,7 @@ public:
         transactionToolBox->addItem(transactionAccountToolBox, QStringLiteral("Account"));
         transactionCategoriesToolBox = new QWidget();
         transactionCategoriesToolBox->setObjectName(QStringLiteral("transactionCategoriesToolBox"));
-        transactionCategoriesToolBox->setGeometry(QRect(0, 0, 290, 470));
+        transactionCategoriesToolBox->setGeometry(QRect(0, 0, 159, 152));
         verticalLayout_4 = new QVBoxLayout(transactionCategoriesToolBox);
         verticalLayout_4->setSpacing(6);
         verticalLayout_4->setContentsMargins(11, 11, 11, 11);
@@ -541,7 +560,7 @@ public:
         transactionToolBox->addItem(transactionCategoriesToolBox, QStringLiteral("Categories"));
         transactionLabelsToolBox = new QWidget();
         transactionLabelsToolBox->setObjectName(QStringLiteral("transactionLabelsToolBox"));
-        transactionLabelsToolBox->setGeometry(QRect(0, 0, 290, 470));
+        transactionLabelsToolBox->setGeometry(QRect(0, 0, 247, 81));
         verticalLayout_6 = new QVBoxLayout(transactionLabelsToolBox);
         verticalLayout_6->setSpacing(6);
         verticalLayout_6->setContentsMargins(11, 11, 11, 11);
@@ -614,11 +633,11 @@ public:
 
         transactionTabWidget = new QWidget(transactionsTab);
         transactionTabWidget->setObjectName(QStringLiteral("transactionTabWidget"));
-        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(transactionTabWidget->sizePolicy().hasHeightForWidth());
-        transactionTabWidget->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(transactionTabWidget->sizePolicy().hasHeightForWidth());
+        transactionTabWidget->setSizePolicy(sizePolicy4);
         horizontalLayout_21 = new QVBoxLayout(transactionTabWidget);
         horizontalLayout_21->setSpacing(6);
         horizontalLayout_21->setContentsMargins(11, 11, 11, 11);
@@ -798,7 +817,7 @@ public:
         reportToolBox->addItem(reportAccountToolBox, QStringLiteral("Account"));
         reportCategoriesToolBox = new QWidget();
         reportCategoriesToolBox->setObjectName(QStringLiteral("reportCategoriesToolBox"));
-        reportCategoriesToolBox->setGeometry(QRect(0, 0, 290, 422));
+        reportCategoriesToolBox->setGeometry(QRect(0, 0, 159, 152));
         verticalLayout_10 = new QVBoxLayout(reportCategoriesToolBox);
         verticalLayout_10->setSpacing(6);
         verticalLayout_10->setContentsMargins(11, 11, 11, 11);
@@ -850,7 +869,7 @@ public:
         reportToolBox->addItem(reportCategoriesToolBox, QStringLiteral("Categories"));
         reportLabelsToolBox = new QWidget();
         reportLabelsToolBox->setObjectName(QStringLiteral("reportLabelsToolBox"));
-        reportLabelsToolBox->setGeometry(QRect(0, 0, 290, 422));
+        reportLabelsToolBox->setGeometry(QRect(0, 0, 247, 81));
         verticalLayout_12 = new QVBoxLayout(reportLabelsToolBox);
         verticalLayout_12->setSpacing(6);
         verticalLayout_12->setContentsMargins(11, 11, 11, 11);
@@ -924,11 +943,11 @@ public:
 
         mReportShowNetIncomeCheckBox = new QCheckBox(reportSelectWidget);
         mReportShowNetIncomeCheckBox->setObjectName(QStringLiteral("mReportShowNetIncomeCheckBox"));
-        QSizePolicy sizePolicy4(QSizePolicy::Minimum, QSizePolicy::Fixed);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(mReportShowNetIncomeCheckBox->sizePolicy().hasHeightForWidth());
-        mReportShowNetIncomeCheckBox->setSizePolicy(sizePolicy4);
+        QSizePolicy sizePolicy5(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(mReportShowNetIncomeCheckBox->sizePolicy().hasHeightForWidth());
+        mReportShowNetIncomeCheckBox->setSizePolicy(sizePolicy5);
         mReportShowNetIncomeCheckBox->setMaximumSize(QSize(16777215, 16777215));
         QFont font4;
         font4.setPointSize(11);
@@ -1206,11 +1225,11 @@ public:
         actionDisplayAbout->setText(QApplication::translate("TransactionManager", "About", Q_NULLPTR));
         overviewAccountTitle->setText(QApplication::translate("TransactionManager", "Accounts", Q_NULLPTR));
         overviewNumberOfAccountsLabel->setText(QApplication::translate("TransactionManager", "Number of Accounts:", Q_NULLPTR));
-        overviewNumberOfTransactionsLabel->setText(QApplication::translate("TransactionManager", "Number of Transactions:", Q_NULLPTR));
         overviewNumberOfAccountValue->setText(QApplication::translate("TransactionManager", "TextLabel", Q_NULLPTR));
+        overviewNumberOfTransactionsLabel->setText(QApplication::translate("TransactionManager", "Number of Transactions:", Q_NULLPTR));
         overviewNumberOfTransactionsValue->setText(QApplication::translate("TransactionManager", "TextLabel", Q_NULLPTR));
-        overviewNetWorthValue->setText(QApplication::translate("TransactionManager", "TextLabel", Q_NULLPTR));
         overviewNetWorthLabel->setText(QApplication::translate("TransactionManager", "Net Worth:", Q_NULLPTR));
+        overviewNetWorthValue->setText(QApplication::translate("TransactionManager", "TextLabel", Q_NULLPTR));
         overviewFirstDateLabel->setText(QApplication::translate("TransactionManager", "Date of First Transaction:", Q_NULLPTR));
         overviewFirstDateValue->setText(QApplication::translate("TransactionManager", "TextLabel", Q_NULLPTR));
         overviewLastDateLabel->setText(QApplication::translate("TransactionManager", "Date of Last Transaction:", Q_NULLPTR));
@@ -1218,6 +1237,7 @@ public:
         overviewShowClosedAccountsLabel->setText(QApplication::translate("TransactionManager", "Show Closed Accounts:", Q_NULLPTR));
         overviewShowClosedAccountsCheckBox->setText(QString());
         overviewSortAccountsLabel->setText(QApplication::translate("TransactionManager", "Sort Accounts By:", Q_NULLPTR));
+        mNotesImageLabel->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(overviewTab), QApplication::translate("TransactionManager", "Overview", Q_NULLPTR));
         transactionAllButton->setText(QApplication::translate("TransactionManager", "Show All", Q_NULLPTR));
         transactionShowInReportsButton->setText(QApplication::translate("TransactionManager", "Show Filter in Reports ->", Q_NULLPTR));

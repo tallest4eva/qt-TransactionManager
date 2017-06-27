@@ -91,18 +91,6 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="overviewNumberOfTransactionsLabel">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Number of Transactions:</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QLabel" name="overviewNumberOfAccountValue">
                <property name="minimumSize">
@@ -127,6 +115,18 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="overviewNumberOfTransactionsLabel">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Number of Transactions:</string>
+               </property>
+              </widget>
+             </item>
              <item row="1" column="1">
               <widget class="QLabel" name="overviewNumberOfTransactionsValue">
                <property name="font">
@@ -148,6 +148,18 @@
                </property>
               </widget>
              </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="overviewNetWorthLabel">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Net Worth:</string>
+               </property>
+              </widget>
+             </item>
              <item row="2" column="1">
               <widget class="QLabel" name="overviewNetWorthValue">
                <property name="font">
@@ -163,18 +175,6 @@
                </property>
                <property name="text">
                 <string>TextLabel</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="overviewNetWorthLabel">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Net Worth:</string>
                </property>
               </widget>
              </item>
@@ -301,6 +301,41 @@
                 <font>
                  <pointsize>12</pointsize>
                 </font>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="8" column="1">
+              <widget class="QLabel" name="mNotesImageLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>350</width>
+                 <height>250</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="TransactionManager.qrc">:/images/resources/notes.png</pixmap>
                </property>
               </widget>
              </item>
@@ -444,8 +479,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>290</width>
-                <height>470</height>
+                <width>159</width>
+                <height>152</height>
                </rect>
               </property>
               <attribute name="label">
@@ -556,8 +591,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>290</width>
-                <height>470</height>
+                <width>247</width>
+                <height>81</height>
                </rect>
               </property>
               <attribute name="label">
@@ -1054,8 +1089,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>290</width>
-                <height>422</height>
+                <width>159</width>
+                <height>152</height>
                </rect>
               </property>
               <attribute name="label">
@@ -1166,8 +1201,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>290</width>
-                <height>422</height>
+                <width>247</width>
+                <height>81</height>
                </rect>
               </property>
               <attribute name="label">

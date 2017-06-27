@@ -448,7 +448,7 @@ void TransactionManager::on_actionDisplayLog_triggered()
 //----------------------------------------------------------------------------
 void TransactionManager::on_actionDisplayHelp_triggered()
 {
-    QFile file("help/help.html");
+    QFile file("help.html");
     QStringList fileContents;
     if( file.open( QIODevice::ReadOnly ) )
     {
@@ -461,7 +461,7 @@ void TransactionManager::on_actionDisplayHelp_triggered()
     }
     DisplayDialog dialog;
     dialog.setWindowTitle( "Help" );
-    dialog.setDisplay( fileContents, "Help file \"help/help.html\" not found." );
+    dialog.setDisplay( fileContents, "Help file \"help.html\" not found." );
     dialog.resize( 900, 500 );
     dialog.exec();
 } // TransactionManager::on_actionDisplayLog_triggered()
